@@ -1,0 +1,115 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.ItemViewModel
+@{
+    ViewData["Title"] = "Items - Create";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Item Details:</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    Item ID: @Html.TextBoxFor(model => model.ItemID, new { ReadOnly="true", Class="form-control mb-2"})
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Item Code: @Html.TextBoxFor(model => model.ItemCode, new { placeholder = "Item Code", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { Class = "error-text" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Sub Group: 
+                    @Html.DropDownListFor(
+                        m => m.SubGroupID,
+                        new SelectList(Model.AvailableSubGroups, "Key", "Value",Model.SubGroupID),                        
+                        new { @class = "form-control" }
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Item Name: @Html.TextBoxFor(model => model.ItemName, new { placeholder = "Item Name", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ItemName, "", new { Class = "error-text" })
+                </div>
+            </div>
+        </div>    
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Item Description: @Html.TextBoxFor(model => model.ItemDescription, new { placeholder = "Item Description", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ItemDescription, "", new { Class = "error-text" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Default Sale Price: @Html.TextBoxFor(model => model.ItemUnitPrice, new { placeholder = "Item Price", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ItemUnitPrice, "", new { Class = "error-text" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Minimum Sale Price: @Html.TextBoxFor(model => model.ItemUnitPriceWithMaxDiscount, new { placeholder = "Item Price (Minimum)", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ItemUnitPriceWithMaxDiscount, "", new { Class = "error-text" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Quantity: @Html.TextBoxFor(model => model.ItemAvailableQty, new { placeholder = "Item Quantity", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ItemAvailableQty, "", new { Class = "error-text" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Low Stock Reminder Quantity: @Html.TextBoxFor(model => model.ItemReorderQtyReminder, new { placeholder = "Reminder Quantity", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ItemAvailableQty, "", new { Class = "error-text" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    @Html.HiddenFor(model => model.ItemImageFilename)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Upload Image: <input type="file" name="UploadFile"/>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Create") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Create</button></div>                   
+            <div class="col-sm-6"><a href="/Item" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>       
+        </div>
+    </form>
+</div>

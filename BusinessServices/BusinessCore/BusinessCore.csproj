@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PackageId>Business Core</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Faisal Ahmed</Authors>
+    <Description>Core Interfaces and Abstract Classes for Extensions and Services</Description>
+    <Copyright>Copyright 2018 (c) FMASolutions Ltd. All rights reserved.</Copyright>
+  </PropertyGroup>
+  <ItemGroup>      
+    <ProjectReference Include="../../DataServices/DataRepository/DataRepository.csproj" />
+    <ProjectReference Include="../../BusinessServices/ControllerTemplate/ControllerTemplate.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />
+    <ProjectReference Include="../../BusinessServices/SQLAppConfigTypes/SQLAppConfigTypes.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PackageId>PoEProfitHunter</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Faisal Ahmed</Authors>
+    <Description>Try and hunt for Profitable trades in PoE</Description>
+    <Copyright>Copyright 2018 (c) FMASolutions Ltd. All rights reserved.</Copyright>
+  </PropertyGroup>
+  <ItemGroup>    
+    <ProjectReference Include="../../DataServices/FileHelper/FileHelper.csproj" />
+    <ProjectReference Include="../../DataServices/WebHelper/WebHelper.csproj" />    
+    <ProjectReference Include="../../BusinessServices/BusinessCore/BusinessCore.csproj" />
+    <ProjectReference Include="../../BusinessServices/AppLoggerExtension/AppLoggerExtension.csproj" />    
+  </ItemGroup>
+</Project>
+
+

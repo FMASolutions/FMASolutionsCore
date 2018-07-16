@@ -1,0 +1,11 @@
+@model FMASolutionsCore.Web.FMASolutionsWebsite.ViewModels.UserProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_LayoutFMASolutions.cshtml";
+}
+
+<div class="container mb-5 pt-3 pb-4"> 
+    <img src="~/SiteAssets/images/pic01.jpg" alt="" class="rounded img-fluid mb-3"/>
+    <h2>Welcome to the user profile secotion</h2>
+    <p>@Model.AuthMessage</p>
+</div>

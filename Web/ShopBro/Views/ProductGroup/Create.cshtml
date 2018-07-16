@@ -1,0 +1,51 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.ProductGroupViewModel
+@{
+    ViewData["Title"] = "Product Group - Create Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Create A Product Group</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    ProductGroup Code: @Html.TextBoxFor(model => model.ProductGroupCode, new { placeholder = "Product Group Code", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ProductGroupCode, "", new { Class = "error-text" })                  
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    ProductGroup Name: @Html.TextBoxFor(model => model.ProductGroupName, new { placeholder = "Product Group Name", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ProductGroupName, "", new { Class = "error-text" })        
+                </div>
+            </div>  
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    ProductGroup Description: @Html.TextBoxFor(model => model.ProductGroupDescription, new { placeholder = "Product Group Description", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.ProductGroupDescription, "", new { Class = "error-text" })        
+                </div>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Create") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Create</button></div>            
+            <div class="col-sm-6"><a href="/ProductGroup" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>            
+        </div>        
+    </form>
+</div>
+

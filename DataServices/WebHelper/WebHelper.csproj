@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>WebHelper</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Faisal Ahmed</Authors>
+    <Description>Provide easy access to the web programatically.</Description>
+    <Copyright>Copyright 2018 (c) FMASolutions Ltd. All rights reserved.</Copyright>
+  </PropertyGroup>
+</Project>

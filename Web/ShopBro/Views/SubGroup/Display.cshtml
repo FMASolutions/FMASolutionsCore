@@ -1,0 +1,69 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.SubGroupViewModel
+@{
+    ViewData["Title"] = "Sub Group - Search Results";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Sub Group Details:</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    SubGroup ID: @Html.TextBoxFor(model => model.SubGroupID, new { ReadOnly="true", Class="form-control mb-2"})               
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    SubGroup Code: @Html.TextBoxFor(model => model.SubGroupCode, new { ReadOnly="true", Class="form-control mb-2"})               
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    ProductGroup: @Html.TextBoxFor(model => model.AvailableProductGroups[Model.ProductGroupID], new { ReadOnly="true", Class="form-control mb-2"})
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    ProductGroup ID: @Html.TextBoxFor(model => model.ProductGroupID, new { ReadOnly="true", Class="form-control mb-2", style="display: none"})               
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    SubGroup Name: @Html.TextBoxFor(model => model.SubGroupName, new { ReadOnly="true", Class="form-control mb-2"})                
+                </div>
+            </div>  
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    SubGroup Description: @Html.TextBoxFor(model => model.SubGroupDescription, new { ReadOnly="true", Class="form-control mb-2"})                
+                </div>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col-sm-4"><button type="submit" formaction=@Url.Action("DisplayForUpdate") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Update</button></div>            
+            <div class="col-sm-4"><a href="/SubGroup" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>
+        </div>        
+    </form>
+</div>
+

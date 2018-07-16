@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PackageId>CryptoTesterCommandLineTool</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Faisal Ahmed</Authors>
+    <Description>Try out CryptoHelper Functions.</Description>
+    <Copyright>Copyright 2018 (c) FMASolutions Ltd. All rights reserved.</Copyright>
+  </PropertyGroup>
+  <ItemGroup>        
+    <ProjectReference Include="../../DataServices/CryptoHelper/CryptoHelper.csproj" />
+    <ProjectReference Include="../../CLITools/CLIHelper/CLIHelper.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,22 @@
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="/Home/About">About</a> 
+    </li>
+</ul>
+<ul class="navbar-nav">
+    @if(User.Identity.IsAuthenticated)
+    {     
+        <li class="nav-item">
+            <a class="nav-link" href="/AdminPanel">Admin Panel</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/UserAccount/Logout">Logout</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="/UserAccount/Login">Login</a>
+        </li>
+    }
+</ul>

@@ -1,0 +1,76 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http; //HttpRequestMessage
+using Microsoft.AspNetCore.Http; //Pathstring
+using System.Net.Http.Headers; //MediaType
+using System.Security.Claims; //ClaimTypes
+using Microsoft.AspNetCore.Authentication; //MapJsonKey
+using Microsoft.AspNetCore.Authentication.Cookies; //CookieAuthenticationDefaults
+using Microsoft.AspNetCore.Authentication.OAuth; //OAuthEvents
+using Newtonsoft.Json.Linq; //JObject
+using FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups;
+using FMASolutionsCore.BusinessServices.ShoppingService.SubGroups;
+using FMASolutionsCore.BusinessServices.ShoppingService.Items;
+using FMASolutionsCore.BusinessServices.SQLAppConfigTypes;
+
+namespace FMASolutionsCore.Web.ShopBro
+{
+    public class Startup
+    {
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {
+            MvcServiceCollectionExtensions.AddMvc(services);
+
+            /*MvcServiceCollectionExtensions.AddMvc(services).AddMvcOptions(options =>
+            {
+                options.Filters.Add(new ValidateAntiForgeryTokenAttribute());
+            });
+            */
+            
+            
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.AccessDeniedPath = "/UserAccount/AccessDenied";
+                    options.LoginPath = "/UserAccount/Login";
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", p => p.RequireAuthenticatedUser().RequireRole("Admin"));
+            });
+
+            
+
+            string shopDBConnectionString = Program.configExtension.GetSetting(AppSettings.ShopBroDBConnectionString.ToString());
+            SQLAppConfigTypes shopSQLDBType = (SQLAppConfigTypes)int.Parse(Program.configExtension.GetSetting(AppSettings.ShopBroDBType.ToString()));
+            
+            services.AddTransient<IProductGroupService>( s => new ProductGroupService(shopDBConnectionString,shopSQLDBType));
+            services.AddTransient<ISubGroupService>(s => new SubGroupService(shopDBConnectionString,shopSQLDBType));
+            services.AddTransient<IItemService>(s => new ItemService(shopDBConnectionString,shopSQLDBType));
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            StaticFileExtensions.UseStaticFiles(app);            
+
+            app.UseAuthentication();
+
+            if (HostingEnvironmentExtensions.IsDevelopment(env))
+                DeveloperExceptionPageExtensions.UseDeveloperExceptionPage(app);
+            MvcApplicationBuilderExtensions.UseMvc(app
+                , (System.Action<IRouteBuilder>)(routes =>
+                 {
+                     routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                     //routes.MapRoute("defaultProductGroup", "{controller=ProductGroup}/{action=Search}/{id?}");
+                 })
+            );
+        }        
+    }
+}

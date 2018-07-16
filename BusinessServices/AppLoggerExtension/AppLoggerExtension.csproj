@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PackageId>App Logger Extension</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Faisal Ahmed</Authors>
+    <Description>Provide Logging functionality to applications</Description>
+    <Copyright>Copyright 2018 (c) FMASolutions Ltd. All rights reserved.</Copyright>
+  </PropertyGroup>
+  <ItemGroup>      
+    <ProjectReference Include="../../DataServices/FileHelper/FileHelper.csproj" />
+    <ProjectReference Include="../../BusinessServices/BusinessCore/BusinessCore.csproj" />    
+  </ItemGroup>
+</Project>

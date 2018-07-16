@@ -1,0 +1,97 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.ItemViewModel
+@{
+    ViewData["Title"] = "Sub Group - Search Results";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Item Details:</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    Item ID: @Html.TextBoxFor(model => model.ItemID, new { ReadOnly="true", Class="form-control mb-2"})
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Item Code: @Html.TextBoxFor(model => model.ItemCode, new { ReadOnly="true", Class="form-control mb-2"})                    
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    Sub Group: @Html.TextBoxFor(model => model.AvailableSubGroups[Model.SubGroupID], new { ReadOnly="true", Class="form-control mb-2"})
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Item Name: @Html.TextBoxFor(model => model.ItemName, new { ReadOnly="true", Class="form-control mb-2"})                    
+                </div>
+            </div>
+        </div>    
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Item Description: @Html.TextBoxFor(model => model.ItemDescription, new { ReadOnly="true", Class="form-control mb-2"})                    
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Default Sale Price: @Html.TextBoxFor(model => model.ItemUnitPrice, new { ReadOnly="true", Class="form-control mb-2"})                   
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Minimum Sale Price: @Html.TextBoxFor(model => model.ItemUnitPriceWithMaxDiscount, new { ReadOnly="true", Class="form-control mb-2"})                    
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Quantity: @Html.TextBoxFor(model => model.ItemAvailableQty, new { ReadOnly="true", Class="form-control mb-2"})                    
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Low Stock Reminder Quantity: @Html.TextBoxFor(model => model.ItemReorderQtyReminder, new { ReadOnly="true", Class="form-control mb-2"})                    
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Image: <img src="http://localhost:5000/SiteAssets/images/Items/@Model.ItemImageFilename" width="100",height="100">
+                    @Html.HiddenFor(model => model.ItemImageFilename)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4"><button type="submit" formaction=@Url.Action("DisplayForUpdate") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Update</button></div>            
+            <div class="col-sm-4"><a href="/Item" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>
+        </div>
+    </form>
+</div>

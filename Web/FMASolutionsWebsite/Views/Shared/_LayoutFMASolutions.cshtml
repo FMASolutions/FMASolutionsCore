@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />    
+</head>
+    <body>                                 
+        @{Html.RenderPartial("_SiteHeader");}
+        @RenderBody()
+        @{Html.RenderPartial("_SiteFooter");}
+        <script src="~/SiteAssets/js/FMAUtil.min.js"></script>
+        <link href="~/SiteAssets/css/FMAIndexLayoutMain.min.css" rel="stylesheet" />
+    </body>
+</html>

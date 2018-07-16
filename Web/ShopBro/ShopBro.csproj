@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />
+    <ProjectReference Include="../../DataServices/DataRepository/DataRepository.csproj" />
+    <ProjectReference Include="../../DataServices/ShoppingRepo/ShoppingRepo.csproj" />
+    <ProjectReference Include="../../BusinessServices/BusinessCore/BusinessCore.csproj" />
+    <ProjectReference Include="../../BusinessServices/AppLoggerExtension/AppLoggerExtension.csproj" />
+    <ProjectReference Include="../../BusinessServices/AppConfigExtension/AppConfigExtension.csproj" />
+    <ProjectReference Include="../../BusinessServices/ShoppingService/ShoppingService.csproj" />
+    <ProjectReference Include="../../BusinessServices/ControllerTemplate/ControllerTemplate.csproj" />    
+    <ProjectReference Include="../../BusinessServices/SQLAppConfigTypes/SQLAppConfigTypes.csproj" />    
+  </ItemGroup>
+</Project>

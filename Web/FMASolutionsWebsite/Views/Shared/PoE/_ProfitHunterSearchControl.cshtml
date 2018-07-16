@@ -1,0 +1,12 @@
+﻿@using FMASolutionsCore.Web.FMASolutionsWebsite.ViewModels.PoE
+@model IndexViewModel
+<div class="ProfitHunterSearchControl">
+    @using (@Html.BeginForm("SearchResults", "PoE", FormMethod.Get))
+    {
+        <b>Select Item to Receive</b>        
+        @Html.DropDownList(Model.SelectListReceiveControlName, Model.SelectListReceive)
+        <b>Select Item to Give:</b>
+        @Html.DropDownList(Model.SelectListGiveControlName, Model.SelectListGive)
+        <input type="submit" value="Go!" />
+    }
+</div>

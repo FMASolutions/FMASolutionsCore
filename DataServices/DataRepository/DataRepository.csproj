@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PackageId>DataRepository</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Faisal Ahmed</Authors>
+    <Description>Data Access entities and repositories for our business entities</Description>
+    <Copyright>Copyright 2018 (c) FMASolutions Ltd. All rights reserved.</Copyright>
+  </PropertyGroup>  
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.5" />    
+    <ProjectReference Include="../../BusinessServices/SQLAppConfigTypes/SQLAppConfigTypes.csproj" />
+  </ItemGroup>
+</Project>

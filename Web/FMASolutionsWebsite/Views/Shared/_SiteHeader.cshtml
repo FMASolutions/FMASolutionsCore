@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbarPerm">
+    <a class="navbar-brand" href="/Home/">FMA Solutions</a>
+    <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdownPerm" aria-controls="navbarNavDropdownPerm" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon "></span>
+    </button>
+    <div id="navbarNavDropdownPerm" class="navbar-collapse collapse">
+        @{Html.RenderPartial("_SiteNavigation");} 
+    </div>
+</nav>
+<!--FLOATING GHOST BANNER-->        
+<div class="fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbarGhost">
+        <a class="navbar-brand" href="/Home/">FMA Solutions</a>
+        <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdownGhost" aria-controls="navbarNavDropdownGhost" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navbarNavDropdownGhost" class="navbar-collapse collapse">
+            @{Html.RenderPartial("_SiteNavigation");}
+        </div> 
+    </nav>
+</div>
+<!--END FLOATING GHOST BANNER-->
+<div class="jumbotron-fluid rounded-bottom bg-dark vertical-center mb-5 pb-5 pt-5">               
+    <div class="text-center jumbo-text-main pb-5 pt-5">                                            
+        <h1 class="display-4"><span class="fma-orange-text">FMA</span> <span style="Color: #ffffff">Solutions</span></h1>                                
+        <p class="lead mt-5">Over 15 Years experience in the public and private I.T sector.</p>                            
+        <a href="/Home/About" ><button class="btn btn-outline-dark mt-5 mr-3 mb-1 ml-1 text-white">About Us</button></a>
+        <a href="/UserAccount/Login"><button class="btn btn-outline-dark mt-5 mr-1 mb-1 ml-3 text-white">Account Login</button></a>
+    </div>
+</div>

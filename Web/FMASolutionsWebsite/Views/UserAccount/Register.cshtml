@@ -1,0 +1,107 @@
+﻿@model FMASolutionsCore.Web.FMASolutionsWebsite.ViewModels.RegistrationViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_LayoutFMASolutions.cshtml";
+}
+<div class="container white-background mb-5 pt-3 pb-4 pl-2 pr-2"> 
+    @using (Html.BeginForm("Register", "UserAccount", FormMethod.Post, new { Class = "form-signin", enctype = "multipart/form-data" }))
+    {        
+       <div class="text-left mb-2">        
+            <h1>Login</h1>
+            <p>Please enter login details:</p>
+        </div>        
+        <div class="error-message">
+            @if (Model != null && Model.RegistartionIssueMessage != null)
+            {
+                <Label class="error-text">@Model.RegistartionIssueMessage </Label>            
+            }
+        </div>
+        <div class="row">
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.FirstName, new { placeholder="Firstname (required)", Class="form-control"})
+            </div>
+            <div class="col-sm-6 pt-1 pb-1 pr-1 pl-1">
+                @Html.ValidationMessageFor(m => m.FirstName, "", new { Class = "error-text" })                
+            </div>
+        </div>        
+        <div class="row">
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.SecondName, new { placeholder="Surname (required)", Class="form-control"})            
+            </div>
+            <div class="col-sm-6 pt-1 pb-1 pr-1 pl-1">
+                @Html.ValidationMessageFor(m => m.SecondName, "", new { Class = "error-text" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.EmailAddress, new { placeholder = "E-Mail address *(required)",Class="form-control" })
+            </div>
+            <div class="col-sm-6 pt-1 pb-1 pr-1 pl-1">
+                @Html.ValidationMessageFor(m => m.EmailAddress, "", new { Class = "error-text" })
+            </div>
+        </div>        
+        <div class="row">
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.EmailAddressConfirm, new { placeholder = "Confirm E-Mail address *(required)",Class="form-control" })                
+            </div>
+            <div class="col-sm-6 pt-1 pb-1 pr-1 pl-1">
+                @Html.ValidationMessageFor(m => m.EmailAddressConfirm, "", new { Class = "error-text" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.PasswordFor(m => m.Password, new { placeholder = "Password *(required)",Class="form-control" })
+            </div>
+            <div class="col-sm-6 pt-1 pb-1 pr-1 pl-1">
+                @Html.ValidationMessageFor(m => m.Password, "", new { Class = "error-text" })
+            </div>
+        </div>        
+        <div class="row">
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.PasswordFor(m => m.PasswordConfirm, new { placeholder = "Confirm Password *(required)",Class="form-control" })                
+            </div>
+            <div class="col-sm-6 pt-1 pb-1 pr-1 pl-1">
+                @Html.ValidationMessageFor(m => m.PasswordConfirm, "", new { Class = "error-text" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.Address1, new { placeholder = "Address Line 1 (optional)",Class="form-control" })
+            </div>
+            <div class="col-sm-6 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.Address2, new { placeholder = "Address Line 2 (optional)",Class="form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.Address3, new { placeholder = "Address Line 3 (optional)",Class="form-control" })
+            </div>
+            <div class="col-sm-4 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.City, new { placeholder = "City (optional)",Class="form-control" })
+            </div>
+            <div class="col-sm-4 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.Postcode, new { placeholder = "Postcode (optional)",Class="form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 mb-3 pr-1 pl-1">
+                @Html.TextBoxFor(m => m.Country, new { placeholder = "Country (optional)",Class="form-control" })
+            </div>
+        </div>
+        <div class="checkbox pr-1 pl-1">
+            <label><input type="checkbox" id="remember-me" value="remember-me">Stay Logged In</label>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 pr-1 pl-1"><button type="submit" class="btn btn-outline-dark btn-block mb-3 fma-orange-text">Submit Registration Form</button></div>            
+        </div>
+        <div class="row">
+            <div class="col-sm-6 pr-1 pl-1">                
+                <a href="#" class="btn btn-outline-dark btn-block mb-3">Forgotten Password?</a>                
+            </div>
+            <div class="col-sm-6 pr-1 pl-1">
+                <a href="/UserAccount/Login" class="btn btn-outline-dark btn-block mb-3">Already Have An Account?</a>
+            </div>
+        </div>
+    }
+</div>
