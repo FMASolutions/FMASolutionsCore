@@ -22,12 +22,12 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [DisplayName("Sub Group ID ( 1 - 9,999,999 ) ")]
         public int SubGroupID { get; set; }
 
-        [Required(ErrorMessage = "Sub Group Name is Required")]
-        [StringLength(100, ErrorMessage = "Sub Group Name should be no more than 100 Characters")]
+        [Required(ErrorMessage = "Item Name is Required")]
+        [StringLength(100, ErrorMessage = "Item Name should be no more than 100 Characters")]
         public string ItemName { get; set; }
 
-        [Required(ErrorMessage = "Sub Group Name is Required")]
-        [StringLength(100, ErrorMessage = "Sub Group Name should be no more than 100 Characters")]
+        [Required(ErrorMessage = "Item Name is Required")]
+        [StringLength(100, ErrorMessage = "Item Name should be no more than 100 Characters")]
         public string ItemDescription { get; set; }
 
         [Range(0, 999999999999.99)]

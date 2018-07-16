@@ -6,8 +6,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
     {
         ProductGroup GetByID(int id);
         ProductGroup GetByCode(string code);
-        bool CreateNew(ProductGroup entityToCreate);
+        bool CreateNew(ProductGroup model);
         List<ProductGroup> GetAll();
-        bool UpdateDB(ProductGroup newEntity);
+        bool UpdateDB(ProductGroup newModel);
     }
 }

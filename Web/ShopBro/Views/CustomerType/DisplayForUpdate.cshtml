@@ -1,0 +1,50 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.CustomerTypeViewModel
+@{
+    ViewData["Title"] = "Customer Type - Update Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Customer Type Details:</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    Customer Type ID: @Html.TextBoxFor(model => model.CustomerTypeID, new { ReadOnly="true", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CustomerTypeID, "", new { Class = "error-text" })                  
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Customer Type Code: @Html.TextBoxFor(model => model.CustomerTypeCode, new { placeholder = "Customer Type Code", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CustomerTypeCode, "", new { Class = "error-text" })                  
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Customer Type Name: @Html.TextBoxFor(model => model.CustomerTypeName, new { placeholder = "Customer Type Name", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CustomerTypeName, "", new { Class = "error-text" })                  
+                </div>
+            </div>  
+        </div>        
+         <div class="row">
+            <div class="col-sm-4"><button type="submit" formaction=@Url.Action("Update") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Process Update</button></div>                   
+            <div class="col-sm-4"><a href="/CustomerType/Search/@Model.CustomerTypeID" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>
+        </div>
+    </form>
+</div>

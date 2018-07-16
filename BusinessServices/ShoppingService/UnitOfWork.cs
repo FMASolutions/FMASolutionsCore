@@ -15,11 +15,13 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _productGroupRepo = new ProductGroupRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
             _subGroupRepo = new SubGroupRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
             _itemRepo = new ItemRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
+            _customerTypeRepo = new CustomerTypeRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
         }
 
         private IProductGroupRepo _productGroupRepo;
         private ISubGroupRepo _subGroupRepo;
         private IItemRepo _itemRepo;
+        private ICustomerTypeRepo _customerTypeRepo;
         private IDbConnection _dbConnection;
         private IDbTransaction _transaction;
         private SQLFactory _connectionFactory;
@@ -28,6 +30,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public IProductGroupRepo ProductGroupRepository {get{return _productGroupRepo;}}
         public ISubGroupRepo SubGroupRepository {get { return _subGroupRepo;}}
         public IItemRepo ItemRepository {get { return _itemRepo;}}
+        public ICustomerTypeRepo CustomerTypeRepo {get {return _customerTypeRepo;}}
         bool _disposed = false;
 
         public void SaveChanges(bool createFollowUpTransaction = true)

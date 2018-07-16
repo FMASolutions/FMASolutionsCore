@@ -43,6 +43,7 @@ namespace FMASolutionsCore.Web.ShopBro
             services.AddTransient<IProductGroupService>( s => new ProductGroupService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<ISubGroupService>(s => new SubGroupService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<IItemService>(s => new ItemService(shopDBConnectionString,shopSQLDBType));
+            services.AddTransient<ICustomerTypeService>(s => new CustomerTypeService(shopDBConnectionString,shopSQLDBType));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

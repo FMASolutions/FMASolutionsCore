@@ -9,6 +9,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         bool CreateNew(SubGroup model);
         List<SubGroup> GetAll();
         List<ProductGroup> GetAvailableProductGroups();
-        bool UpdateDB(SubGroup newEntity);
+        bool UpdateDB(SubGroup newModel);
     }
 }

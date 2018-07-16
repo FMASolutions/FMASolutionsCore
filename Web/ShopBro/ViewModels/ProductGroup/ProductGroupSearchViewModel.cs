@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 using System;
 
 namespace FMASolutionsCore.Web.ShopBro.ViewModels

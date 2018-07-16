@@ -8,6 +8,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         IProductGroupRepo ProductGroupRepository {get; }
         ISubGroupRepo SubGroupRepository {get;}
         IItemRepo ItemRepository {get;}
+        ICustomerTypeRepo CustomerTypeRepo {get;}
 
         void SaveChanges(bool createFollowUpTransaction = true);
     }

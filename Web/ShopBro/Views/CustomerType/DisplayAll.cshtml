@@ -1,13 +1,14 @@
-@model FMASolutionsCore.Web.ShopBro.ViewModels.ProductGroupsViewModel;
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.CustomerTypesViewModel
 @{
-    ViewData["Title"] = "Product Group - Show All Results";
+    ViewData["Title"] = "Customer Type - View All Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
 }
 <div class="container rounded">            
     <div class="row">
         <div class="col-sm-12">
             <div class="text-left">
-                <h3>Product Group Details:</h3>            
+                <h3>Customer Type Details:</h3>            
             </div>        
         </div>
     </div>
@@ -18,37 +19,35 @@
         {
             <Label class="error-text">@Model.StatusErrorMessage </Label>
         }
-        @foreach (var item in Model.ProductGroups)
+        @foreach (var item in Model.CustomerTypes)
         {
             <div class="container rounded mb-3 pb-3 pt-3 bg-dark">
                 <div class="row ">
                     <div class="col-sm-3 mb-2">
                         <div class="text-left">                    
-                            <span class="form-control">ProductGroup ID: @item.ProductGroupID</span>
+                            <span class="form-control">Customer Type ID: @item.CustomerTypeID</span>
                         </div>
                     </div>
                     <div class="col-sm-3 mb-2">
                         <div class="text-left">                    
-                            <span class="form-control">ProductGroup Code: @item.ProductGroupCode</span>
+                            <span class="form-control">Customer Type Code: @item.CustomerTypeCode</span>
                         </div>            
                     </div>
                     <div class="col-sm-6 mb-2">
                         <div class="text-left">                    
-                            <span class="form-control">ProductGroup Name: @item.ProductGroupName</span>
+                            <span class="form-control">Customer Type Name: @item.CustomerTypeName</span>
                         </div>            
                     </div>
                 </div>            
                 <div class="row">
                     <div class="col-sm-12">      
-                        <a href="/ProductGroup/Search/@item.ProductGroupID" class="btn btn-outline-light btn-block">View</a>
+                        <a href="/CustomerType/Search/@item.CustomerTypeID" class="btn btn-outline-light btn-block">View</a>
                     </div>                
                 </div>                         
             </div>                          
         }
         <div class="col-sm-12 mt-5">
-            <a href="/ProductGroup" class="btn btn-outline-dark btn-block mb-3">Back</a>
+            <a href="/CustomerType" class="btn btn-outline-dark btn-block mb-3">Back</a>
         </div>            
     </form>
 </div>
-
- 
