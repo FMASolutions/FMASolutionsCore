@@ -2,17 +2,18 @@ using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.DataServices.ShoppingRepo;
 using System;
 using System.Collections.Generic;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.SubGroups
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class SubGroupService : ISubGroupService
     {
         public SubGroupService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _productGroupService = new ProductGroups.ProductGroupService(connectionString, dbType);
+            _productGroupService = new ProductGroupService(connectionString, dbType);
         }
         private IUnitOfWork _uow;
-        ProductGroups.IProductGroupService _productGroupService;
+        IProductGroupService _productGroupService;
 
         #region ISubGroupService
         public SubGroup GetByID(int id)
@@ -84,7 +85,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService.SubGroups
             return returnList;
         }
 
-        public List<ProductGroups.ProductGroup> GetAvailableProductGroups()
+        public List<ProductGroup> GetAvailableProductGroups()
         {
             return _productGroupService.GetAll();
         }

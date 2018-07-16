@@ -1,4 +1,4 @@
-using FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups;
+using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.Web.ShopBro.ViewModels;
 using System.Collections.Generic;

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using FMASolutionsCore.DataServices.ShoppingRepo;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
-using FMASolutionsCore.BusinessServices.ShoppingService.SubGroups;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.Items
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class ItemService : IItemService
     {

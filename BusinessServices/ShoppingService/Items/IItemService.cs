@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using FMASolutionsCore.BusinessServices.ShoppingService.SubGroups;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.Items
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface IItemService
     {

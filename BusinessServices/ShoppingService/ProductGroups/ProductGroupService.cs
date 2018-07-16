@@ -1,9 +1,9 @@
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.DataServices.ShoppingRepo;
-using FMASolutionsCore.DataServices.DataRepository;
 using System;
 using System.Collections.Generic;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class ProductGroupService : IProductGroupService
     {
@@ -190,7 +190,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups
             }
             else
                 return false;
-            return true;           
+            return true;
 
         }
         #endregion

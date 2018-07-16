@@ -1,19 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http; //HttpRequestMessage
-using Microsoft.AspNetCore.Http; //Pathstring
-using System.Net.Http.Headers; //MediaType
-using System.Security.Claims; //ClaimTypes
-using Microsoft.AspNetCore.Authentication; //MapJsonKey
 using Microsoft.AspNetCore.Authentication.Cookies; //CookieAuthenticationDefaults
-using Microsoft.AspNetCore.Authentication.OAuth; //OAuthEvents
-using Newtonsoft.Json.Linq; //JObject
-using FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups;
-using FMASolutionsCore.BusinessServices.ShoppingService.SubGroups;
-using FMASolutionsCore.BusinessServices.ShoppingService.Items;
+using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.BusinessServices.SQLAppConfigTypes;
 
 namespace FMASolutionsCore.Web.ShopBro

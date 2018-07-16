@@ -1,11 +1,12 @@
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.DataServices.ShoppingRepo;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class ProductGroup : ProductGroupEntity, IModel
     {
-        public ProductGroup(ICustomModelState modelState,int productGroupID = 0, string productGroupCode = "", string productGroupName = "", string productGroupDescription = "")
-        {          
+        public ProductGroup(ICustomModelState modelState, int productGroupID = 0, string productGroupCode = "", string productGroupName = "", string productGroupDescription = "")
+        {
             this.ModelState = modelState;
             this._productGroupID = productGroupID;
             this._productGroupCode = productGroupCode;

@@ -1,7 +1,7 @@
 using System;
 using FMASolutionsCore.CLITools.CLIHelper;
 using System.Collections.Generic;
-using FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups;
+using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.BusinessServices.SQLAppConfigTypes;
 

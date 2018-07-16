@@ -1,4 +1,5 @@
 using System;
+
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
     public class UserAccountModel

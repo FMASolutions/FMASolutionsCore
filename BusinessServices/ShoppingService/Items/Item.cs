@@ -1,11 +1,12 @@
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.DataServices.ShoppingRepo;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.Items
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class Item : ItemEntity, IModel
     {
         public Item(ICustomModelState modelState, int itemID, string itemCode, int subGroupID, string itemName, string itemDescription, decimal itemUnitPrice, decimal itemUnitPriceWithMaxDiscount
-        , int itemAvailableQty, int itemReorderQtyReminder, string itemImageLocation )
+        , int itemAvailableQty, int itemReorderQtyReminder, string itemImageLocation)
         {
             _modelState = modelState;
             _itemID = itemID;

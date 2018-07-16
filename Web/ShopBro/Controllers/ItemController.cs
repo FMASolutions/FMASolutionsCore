@@ -6,7 +6,8 @@ using FMASolutionsCore.Web.ShopBro.Models;
 using FMASolutionsCore.Web.ShopBro.ViewModels;
 using FMASolutionsCore.BusinessServices.ControllerTemplate;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
-using FMASolutionsCore.BusinessServices.ShoppingService.Items;
+using FMASolutionsCore.BusinessServices.ShoppingService;
+
 namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class ItemController : BaseController

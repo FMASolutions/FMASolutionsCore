@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using FMASolutionsCore.DataServices.ShoppingRepo;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.ProductGroups
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface IProductGroupService
     {

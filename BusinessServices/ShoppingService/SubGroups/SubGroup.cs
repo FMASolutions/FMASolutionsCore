@@ -1,7 +1,7 @@
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.DataServices.ShoppingRepo;
-using System;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.SubGroups
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class SubGroup : SubGroupEntity, IModel
     {

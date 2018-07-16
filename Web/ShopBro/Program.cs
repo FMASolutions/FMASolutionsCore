@@ -10,7 +10,7 @@ namespace FMASolutionsCore.Web.ShopBro
     {
         public static void Main(string[] args)
         {
-            RegisterServices();            
+            RegisterServices();
             loggerExtension.WriteToProcessLog("RegisterServices Complete");
 
             loggerExtension.WriteToProcessLog("Run the host with args:  " + args.ToString());
@@ -25,10 +25,10 @@ namespace FMASolutionsCore.Web.ShopBro
 
         internal static IAppLoggerExtension loggerExtension = new AppLoggerExtension();
         internal static IAppConfigExtension configExtension = new AppConfigExtension(ShopBro.C.SettingsKeys);
-        
+
         private static void InitSystems()
         {
-            
+
         }
 
         private static void RegisterServices()
@@ -39,7 +39,7 @@ namespace FMASolutionsCore.Web.ShopBro
 
                 loggerExtension.WriteToProcessLog("Registering Config Service");
 
-                configExtension.Register();               
+                configExtension.Register();
 
                 loggerExtension.WriteToProcessLog("Config Service Registration Complete");
             }

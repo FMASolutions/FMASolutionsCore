@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using FMASolutionsCore.DataServices.ShoppingRepo;
-namespace FMASolutionsCore.BusinessServices.ShoppingService.SubGroups
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface ISubGroupService
     {
@@ -8,7 +8,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService.SubGroups
         SubGroup GetByCode(string code);
         bool CreateNew(SubGroup model);
         List<SubGroup> GetAll();
-        List<ProductGroups.ProductGroup> GetAvailableProductGroups();
+        List<ProductGroup> GetAvailableProductGroups();
         bool UpdateDB(SubGroup newEntity);
     }
 }
