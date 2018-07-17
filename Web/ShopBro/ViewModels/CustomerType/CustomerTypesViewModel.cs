@@ -8,6 +8,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         {
             CustomerTypes = new List<CustomerTypeViewModel>();
         }
+        
         public List<CustomerTypeViewModel> CustomerTypes { get; set; }
         public string StatusErrorMessage { get; set; }
     }

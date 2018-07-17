@@ -3,14 +3,14 @@ using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
-    public class CustomerType : CustomerTypeEntity, IModel
+    public class Country : CountryEntity, IModel
     {
-        public CustomerType(ICustomModelState modelState, int customerTypeID = 0, string customerTypeCode = "", string customerTypeName = "")
+        public Country(ICustomModelState modelState, int countryID = 0, string countryCode = "", string countryName = "")
         {
             _modelState = modelState;
-            _customerTypeID = customerTypeID;
-            _customerTypeCode = customerTypeCode;
-            _customerTypeName = customerTypeName;
+            _countryID = countryID;
+            _countryCode = countryCode;
+            _countryName = countryName;
         }
         public ICustomModelState ModelState { get { return _modelState; } set { _modelState = value; } }
         private ICustomModelState _modelState;

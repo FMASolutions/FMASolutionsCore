@@ -5,18 +5,18 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
-    public class CustomerTypeService : ICustomerTypeService
+    public class CountryService : ICountryService
     {
-        public CustomerTypeService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
+        public CountryService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
         }
         private IUnitOfWork _uow;
-        public CustomerType GetByID(int id)
+         public Country GetByID(int id)
         {
             try
             {
-                CustomerTypeEntity entity = _uow.CustomerTypeRepo.GetByID(id);
+                CountryEntity entity = _uow.CountryRepo.GetByID(id);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -27,11 +27,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return null;
             }
         }
-        public CustomerType GetByCode(string code)
+        public Country GetByCode(string code)
         {
             try
             {
-                CustomerTypeEntity entity = _uow.CustomerTypeRepo.GetByCode(code);
+                CountryEntity entity = _uow.CountryRepo.GetByCode(code);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -42,23 +42,23 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return null;
             }
         }
-        public bool CreateNew(CustomerType model)
+        public bool CreateNew(Country model)
         {
             try
             {
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.CustomerTypeID = _uow.CustomerTypeRepo.GetNextAvailableID();
-                    CustomerTypeEntity entity = ConvertModelToEntity(model);
-                    success = _uow.CustomerTypeRepo.Create(entity);
+                    model.CountryID = _uow.CountryRepo.GetNextAvailableID();
+                    CountryEntity entity = ConvertModelToEntity(model);
+                    success = _uow.CountryRepo.Create(entity);
                     if (success)
                     {
-                        model.CustomerTypeID = entity.CustomerTypeID;
+                        model.CountryID = entity.CountryID;
                         _uow.SaveChanges();
                     }
                     else
-                        model.ModelState.AddError("CreateFailed", "Unable to create new Customer Type");
+                        model.ModelState.AddError("CreateFailed", "Unable to create new Country");
                 }
                 return success;
             }
@@ -68,25 +68,25 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return false;
             }
         }
-        public List<CustomerType> GetAll()
+        public List<Country> GetAll()
         {
-            List<CustomerType> returnList = null;
-            var initialList = _uow.CustomerTypeRepo.GetAll();
+            List<Country> returnList = null;
+            var initialList = _uow.CountryRepo.GetAll();
             if (initialList != null)
             {
-                returnList = new List<CustomerType>();
+                returnList = new List<Country>();
                 foreach (var item in initialList)
-                    returnList.Add(new CustomerType(new CustomModelState(), item.CustomerTypeID, item.CustomerTypeCode, item.CustomerTypeName));
+                    returnList.Add(new Country(new CustomModelState(), item.CountryID, item.CountryCode, item.CountryName));
             }
             return returnList;
         }
-        public bool UpdateDB(CustomerType newModel)
+        public bool UpdateDB(Country newModel)
         {
             bool updateSuccess = false;
 
             if (ValidateForUpdate(newModel))
             {
-                updateSuccess = _uow.CustomerTypeRepo.Update(newModel);
+                updateSuccess = _uow.CountryRepo.Update(newModel);
                 _uow.SaveChanges();
             }
             return updateSuccess;
@@ -95,26 +95,26 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         #region Private Functions
         private bool CodeExists(string code)
         {
-            CustomerTypeEntity ent = _uow.CustomerTypeRepo.GetByCode(code);
-            if (ent != null && ent.CustomerTypeID > 0)
+            CountryEntity ent = _uow.CountryRepo.GetByCode(code);
+            if (ent != null && ent.CountryID > 0)
                 return true;
             else
                 return false;
         }
-        private CustomerType ConvertEntityToModel(CustomerTypeEntity entity)
+        private Country ConvertEntityToModel(CountryEntity entity)
         {
-            return new CustomerType(new CustomModelState()
-                , entity.CustomerTypeID
-                , entity.CustomerTypeCode
-                , entity.CustomerTypeName
+            return new Country(new CustomModelState()
+                , entity.CountryID
+                , entity.CountryCode
+                , entity.CountryName
             );
         }
-        private CustomerTypeEntity ConvertModelToEntity(CustomerType model)
+        private CountryEntity ConvertModelToEntity(Country model)
         {
-            CustomerTypeEntity returnEntity = new CustomerTypeEntity();
-            returnEntity.CustomerTypeID = model.CustomerTypeID;
-            returnEntity.CustomerTypeCode = model.CustomerTypeCode;
-            returnEntity.CustomerTypeName = model.CustomerTypeName;
+            CountryEntity returnEntity = new CountryEntity();
+            returnEntity.CountryID = model.CountryID;
+            returnEntity.CountryCode = model.CountryCode;
+            returnEntity.CountryName = model.CountryName;
             return returnEntity;
         }
         private bool ValidateID(int id)
@@ -129,33 +129,33 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             if (code.Length > 5) return false;
             else return true;
         }
-        private bool ValidateAllValues(CustomerType model)
+        private bool ValidateAllValues(Country model)
         {
-            if (ValidateID(model.CustomerTypeID) == false)
+            if (ValidateID(model.CountryID) == false)
             {
                 model.ModelState.AddError("InvalidID", "ID value was invalid");
                 return false;
             }
-            else if (ValidateCode(model.CustomerTypeCode) == false)
+            else if (ValidateCode(model.CountryCode) == false)
             {
                 model.ModelState.AddError("InvalidCode", "Code value was invalid, it can't be more than 5 characters or empty");
                 return false;
             }
-            else if (string.IsNullOrEmpty(model.CustomerTypeCode) || string.IsNullOrEmpty(model.CustomerTypeName))
+            else if (string.IsNullOrEmpty(model.CountryCode) || string.IsNullOrEmpty(model.CountryName))
             {
                 model.ModelState.AddError("Null", "Values cant be blank.");
                 return false;
             }
             else return true;
         }
-        private bool ValidateForUpdate(CustomerType newModel)
+        private bool ValidateForUpdate(Country newModel)
         {
-            CustomerTypeEntity entityFromIDSearch = _uow.CustomerTypeRepo.GetByID(newModel.CustomerTypeID);
-            CustomerTypeEntity entityFromCodeSearch = _uow.CustomerTypeRepo.GetByCode(newModel.CustomerTypeCode);
+            CountryEntity entityFromIDSearch = _uow.CountryRepo.GetByID(newModel.CountryID);
+            CountryEntity entityFromCodeSearch = _uow.CountryRepo.GetByCode(newModel.CountryCode);
             //Check our new code (if it is even new) doesn't exist under a different ID which would cause a proble with the UNIQUE contraint on the CODE column.                        
-            if (entityFromCodeSearch != null && entityFromCodeSearch.ID != newModel.CustomerTypeID)
+            if (entityFromCodeSearch != null && entityFromCodeSearch.ID != newModel.CountryID)
             {
-                newModel.ModelState.AddError("CodeExists", @"Customer Type Code already exists under a different ID (ID = " + entityFromCodeSearch.CustomerTypeID.ToString() + " Name = " + entityFromCodeSearch.CustomerTypeName + ") and must be unique");
+                newModel.ModelState.AddError("CodeExists", @"Country Code already exists under a different ID (ID = " + entityFromCodeSearch.CountryID.ToString() + " Name = " + entityFromCodeSearch.CountryName + ") and must be unique");
                 return false;
             }
             else if (ValidateAllValues(newModel) == false || newModel.ModelState.IsValid == false)
@@ -164,27 +164,27 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return false;
             }
             //If user changed something, return true at this point
-            else if (entityFromIDSearch.CustomerTypeName != newModel.CustomerTypeName || entityFromIDSearch.CustomerTypeCode != newModel.CustomerTypeCode)
+            else if (entityFromIDSearch.CountryName != newModel.CountryName || entityFromIDSearch.CountryCode != newModel.CountryCode)
                 return true;
             else
                 newModel.ModelState.AddError("NoChange", "No Changes detected");
             return false;
         }
-        private bool ValidateForCreate(CustomerType model)
+        private bool ValidateForCreate(Country model)
         {
             if (model.ModelState.IsValid)
             {
-                if (model.CustomerTypeCode.Length > 5)
+                if (model.CountryCode.Length > 5)
                 {
                     model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
                     return false;
                 }
-                else if (string.IsNullOrEmpty(model.CustomerTypeCode) || string.IsNullOrEmpty(model.CustomerTypeName))
+                else if (string.IsNullOrEmpty(model.CountryCode) || string.IsNullOrEmpty(model.CountryName))
                 {
                     model.ModelState.AddError("NullValues", "All values must be populated...");
                     return false;
                 }
-                else if (CodeExists(model.CustomerTypeCode))
+                else if (CodeExists(model.CountryCode))
                 {
                     model.ModelState.AddError("CodeExists", "The code provided already exists and must be unique.");
                     return false;
@@ -195,5 +195,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return true;
         }
         #endregion
-    }
+        
+    }    
 }

@@ -20,7 +20,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             try
             {
-                SubGroupEntity entity = _uow.SubGroupRepository.GetByID(id);
+                SubGroupEntity entity = _uow.SubGroupRepo.GetByID(id);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -35,7 +35,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             try
             {
-                SubGroupEntity entity = _uow.SubGroupRepository.GetByCode(code);
+                SubGroupEntity entity = _uow.SubGroupRepo.GetByCode(code);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -53,9 +53,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.SubGroupID = _uow.SubGroupRepository.GetNextAvailableID();
+                    model.SubGroupID = _uow.SubGroupRepo.GetNextAvailableID();
                     SubGroupEntity entity = ConvertModelToEntity(model);
-                    success = _uow.SubGroupRepository.Create(entity);
+                    success = _uow.SubGroupRepo.Create(entity);
                     if (success)
                     {
                         model.SubGroupID = entity.SubGroupID;
@@ -75,7 +75,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public List<SubGroup> GetAll()
         {
             List<SubGroup> returnList = null;
-            var initialList = _uow.SubGroupRepository.GetAll();
+            var initialList = _uow.SubGroupRepo.GetAll();
             if (initialList != null)
             {
                 returnList = new List<SubGroup>();
@@ -95,7 +95,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
             if (ValidateForUpdate(newModel))
             {
-                updateSuccess = _uow.SubGroupRepository.Update(newModel);
+                updateSuccess = _uow.SubGroupRepo.Update(newModel);
                 _uow.SaveChanges();
             }
             return updateSuccess;
@@ -124,7 +124,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         private bool CodeExists(string code)
         {
-            SubGroupEntity entity = _uow.SubGroupRepository.GetByCode(code);
+            SubGroupEntity entity = _uow.SubGroupRepo.GetByCode(code);
             if (entity != null && entity.SubGroupID > 0)
                 return true;
             else
@@ -132,7 +132,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         private bool ProductGroupIDExists(int id)
         {
-            ProductGroupEntity entity = _uow.ProductGroupRepository.GetByID(id);
+            ProductGroupEntity entity = _uow.ProductGroupRepo.GetByID(id);
             if (entity != null && entity.ProductGroupID > 0)
                 return true;
             else
@@ -170,9 +170,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         private bool ValidateForUpdate(SubGroup newModel)
         {
-            SubGroupEntity sgIDSearchResult = _uow.SubGroupRepository.GetByID(newModel.SubGroupID);
-            SubGroupEntity sgCodeSearchResult = _uow.SubGroupRepository.GetByCode(newModel.SubGroupCode);
-            ProductGroupEntity pgIDSearchResult = _uow.ProductGroupRepository.GetByID(newModel.ProductGroupID);
+            SubGroupEntity sgIDSearchResult = _uow.SubGroupRepo.GetByID(newModel.SubGroupID);
+            SubGroupEntity sgCodeSearchResult = _uow.SubGroupRepo.GetByCode(newModel.SubGroupCode);
+            ProductGroupEntity pgIDSearchResult = _uow.ProductGroupRepo.GetByID(newModel.ProductGroupID);
             //Ensure new code (is it's new) doesn't already exist under a different ID.
             if (sgCodeSearchResult != null && sgCodeSearchResult.SubGroupID != newModel.SubGroupID)
             {

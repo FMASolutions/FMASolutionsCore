@@ -21,7 +21,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             try
             {
-                ItemEntity entity = _uow.ItemRepository.GetByID(id);
+                ItemEntity entity = _uow.ItemRepo.GetByID(id);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -37,7 +37,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             try
             {
-                ItemEntity entity = _uow.ItemRepository.GetByCode(code);
+                ItemEntity entity = _uow.ItemRepo.GetByCode(code);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -56,9 +56,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.ItemID = _uow.ItemRepository.GetNextAvailableID();
+                    model.ItemID = _uow.ItemRepo.GetNextAvailableID();
                     ItemEntity entity = ConvertModelToEntity(model);
-                    success = _uow.ItemRepository.Create(entity);
+                    success = _uow.ItemRepo.Create(entity);
                     if (success)
                     {
                         model.ItemID = entity.ItemID;
@@ -79,7 +79,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public List<Item> GetAll()
         {
             List<Item> returnList = null;
-            var initialList = _uow.ItemRepository.GetAll();
+            var initialList = _uow.ItemRepo.GetAll();
             if (initialList != null)
             {
                 returnList = new List<Item>();
@@ -111,7 +111,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             bool updateSuccess = false;
             if (ValidateForUpdate(newModel))
             {
-                updateSuccess = _uow.ItemRepository.Update(newModel);
+                updateSuccess = _uow.ItemRepo.Update(newModel);
                 _uow.SaveChanges();
             }
             return updateSuccess;
@@ -181,9 +181,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         private bool ValidateForUpdate(Item model)
         {
-            ItemEntity itemIDSearchResult = _uow.ItemRepository.GetByID(model.ItemID);
-            ItemEntity itemCodeSearchResult = _uow.ItemRepository.GetByCode(model.ItemCode);
-            SubGroupEntity subIDSearchResult = _uow.SubGroupRepository.GetByID(model.SubGroupID);
+            ItemEntity itemIDSearchResult = _uow.ItemRepo.GetByID(model.ItemID);
+            ItemEntity itemCodeSearchResult = _uow.ItemRepo.GetByCode(model.ItemCode);
+            SubGroupEntity subIDSearchResult = _uow.SubGroupRepo.GetByID(model.SubGroupID);
             if (itemCodeSearchResult != null && itemCodeSearchResult.ItemID != model.ItemID)
             {
                 model.ModelState.AddError("CodeExists", "Item Code already exists under a different ID (ID = " + itemCodeSearchResult.ItemID.ToString() + "Name: " + itemCodeSearchResult.ItemName + ") and must be unique");
@@ -262,7 +262,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         private bool SubGroupIDExists(int id)
         {
-            var result = _uow.SubGroupRepository.GetByID(id);
+            var result = _uow.SubGroupRepo.GetByID(id);
             if (result != null && result.SubGroupID > 0)
                 return true;
             else

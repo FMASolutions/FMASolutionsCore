@@ -17,7 +17,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             try
             {
-                ProductGroupEntity entity = _uow.ProductGroupRepository.GetByID(id);
+                ProductGroupEntity entity = _uow.ProductGroupRepo.GetByID(id);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -32,7 +32,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             try
             {
-                ProductGroupEntity entity = _uow.ProductGroupRepository.GetByCode(code);
+                ProductGroupEntity entity = _uow.ProductGroupRepo.GetByCode(code);
                 if (entity != null)
                     return ConvertEntityToModel(entity);
                 else
@@ -50,9 +50,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.ProductGroupID = _uow.ProductGroupRepository.GetNextAvailableID();
+                    model.ProductGroupID = _uow.ProductGroupRepo.GetNextAvailableID();
                     ProductGroupEntity entity = ConvertModelToEntity(model);
-                    success = _uow.ProductGroupRepository.Create(entity);
+                    success = _uow.ProductGroupRepo.Create(entity);
                     if (success)
                     {
                         model.ProductGroupID = entity.ProductGroupID;
@@ -72,7 +72,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public List<ProductGroup> GetAll()
         {
             List<ProductGroup> returnList = null;
-            var initialList = _uow.ProductGroupRepository.GetAll();
+            var initialList = _uow.ProductGroupRepo.GetAll();
             if (initialList != null)
             {
                 returnList = new List<ProductGroup>();
@@ -87,7 +87,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
             if (ValidateForUpdate(newModel))
             {
-                updateSuccess = _uow.ProductGroupRepository.Update(newModel);
+                updateSuccess = _uow.ProductGroupRepo.Update(newModel);
                 _uow.SaveChanges();
             }
             return updateSuccess;
@@ -96,7 +96,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         #region Private Functions
         private bool CodeExists(string code)
         {
-            ProductGroupEntity ent = _uow.ProductGroupRepository.GetByCode(code);
+            ProductGroupEntity ent = _uow.ProductGroupRepo.GetByCode(code);
             if (ent != null && ent.ProductGroupID > 0)
                 return true;
             else
@@ -148,8 +148,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         private bool ValidateForUpdate(ProductGroup newModel)
         {
-            ProductGroupEntity entityFromIDSearch = _uow.ProductGroupRepository.GetByID(newModel.ProductGroupID);
-            ProductGroupEntity entityFromCodeSearch = _uow.ProductGroupRepository.GetByCode(newModel.ProductGroupCode);
+            ProductGroupEntity entityFromIDSearch = _uow.ProductGroupRepo.GetByID(newModel.ProductGroupID);
+            ProductGroupEntity entityFromCodeSearch = _uow.ProductGroupRepo.GetByCode(newModel.ProductGroupCode);
             //Check our new code (if it is even new) doesn't exist under a different ID which would cause a proble with the UNIQUE contraint on the CODE column.                        
             if (entityFromCodeSearch != null && entityFromCodeSearch.ID != newModel.ProductGroupID)
             {

@@ -22,8 +22,8 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
 
         [Required(ErrorMessage = "Customer Type Name is mandatory")]
         [StringLength(100, ErrorMessage = "Customer Type Name should be no more than 100 characters")]
-        public string CustomerTypeName { get; set; }       
+        public string CustomerTypeName { get; set; }
 
         public string StatusErrorMessage { get; set; }
-    }    
+    }
 }

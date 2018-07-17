@@ -17,5 +17,5 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public string CustomerTypeCode { get; set; }
 
         public string StatusErrorMessage { get; set; }
-    }       
+    }
 }

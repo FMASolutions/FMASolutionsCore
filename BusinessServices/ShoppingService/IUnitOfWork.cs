@@ -5,10 +5,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface IUnitOfWork : IDisposable
     {
-        IProductGroupRepo ProductGroupRepository {get; }
-        ISubGroupRepo SubGroupRepository {get;}
-        IItemRepo ItemRepository {get;}
+        IProductGroupRepo ProductGroupRepo {get; }
+        ISubGroupRepo SubGroupRepo {get;}
+        IItemRepo ItemRepo {get;}
         ICustomerTypeRepo CustomerTypeRepo {get;}
+        ICountryRepo CountryRepo {get;}
 
         void SaveChanges(bool createFollowUpTransaction = true);
     }

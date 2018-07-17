@@ -82,7 +82,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             CustomerTypeViewModel model = new CustomerTypeViewModel();
             model.CustomerTypeID = sourceModel.CustomerTypeID;
             model.CustomerTypeCode = sourceModel.CustomerTypeCode;
-            model.CustomerTypeName = sourceModel.CustomerTypeName;            
+            model.CustomerTypeName = sourceModel.CustomerTypeName;
             return model;
         }
 
@@ -91,7 +91,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             CustomerType customerType = new CustomerType(_modelState
                 , vm.CustomerTypeID
                 , vm.CustomerTypeCode
-                , vm.CustomerTypeName                
+                , vm.CustomerTypeName
             );
             return customerType;
         }

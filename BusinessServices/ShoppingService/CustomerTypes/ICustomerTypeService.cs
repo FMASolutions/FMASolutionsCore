@@ -9,7 +9,5 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         bool CreateNew(CustomerType model);
         List<CustomerType> GetAll();
         bool UpdateDB(CustomerType newModel);
-        
-                
     }
 }

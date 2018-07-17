@@ -1,0 +1,13 @@
+using System.Collections.Generic;
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
+{
+    public interface ICountryService
+    {
+        Country GetByID(int id);
+        Country GetByCode(string code);
+        bool CreateNew(Country model);
+        List<Country> GetAll();
+        bool UpdateDB(Country newModel);
+    }
+}
