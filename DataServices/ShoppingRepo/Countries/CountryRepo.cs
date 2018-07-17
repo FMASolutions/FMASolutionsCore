@@ -14,7 +14,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
         public void Dispose()
         {
-
+            _dbConnection.Dispose();
         }
 
         private IDbConnection _dbConnection;
@@ -105,7 +105,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         }
         #endregion
 
-        #region IProductGroupRepo
+        #region ICountryRepo
         public Int32 GetNextAvailableID()
         {
             return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CountryID),0)+1 FROM Countries");

@@ -7,7 +7,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
     {
         public ItemEntity()
         {
-
+            
         }
         public ItemEntity(Int32 itemID, Int32 subGroupID, string itemCode, string itemName, string itemDescription
             , decimal itemUnitPrice, decimal itemUnitPriceWithMaxDiscount, Int32 itemAvailableQty

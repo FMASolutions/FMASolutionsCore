@@ -5,6 +5,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
     public class CountryEntity : IBaseEntity
     {
+        public CountryEntity()
+        {
+            
+        }
+        public CountryEntity(Int32 countryID, string countryCode, string countryName)
+        {
+            _countryID = countryID;
+            _countryCode = countryCode;
+            _countryName = countryName;
+        }
         protected Int32 _countryID;
         protected string _countryCode;
         protected string _countryName;

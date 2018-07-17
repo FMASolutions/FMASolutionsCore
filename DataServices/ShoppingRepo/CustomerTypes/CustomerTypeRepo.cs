@@ -14,7 +14,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
         public void Dispose()
         {
-
+            _dbConnection.Dispose();
         }
 
         private IDbConnection _dbConnection;

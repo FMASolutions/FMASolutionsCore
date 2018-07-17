@@ -5,6 +5,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
     public class CustomerTypeEntity : IBaseEntity
     {
+        public CustomerTypeEntity()
+        {
+            
+        }
+        public CustomerTypeEntity(Int32 customerTypeID, string customerTypeCode, string customerTypeName)
+        {
+            _customerTypeID = customerTypeID;
+            _customerTypeCode = customerTypeCode;
+            _customerTypeName = customerTypeName;
+        }
         protected Int32 _customerTypeID;
         protected string _customerTypeCode;
         protected string _customerTypeName;

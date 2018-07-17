@@ -6,12 +6,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
     public class SubGroupEntity : IBaseEntity
     {
         public SubGroupEntity()
-        {            
-            _subGroupID = 0;
-            _productGroupID = 0;
-            _subGroupCode = "";
-            _subGroupName = "";
-            _subGroupDescription = "";
+        {
+            
         }
         public SubGroupEntity(Int32 subGroupID, Int32 productGroupID, string subGroupCode, string subGroupName, string subGroupDescription)
         {            

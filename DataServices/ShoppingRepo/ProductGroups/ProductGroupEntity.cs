@@ -7,11 +7,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
     {
         public ProductGroupEntity()
         {
-            _productGroupID = 0;
-            _productGroupCode = "";
-            _productGroupName = "";
-            _productGroupDescription = "";            
-        }
+            
+        } 
         public ProductGroupEntity(Int32 productGroupID, string productGroupCode, string productGroupName, string productGroupDescription)
         {
             _productGroupID = productGroupID;
