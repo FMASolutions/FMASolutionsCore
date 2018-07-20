@@ -10,6 +10,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         IItemRepo ItemRepo {get;}
         ICustomerTypeRepo CustomerTypeRepo {get;}
         ICountryRepo CountryRepo {get;}
+        ICityRepo CityRepo {get;}
 
         void SaveChanges(bool createFollowUpTransaction = true);
     }

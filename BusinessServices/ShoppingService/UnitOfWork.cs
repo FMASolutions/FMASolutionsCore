@@ -17,6 +17,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _itemRepo = new ItemRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
             _customerTypeRepo = new CustomerTypeRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
             _countryRepo = new CountryRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
+            _cityRepo = new CityRepo(new SQLFactoryStandard().CreateDBConnection(dbType,connectionString));
         }
 
         private IProductGroupRepo _productGroupRepo;
@@ -24,6 +25,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private IItemRepo _itemRepo;
         private ICustomerTypeRepo _customerTypeRepo;
         private ICountryRepo _countryRepo;
+        private ICityRepo _cityRepo;
         private IDbConnection _dbConnection;
         private IDbTransaction _transaction;        
         private SQLFactory _connectionFactory;
@@ -34,6 +36,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public IItemRepo ItemRepo {get { return _itemRepo;}}
         public ICustomerTypeRepo CustomerTypeRepo {get {return _customerTypeRepo;}}
         public ICountryRepo CountryRepo {get {return _countryRepo;}}
+        public ICityRepo CityRepo {get {return _cityRepo;}}
         bool _disposed = false;
 
         public void SaveChanges(bool createFollowUpTransaction = true)

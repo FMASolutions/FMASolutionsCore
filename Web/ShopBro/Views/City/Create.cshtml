@@ -1,0 +1,56 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.CityViewModel
+@{
+    ViewData["Title"] = "City - Create Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Create A City</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    City Code: @Html.TextBoxFor(model => model.CityCode, new { placeholder = "City Code", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CityCode, "", new { Class = "error-text" })                  
+                </div>
+            </div>
+        </div>     
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Country: 
+                    @Html.DropDownListFor(
+                        m => m.CountryID,
+                        new SelectList(Model.AvailableCountries, "Key", "Value"),
+                        "- Select Country -",
+                        new { @class = "form-control" } 
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Name: @Html.TextBoxFor(model => model.CityName, new { placeholder = "City Name", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CityName, "", new { Class = "error-text" })        
+                </div>
+            </div>  
+        </div>
+         <div class="row">
+            <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Create") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Create</button></div>            
+            <div class="col-sm-6"><a href="/City" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>            
+        </div>        
+    </form>
+</div>
+
