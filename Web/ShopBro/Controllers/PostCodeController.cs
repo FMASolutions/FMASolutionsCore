@@ -8,69 +8,69 @@ using FMASolutionsCore.BusinessServices.ShoppingService;
 
 namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
-    public class CityAreaController : BaseController
+    public class PostCodeController : BaseController
     {
-        public CityAreaController(ICityAreaService cityAreaService)
+        public PostCodeController(IPostCodeService postCodeService)
         {
-            _cityAreaService = cityAreaService;
+            _postCodeService = postCodeService;
         }
 
-        private ICityAreaService _cityAreaService;
+        private IPostCodeService _postCodeService;
 
         public IActionResult Index()
         {
-            CityAreaSearchViewModel vmInput = new CityAreaSearchViewModel();
+            PostCodeSearchViewModel vmInput = new PostCodeSearchViewModel();
             return View("Search", vmInput);
         }
 
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
-            CityAreaSearchViewModel vmInput = new CityAreaSearchViewModel();
-            vmInput.CityAreaID = id;
+            PostCodeSearchViewModel vmInput = new PostCodeSearchViewModel();
+            vmInput.PostCodeID = id;
             return ProcessSearch(vmInput);
         }
 
         [HttpPost]
-        public IActionResult ProcessSearch(CityAreaSearchViewModel vmInput)
+        public IActionResult ProcessSearch(PostCodeSearchViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
-            CityAreaViewModel vmCityArea = new CityAreaViewModel();
+            PostCodeModel model = GetModel();
+            PostCodeViewModel vmPostCode = new PostCodeViewModel();
             if (model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmCityArea = model.Search(vmInput.CityAreaID, vmInput.CityAreaCode);
-                if (vmCityArea.CityAreaID > 0)
+                vmPostCode = model.Search(vmInput.PostCodeID, vmInput.PostCodeCode);
+                if (vmPostCode.PostCodeID > 0)
                 {
-                    vmCityArea.AvailableCities = model.GetAvailableCities();
-                    return View("Display", vmCityArea);
+                    vmPostCode.AvailableCities = model.GetAvailableCities();
+                    return View("Display", vmPostCode);
                 }
             }
-            CityAreaSearchViewModel vmSearch = new CityAreaSearchViewModel();
-            vmSearch.StatusErrorMessage = vmCityArea.StatusErrorMessage;
+            PostCodeSearchViewModel vmSearch = new PostCodeSearchViewModel();
+            vmSearch.StatusErrorMessage = vmPostCode.StatusErrorMessage;
             return View("Search", vmSearch);
         }
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
-        public IActionResult DisplayForUpdate(CityAreaViewModel vmInput)
+        public IActionResult DisplayForUpdate(PostCodeViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
+            PostCodeModel model = GetModel();
             vmInput.AvailableCities = model.GetAvailableCities();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
-            CityAreaModel model = GetModel();
-            return View(model.GetAllCityAreas());
+            PostCodeModel model = GetModel();
+            return View(model.GetAllPostCodes());
         }
 
         [HttpGet]
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
-            CityAreaViewModel vm = new CityAreaViewModel();
-            CityAreaModel model = GetModel();
+            PostCodeViewModel vm = new PostCodeViewModel();
+            PostCodeModel model = GetModel();
             vm.AvailableCities = model.GetAvailableCities();
             if (vm.AvailableCities.Count > 0)
                 return View(vm);
@@ -80,16 +80,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
-        public IActionResult Create(CityAreaViewModel vmInput)
+        public IActionResult Create(PostCodeViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
-            CityAreaViewModel vmResult = new CityAreaViewModel();
+            PostCodeModel model = GetModel();
+            PostCodeViewModel vmResult = new PostCodeViewModel();
             if (model.ModelState.IsValid)
             {
                 vmResult = model.Create(vmInput);
-                if (vmResult.CityAreaID > 0)
+                if (vmResult.PostCodeID > 0)
                 {
-                    return Search(vmResult.CityAreaID);
+                    return Search(vmResult.PostCodeID);
                 }
             }
             vmInput.AvailableCities = model.GetAvailableCities();
@@ -99,9 +99,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
-        public IActionResult Update(CityAreaViewModel vmInput)
+        public IActionResult Update(PostCodeViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
+            PostCodeModel model = GetModel();
             if (model.ModelState.IsValid)
             {
                 if (model.UpdateDB(vmInput))
@@ -117,10 +117,10 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             return View("DisplayForUpdate", vmInput);
         }
 
-        private CityAreaModel GetModel()
+        private PostCodeModel GetModel()
         {
             IModelStateConverter converter = new ModelStateConverter(this);
-            return new CityAreaModel(converter.Convert(), _cityAreaService);
+            return new PostCodeModel(converter.Convert(), _postCodeService);
         }
     }
 }
