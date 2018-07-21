@@ -13,6 +13,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         ICityRepo CityRepo {get;}
         ICityAreaRepo CityAreaRepo {get;}
         IPostCodeRepo PostCodeRepo {get;}
+        IAddressLocationRepo AddressLocationRepo {get;}
 
         void SaveChanges(bool createFollowUpTransaction = true);
     }

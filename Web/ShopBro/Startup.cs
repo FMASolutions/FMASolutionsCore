@@ -22,7 +22,6 @@ namespace FMASolutionsCore.Web.ShopBro
             });
             */
             
-            
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -33,9 +32,7 @@ namespace FMASolutionsCore.Web.ShopBro
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", p => p.RequireAuthenticatedUser().RequireRole("Admin"));
-            });
-
-            
+            });            
 
             string shopDBConnectionString = Program.configExtension.GetSetting(AppSettings.ShopBroDBConnectionString.ToString());
             SQLAppConfigTypes shopSQLDBType = (SQLAppConfigTypes)int.Parse(Program.configExtension.GetSetting(AppSettings.ShopBroDBType.ToString()));
@@ -48,6 +45,7 @@ namespace FMASolutionsCore.Web.ShopBro
             services.AddTransient<ICityService>(s => new CityService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<ICityAreaService>(s => new CityAreaService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<IPostCodeService>(s => new PostCodeService(shopDBConnectionString,shopSQLDBType));
+            services.AddTransient<IAddressLocationService>(s => new AddressLocationService(shopDBConnectionString,shopSQLDBType));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
