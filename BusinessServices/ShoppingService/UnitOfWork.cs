@@ -21,6 +21,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _cityAreaRepo = new CityAreaRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
             _postCodeRepo = new PostCodeRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
             _addressLocationRepo = new AddressLocationRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
+            _customerRepo = new CustomerRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
         }
 
         private IProductGroupRepo _productGroupRepo;
@@ -32,6 +33,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private ICityAreaRepo _cityAreaRepo;
         private IPostCodeRepo _postCodeRepo;
         private IAddressLocationRepo _addressLocationRepo;
+        private ICustomerRepo _customerRepo;
         private IDbConnection _dbConnection;
         private IDbTransaction _transaction;
         private SQLFactory _connectionFactory;
@@ -46,6 +48,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public ICityAreaRepo CityAreaRepo { get { return _cityAreaRepo; } }
         public IPostCodeRepo PostCodeRepo { get { return _postCodeRepo; } }
         public IAddressLocationRepo AddressLocationRepo { get { return _addressLocationRepo; } }
+        public ICustomerRepo CustomerRepo { get { return _customerRepo; } }
         bool _disposed = false;
 
         public void SaveChanges(bool createFollowUpTransaction = true)
