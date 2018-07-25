@@ -1,0 +1,55 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.CustomersViewModel
+@{
+    ViewData["Title"] = "Customers - View All";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+<div class="container rounded">            
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="text-left">
+                <h3>Customer Details:</h3>            
+            </div>        
+        </div>
+    </div>
+</div>
+<div class="container bg-light pt-2 pb-2">
+    <form class="form-signin">
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        @foreach (var item in Model.Customers)
+        {
+            <div class="container rounded mb-3 pb-3 pt-3 bg-dark">
+                <div class="row ">
+                    <div class="col-sm-3 mb-2">
+                        <div class="text-left">                    
+                            <span class="form-control">Customer ID: @item.CustomerID</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 mb-2">
+                        <div class="text-left">                    
+                            <span class="form-control">Customer Code: @item.CustomerCode</span>
+                        </div>            
+                    </div>
+                    <div class="col-sm-6 mb-2">
+                        <div class="text-left">                    
+                            <span class="form-control">Customer Name: @item.CustomerName</span>
+                        </div>            
+                    </div>
+                </div>            
+                <div class="row">
+                    <div class="col-sm-12">      
+                        <a href="/Customer/Search/@item.CustomerID" class="btn btn-outline-light btn-block">View</a>
+                    </div>                
+                </div>                         
+            </div>                          
+        }
+        <div class="col-sm-12 mt-5">
+            <a href="/Customer" class="btn btn-outline-dark btn-block mb-3">Back</a>
+        </div>            
+    </form>
+</div>
+
+ 

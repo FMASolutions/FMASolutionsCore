@@ -29,7 +29,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 FROM Customers
                 WHERE CustomerID = @CustomerID
                 ";
-                return _dbConnection.QueryFirst<CustomerEntity>(query, new { SubGroupID = id });
+                return _dbConnection.QueryFirst<CustomerEntity>(query, new { CustomerID = id });
             }
             catch (Exception)
             {

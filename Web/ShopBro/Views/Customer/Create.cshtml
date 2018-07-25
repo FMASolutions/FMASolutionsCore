@@ -1,0 +1,72 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.CustomerViewModel
+@{
+    ViewData["Title"] = "Customer - Create Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Create A Customer</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Customer Code: @Html.TextBoxFor(model => model.CustomerCode, new { placeholder = "Customer Code", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CustomerCode, "", new { Class = "error-text" })                  
+                </div>
+            </div>
+        </div>     
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Customer Type: 
+                    @Html.DropDownListFor(
+                        m => m.CustomerTypeID,
+                        new SelectList(Model.AvailableCustomerTypes, "Key", "Value"),
+                        "- Select Customer Type -",
+                        new { @class = "form-control" } 
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Customer Name: @Html.TextBoxFor(model => model.CustomerName, new { placeholder = "Customer Name", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { Class = "error-text" })        
+                </div>
+            </div>  
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Contact Number: @Html.TextBoxFor(model => model.CustomerContactNumber, new { placeholder = "Customer Contact Number", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CustomerContactNumber, "", new { Class = "error-text" })        
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    E-Mail: @Html.TextBoxFor(model => model.CustomerEmailAddress, new { placeholder = "Customer E-Mail Addres", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.CustomerEmailAddress, "", new { Class = "error-text" })        
+                </div>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Create") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Create</button></div>            
+            <div class="col-sm-6"><a href="/Customer" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>            
+        </div>        
+    </form>
+</div>
+

@@ -1,0 +1,76 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.CustomerViewModel
+@{
+    ViewData["Title"] = "Customer - View Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Customer Details:</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusErrorMessage != null)
+        {
+            <Label class="error-text">@Model.StatusErrorMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    Customer ID: @Html.TextBoxFor(model => model.CustomerID, new { ReadOnly="true", Class="form-control mb-2"})               
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Customer Code: @Html.TextBoxFor(model => model.CustomerCode, new { ReadOnly="true", Class="form-control mb-2"})               
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    Customer Type: @Html.TextBoxFor(model => model.AvailableCustomerTypes[Model.CustomerTypeID], new { ReadOnly="true", Class="form-control mb-2"})
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    @Html.TextBoxFor(model => model.CustomerTypeID, new { ReadOnly="true", Class="form-control mb-2", style="display: none"})               
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Customer Name: @Html.TextBoxFor(model => model.CustomerName, new { ReadOnly="true", Class="form-control mb-2"})                
+                </div>
+            </div>  
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Contact Number: @Html.TextBoxFor(model => model.CustomerContactNumber, new { ReadOnly="true", Class="form-control mb-2"})                
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    E-Mail Address: @Html.TextBoxFor(model => model.CustomerEmailAddress, new { ReadOnly="true", Class="form-control mb-2"})                
+                </div>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col-sm-4"><button type="submit" formaction=@Url.Action("DisplayForUpdate") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Update</button></div>            
+            <div class="col-sm-4"><a href="/Customer" class="btn btn-outline-dark btn-block mb-3">Back</a></button></div>
+        </div>        
+    </form>
+</div>
+
