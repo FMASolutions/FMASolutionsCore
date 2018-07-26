@@ -12,10 +12,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
     {
         public CountryController(ICountryService service)
         {
-            _countryService = service;
+            _model = new CountryModel(new ModelStateConverter(this).Convert(), service);
+            _service = service;
         }
 
-        private ICountryService _countryService;
+        private ICountryService _service;
+        private CountryModel _model;
 
         public IActionResult Index()
         {
@@ -34,12 +36,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CountrySearchViewModel vmInput)
         {
-            CountryModel model = GetModel();
             CountryViewModel vmCountry = new CountryViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmCountry = model.Search(vmInput.CountryID, vmInput.CountryCode);
+                vmCountry = _model.Search(vmInput.CountryID, vmInput.CountryCode);
                 if (vmCountry.CountryID > 0)
                     return View("Display", vmCountry);
             }
@@ -56,8 +57,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         public IActionResult DisplayAll()
         {
-            CountryModel model = GetModel();
-            return View(model.GetAllCountries());
+            return View(_model.GetAllCountries());
         }
 
         [HttpGet]
@@ -70,10 +70,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CountryViewModel vm)
         {
-            CountryModel model = GetModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vm = model.Create(vm);
+                vm = _model.Create(vm);
                 if (vm.CountryID > 0)
                     return View("Display", vm);
             }
@@ -84,25 +83,18 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CountryViewModel vm)
         {
-            CountryModel model = GetModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vm))
+                if (_model.UpdateDB(vm))
                 {
                     vm.StatusErrorMessage = "Update processed";
                     return View("Display", vm);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vm.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vm);
-        }
-
-        private CountryModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new CountryModel(converter.Convert(), _countryService);
         }
     }
 }

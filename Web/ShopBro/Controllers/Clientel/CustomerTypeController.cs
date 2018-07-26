@@ -12,10 +12,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
     {
         public CustomerTypeController(ICustomerTypeService service)
         {
-            _customerTypeService = service;
+            _model = new CustomerTypeModel(new ModelStateConverter(this).Convert(), service);
+            _service = service;
         }
 
-        private ICustomerTypeService _customerTypeService;
+        private ICustomerTypeService _service;
+        private CustomerTypeModel _model;
 
         public IActionResult Index()
         {
@@ -34,12 +36,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CustomerTypeSearchViewModel vmInput)
         {
-            CustomerTypeModel model = GetModel();
             CustomerTypeViewModel vmCustomerType = new CustomerTypeViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmCustomerType = model.Search(vmInput.CustomerTypeID, vmInput.CustomerTypeCode);
+                vmCustomerType = _model.Search(vmInput.CustomerTypeID, vmInput.CustomerTypeCode);
                 if (vmCustomerType.CustomerTypeID > 0)
                     return View("Display", vmCustomerType);
             }
@@ -56,8 +57,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         public IActionResult DisplayAll()
         {
-            CustomerTypeModel model = GetModel();
-            return View(model.GetAllCustomerTypes());
+            return View(_model.GetAllCustomerTypes());
         }
 
         [HttpGet]
@@ -70,10 +70,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CustomerTypeViewModel vm)
         {
-            CustomerTypeModel model = GetModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vm = model.Create(vm);
+                vm = _model.Create(vm);
                 if (vm.CustomerTypeID > 0)
                     return View("Display", vm);
             }
@@ -84,25 +83,18 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CustomerTypeViewModel vm)
         {
-            CustomerTypeModel model = GetModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vm))
+                if (_model.UpdateDB(vm))
                 {
                     vm.StatusErrorMessage = "Update processed";
                     return View("Display", vm);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vm.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vm);
-        }
-
-        private CustomerTypeModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new CustomerTypeModel(converter.Convert(), _customerTypeService);
         }
     }
 }

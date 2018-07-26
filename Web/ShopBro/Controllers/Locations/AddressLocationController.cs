@@ -10,12 +10,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class AddressLocationController : BaseController
     {
-        public AddressLocationController(IAddressLocationService addressLocationService)
+        public AddressLocationController(IAddressLocationService service)
         {
-            _addressLocationService = addressLocationService;
+            _model = new AddressLocationModel(new ModelStateConverter(this).Convert(), service);
+            _service = service;            
         }
 
-        private IAddressLocationService _addressLocationService;
+        private IAddressLocationService _service;
+        private AddressLocationModel _model;
 
         public IActionResult Index()
         {
@@ -34,16 +36,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(AddressLocationSearchViewModel vmInput)
         {
-            AddressLocationModel model = GetModel();
             AddressLocationViewModel vmAddressLocation = new AddressLocationViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmAddressLocation = model.Search(vmInput.AddressLocationID, vmInput.AddressLocationCode);
+                vmAddressLocation = _model.Search(vmInput.AddressLocationID, vmInput.AddressLocationCode);
                 if (vmAddressLocation.AddressLocationID > 0)
                 {
-                    vmAddressLocation.AvailableCityAreas = model.GetAvailableCityAreas();
-                    vmAddressLocation.AvailablePostCodes = model.GetAvailablePostCodes();
+                    vmAddressLocation.AvailableCityAreas = _model.GetAvailableCityAreas();
+                    vmAddressLocation.AvailablePostCodes = _model.GetAvailablePostCodes();
                     return View("Display", vmAddressLocation);
                 }
             }
@@ -55,16 +56,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(AddressLocationViewModel vmInput)
-        {
-            AddressLocationModel model = GetModel();
-            vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
-            vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
+        {            
+            vmInput.AvailableCityAreas = _model.GetAvailableCityAreas();
+            vmInput.AvailablePostCodes = _model.GetAvailablePostCodes();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
-            AddressLocationModel model = GetModel();
-            return View(model.GetAllAddressLocations());
+            return View(_model.GetAllAddressLocations());
         }
 
         [HttpGet]
@@ -72,9 +71,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Create()
         {
             AddressLocationViewModel vm = new AddressLocationViewModel();
-            AddressLocationModel model = GetModel();
-            vm.AvailableCityAreas = model.GetAvailableCityAreas();
-            vm.AvailablePostCodes = model.GetAvailablePostCodes();
+            vm.AvailableCityAreas = _model.GetAvailableCityAreas();
+            vm.AvailablePostCodes = _model.GetAvailablePostCodes();
             if (vm.AvailableCityAreas.Count > 0 && vm.AvailablePostCodes.Count > 0)
                 return View(vm);
             else
@@ -84,19 +82,18 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(AddressLocationViewModel vmInput)
-        {
-            AddressLocationModel model = GetModel();
+        {            
             AddressLocationViewModel vmResult = new AddressLocationViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vmResult = model.Create(vmInput);
+                vmResult = _model.Create(vmInput);
                 if (vmResult.AddressLocationID > 0)
                 {
                     return Search(vmResult.AddressLocationID);
                 }
             }
-            vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
-            vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
+            vmInput.AvailableCityAreas = _model.GetAvailableCityAreas();
+            vmInput.AvailablePostCodes = _model.GetAvailablePostCodes();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
             return View(vmInput);
         }
@@ -104,28 +101,21 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Update(AddressLocationViewModel vmInput)
-        {
-            AddressLocationModel model = GetModel();
-            if (model.ModelState.IsValid)
+        {            
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vmInput))
+                if (_model.UpdateDB(vmInput))
                 {
                     vmInput.StatusErrorMessage = "Update Processed";
-                    vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
-                    vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
+                    vmInput.AvailableCityAreas = _model.GetAvailableCityAreas();
+                    vmInput.AvailablePostCodes = _model.GetAvailablePostCodes();
                     return View("Display", vmInput);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
-        }
-
-        private AddressLocationModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new AddressLocationModel(converter.Convert(), _addressLocationService);
         }
     }
 }

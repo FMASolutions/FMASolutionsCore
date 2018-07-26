@@ -12,13 +12,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class ItemController : BaseController
     {
-        public ItemController(IItemService itemService, IHostingEnvironment he)
+        public ItemController(IItemService service, IHostingEnvironment he)
         {
-            _itemService = itemService;
+            _service = service;
             _hostingEnv = he;
+            _model = new ItemModel(new ModelStateConverter(this).Convert(),service);
         }
-        private IItemService _itemService;
+        private IItemService _service;
         private IHostingEnvironment _hostingEnv;
+        private ItemModel _model;
 
         public IActionResult Index()
         {
@@ -34,17 +36,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
 
         public IActionResult ProcessSearch(ItemSearchViewModel vmInput)
-        {
-            ItemModel model = GetModel();
+        {            
             ItemViewModel vmSearchResult = new ItemViewModel();
 
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmSearchResult = model.Search(vmInput.ItemID, vmInput.ItemCode);
+                vmSearchResult = _model.Search(vmInput.ItemID, vmInput.ItemCode);
                 if (vmSearchResult.ItemID > 0)
                 {
-                    vmSearchResult.AvailableSubGroups = model.GetAvailableSubGroups();
+                    vmSearchResult.AvailableSubGroups = _model.GetAvailableSubGroups();
                     return View("Display", vmSearchResult);
                 }
             }
@@ -54,17 +55,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
 
         public IActionResult DisplayAll()
-        {
-            ItemModel model = GetModel();
-            return View(model.GetAllItems());
+        {            
+            return View(_model.GetAllItems());
         }
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(ItemViewModel vmInput)
         {
-            ItemModel model = GetModel();
-            ItemViewModel vm = model.Search(vmInput.ItemID, vmInput.ItemCode);
+            ItemViewModel vm = _model.Search(vmInput.ItemID, vmInput.ItemCode);
             return View(vm);
         }
 
@@ -72,9 +71,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
-            ItemViewModel vm = new ItemViewModel();
-            ItemModel model = GetModel();
-            vm.AvailableSubGroups = model.GetAvailableSubGroups();
+            ItemViewModel vm = new ItemViewModel();            
+            vm.AvailableSubGroups = _model.GetAvailableSubGroups();
             if (vm.AvailableSubGroups.Count > 0)
                 return View(vm);
             else
@@ -84,19 +82,18 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(ItemViewModel vmInput, IFormFile uploadFile = null)
-        {
-            ItemModel model = GetModel();
+        {            
             ItemViewModel vmResult = new ItemViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vmResult = model.Create(vmInput, uploadFile, _hostingEnv);
+                vmResult = _model.Create(vmInput, uploadFile, _hostingEnv);
 
                 if (vmResult.ItemID > 0)
                 {
                     return Search(vmResult.ItemID);
                 }
             }
-            vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
+            vmInput.AvailableSubGroups = _model.GetAvailableSubGroups();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
             return View(vmInput);
         }
@@ -104,27 +101,20 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Update(ItemViewModel vmInputs, IFormFile UploadFile = null)
-        {
-            ItemModel model = GetModel();
-            if (model.ModelState.IsValid)
+        {            
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vmInputs, UploadFile, _hostingEnv))
+                if (_model.UpdateDB(vmInputs, UploadFile, _hostingEnv))
                 {
                     vmInputs.StatusErrorMessage = "Update Processed";
-                    vmInputs.AvailableSubGroups = model.GetAvailableSubGroups();
+                    vmInputs.AvailableSubGroups = _model.GetAvailableSubGroups();
                     return View("Display", vmInputs);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vmInputs.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInputs);
-        }
-
-        private ItemModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new ItemModel(converter.Convert(), _itemService);
         }
     }
 }

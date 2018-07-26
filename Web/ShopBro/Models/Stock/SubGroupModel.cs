@@ -18,20 +18,24 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         public SubGroupViewModel Search(int id = 0, string code = "")
         {
-            SubGroup searchResult = null;
+            SubGroup searchResult = null;            
+            SubGroupViewModel returnVM;
             if (id > 0)
                 searchResult = _subGroupService.GetByID(id);
             if (searchResult == null && !string.IsNullOrEmpty(code))
                 searchResult = _subGroupService.GetByCode(code);
 
             if (searchResult != null)
-                return ConvertToViewModel(searchResult);
+            {
+                returnVM = ConvertToViewModel(searchResult);
+                returnVM.AvailableProductGroups = GetAvailableProductGroups();                
+            }
             else
             {
-                SubGroupViewModel returnVM = new SubGroupViewModel();
-                returnVM.StatusErrorMessage = "No result Found";
-                return returnVM;
+                returnVM = new SubGroupViewModel();
+                returnVM.StatusErrorMessage = "No result Found";                
             }
+            return returnVM;
         }
 
         public SubGroupsViewModel GetAllSubGroups()

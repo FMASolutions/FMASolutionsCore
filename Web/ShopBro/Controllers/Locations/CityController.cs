@@ -10,12 +10,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class CityController : BaseController
     {
-        public CityController(ICityService cityService)
+        public CityController(ICityService service)
         {
-            _cityService = cityService;
+            _model = new CityModel(new ModelStateConverter(this).Convert(), service);
+            _service = service;            
         }
 
-        private ICityService _cityService;
+        private ICityService _service;
+        private CityModel _model;
 
         public IActionResult Index()
         {
@@ -34,15 +36,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CitySearchViewModel vmInput)
         {
-            CityModel model = GetModel();
             CityViewModel vmCity = new CityViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmCity = model.Search(vmInput.CityID, vmInput.CityCode);
+                vmCity = _model.Search(vmInput.CityID, vmInput.CityCode);
                 if (vmCity.CityID > 0)
                 {
-                    vmCity.AvailableCountries = model.GetAvailableCountries();
+                    vmCity.AvailableCountries = _model.GetAvailableCountries();
                     return View("Display", vmCity);
                 }
             }
@@ -55,14 +56,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(CityViewModel vmInput)
         {
-            CityModel model = GetModel();
-            vmInput.AvailableCountries = model.GetAvailableCountries();
+            vmInput.AvailableCountries = _model.GetAvailableCountries();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
-            CityModel model = GetModel();
-            return View(model.GetAllCities());
+            return View(_model.GetAllCities());
         }
 
         [HttpGet]
@@ -70,8 +69,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Create()
         {
             CityViewModel vm = new CityViewModel();
-            CityModel model = GetModel();
-            vm.AvailableCountries = model.GetAvailableCountries();
+            vm.AvailableCountries = _model.GetAvailableCountries();
             if (vm.AvailableCountries.Count > 0)
                 return View(vm);
             else
@@ -82,17 +80,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CityViewModel vmInput)
         {
-            CityModel model = GetModel();
             CityViewModel vmResult = new CityViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vmResult = model.Create(vmInput);
+                vmResult = _model.Create(vmInput);
                 if (vmResult.CityID > 0)
                 {
                     return Search(vmResult.CityID);
                 }
             }
-            vmInput.AvailableCountries = model.GetAvailableCountries();
+            vmInput.AvailableCountries = _model.GetAvailableCountries();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
             return View(vmInput);
         }
@@ -101,26 +98,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CityViewModel vmInput)
         {
-            CityModel model = GetModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vmInput))
+                if (_model.UpdateDB(vmInput))
                 {
                     vmInput.StatusErrorMessage = "Update Processed";
-                    vmInput.AvailableCountries = model.GetAvailableCountries();
+                    vmInput.AvailableCountries = _model.GetAvailableCountries();
                     return View("Display", vmInput);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
-        }
-
-        private CityModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new CityModel(converter.Convert(), _cityService);
         }
     }
 }

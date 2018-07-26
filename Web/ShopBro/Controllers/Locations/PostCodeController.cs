@@ -10,12 +10,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class PostCodeController : BaseController
     {
-        public PostCodeController(IPostCodeService postCodeService)
+        public PostCodeController(IPostCodeService service)
         {
-            _postCodeService = postCodeService;
+            _model = new PostCodeModel(new ModelStateConverter(this).Convert(),service);
+            _service = service;
         }
 
-        private IPostCodeService _postCodeService;
+        private IPostCodeService _service;
+        private PostCodeModel _model;
 
         public IActionResult Index()
         {
@@ -34,15 +36,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(PostCodeSearchViewModel vmInput)
         {
-            PostCodeModel model = GetModel();
             PostCodeViewModel vmPostCode = new PostCodeViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmPostCode = model.Search(vmInput.PostCodeID, vmInput.PostCodeCode);
+                vmPostCode = _model.Search(vmInput.PostCodeID, vmInput.PostCodeCode);
                 if (vmPostCode.PostCodeID > 0)
                 {
-                    vmPostCode.AvailableCities = model.GetAvailableCities();
+                    vmPostCode.AvailableCities = _model.GetAvailableCities();
                     return View("Display", vmPostCode);
                 }
             }
@@ -55,14 +56,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(PostCodeViewModel vmInput)
         {
-            PostCodeModel model = GetModel();
-            vmInput.AvailableCities = model.GetAvailableCities();
+            vmInput.AvailableCities = _model.GetAvailableCities();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
-            PostCodeModel model = GetModel();
-            return View(model.GetAllPostCodes());
+            return View(_model.GetAllPostCodes());
         }
 
         [HttpGet]
@@ -70,8 +69,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Create()
         {
             PostCodeViewModel vm = new PostCodeViewModel();
-            PostCodeModel model = GetModel();
-            vm.AvailableCities = model.GetAvailableCities();
+            vm.AvailableCities = _model.GetAvailableCities();
             if (vm.AvailableCities.Count > 0)
                 return View(vm);
             else
@@ -82,17 +80,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(PostCodeViewModel vmInput)
         {
-            PostCodeModel model = GetModel();
             PostCodeViewModel vmResult = new PostCodeViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vmResult = model.Create(vmInput);
+                vmResult = _model.Create(vmInput);
                 if (vmResult.PostCodeID > 0)
                 {
                     return Search(vmResult.PostCodeID);
                 }
             }
-            vmInput.AvailableCities = model.GetAvailableCities();
+            vmInput.AvailableCities = _model.GetAvailableCities();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
             return View(vmInput);
         }
@@ -101,26 +98,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(PostCodeViewModel vmInput)
         {
-            PostCodeModel model = GetModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vmInput))
+                if (_model.UpdateDB(vmInput))
                 {
                     vmInput.StatusErrorMessage = "Update Processed";
-                    vmInput.AvailableCities = model.GetAvailableCities();
+                    vmInput.AvailableCities = _model.GetAvailableCities();
                     return View("Display", vmInput);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
-        }
-
-        private PostCodeModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new PostCodeModel(converter.Convert(), _postCodeService);
         }
     }
 }

@@ -10,12 +10,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class CityAreaController : BaseController
     {
-        public CityAreaController(ICityAreaService cityAreaService)
+        public CityAreaController(ICityAreaService service)
         {
-            _cityAreaService = cityAreaService;
+            _model = new CityAreaModel(new ModelStateConverter(this).Convert(), service);
+            _service = service;
         }
 
-        private ICityAreaService _cityAreaService;
+        private ICityAreaService _service;
+        private CityAreaModel _model;
 
         public IActionResult Index()
         {
@@ -34,15 +36,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CityAreaSearchViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
+            ;
             CityAreaViewModel vmCityArea = new CityAreaViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmCityArea = model.Search(vmInput.CityAreaID, vmInput.CityAreaCode);
+                vmCityArea = _model.Search(vmInput.CityAreaID, vmInput.CityAreaCode);
                 if (vmCityArea.CityAreaID > 0)
                 {
-                    vmCityArea.AvailableCities = model.GetAvailableCities();
+                    vmCityArea.AvailableCities = _model.GetAvailableCities();
                     return View("Display", vmCityArea);
                 }
             }
@@ -55,14 +57,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(CityAreaViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
-            vmInput.AvailableCities = model.GetAvailableCities();
+            vmInput.AvailableCities = _model.GetAvailableCities();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
-            CityAreaModel model = GetModel();
-            return View(model.GetAllCityAreas());
+            return View(_model.GetAllCityAreas());
         }
 
         [HttpGet]
@@ -70,8 +70,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Create()
         {
             CityAreaViewModel vm = new CityAreaViewModel();
-            CityAreaModel model = GetModel();
-            vm.AvailableCities = model.GetAvailableCities();
+            vm.AvailableCities = _model.GetAvailableCities();
             if (vm.AvailableCities.Count > 0)
                 return View(vm);
             else
@@ -82,17 +81,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CityAreaViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
             CityAreaViewModel vmResult = new CityAreaViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vmResult = model.Create(vmInput);
+                vmResult = _model.Create(vmInput);
                 if (vmResult.CityAreaID > 0)
                 {
                     return Search(vmResult.CityAreaID);
                 }
             }
-            vmInput.AvailableCities = model.GetAvailableCities();
+            vmInput.AvailableCities = _model.GetAvailableCities();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
             return View(vmInput);
         }
@@ -101,26 +99,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CityAreaViewModel vmInput)
         {
-            CityAreaModel model = GetModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vmInput))
+                if (_model.UpdateDB(vmInput))
                 {
                     vmInput.StatusErrorMessage = "Update Processed";
-                    vmInput.AvailableCities = model.GetAvailableCities();
+                    vmInput.AvailableCities = _model.GetAvailableCities();
                     return View("Display", vmInput);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
-        }
-
-        private CityAreaModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new CityAreaModel(converter.Convert(), _cityAreaService);
         }
     }
 }

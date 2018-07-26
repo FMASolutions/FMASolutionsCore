@@ -12,10 +12,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
     {
         public ProductGroupController(IProductGroupService service)
         {
-            _productGroupService = service;
+            _service = service;            
+            _model = new ProductGroupModel(new ModelStateConverter(this).Convert(), _service);
         }
 
-        private IProductGroupService _productGroupService;
+        private IProductGroupService _service;
+        private ProductGroupModel _model;
 
         public IActionResult Index()
         {
@@ -33,13 +35,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         [HttpPost]
         public IActionResult ProcessSearch(ProductGroupSearchViewModel vmInput)
-        {
-            ProductGroupModel model = GetModel();
+        {            
             ProductGroupViewModel vmProductGroup = new ProductGroupViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmProductGroup = model.Search(vmInput.ProductGroupID, vmInput.ProductGroupCode);
+                vmProductGroup = _model.Search(vmInput.ProductGroupID, vmInput.ProductGroupCode);
                 if (vmProductGroup.ProductGroupID > 0)
                     return View("Display", vmProductGroup);
             }
@@ -57,8 +58,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         public IActionResult DisplayAll()
         {
-            ProductGroupModel model = GetModel();
-            return View(model.GetAllProductGroups());
+            return View(_model.GetAllProductGroups());
         }
 
         [HttpGet]
@@ -70,11 +70,10 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(ProductGroupViewModel vm)
-        {
-            ProductGroupModel model = GetModel();
-            if (model.ModelState.IsValid)
+        {            
+            if (_model.ModelState.IsValid)
             {
-                vm = model.Create(vm);
+                vm = _model.Create(vm);
                 if (vm.ProductGroupID > 0)
                     return View("Display", vm);
             }
@@ -84,26 +83,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Update(ProductGroupViewModel vm)
-        {
-            ProductGroupModel model = GetModel();
-            if (model.ModelState.IsValid)
+        {            
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vm))
+                if (_model.UpdateDB(vm))
                 {
                     vm.StatusErrorMessage = "Update processed";
                     return View("Display", vm);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vm.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vm);
-        }
-
-        private ProductGroupModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new ProductGroupModel(converter.Convert(), _productGroupService);
         }
     }
 }

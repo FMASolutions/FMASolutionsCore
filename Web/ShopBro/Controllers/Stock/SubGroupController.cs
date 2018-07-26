@@ -10,12 +10,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class SubGroupController : BaseController
     {
-        public SubGroupController(ISubGroupService subGroupService)
+        public SubGroupController(ISubGroupService service)
         {
-            _subGroupService = subGroupService;
+            _model = new SubGroupModel(new ModelStateConverter(this).Convert(), service);
+            _service = service;            
         }
 
-        private ISubGroupService _subGroupService;
+        private ISubGroupService _service;
+        private SubGroupModel _model;
 
         public IActionResult Index()
         {
@@ -33,16 +35,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         [HttpPost]
         public IActionResult ProcessSearch(SubGroupSearchViewModel vmInput)
-        {
-            SubGroupModel model = GetModel();
+        {            
             SubGroupViewModel vmSubGroup = new SubGroupViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
                 ModelState.Clear();
-                vmSubGroup = model.Search(vmInput.SubGroupID, vmInput.SubGroupCode);
+                vmSubGroup = _model.Search(vmInput.SubGroupID, vmInput.SubGroupCode);
                 if (vmSubGroup.SubGroupID > 0)
-                {
-                    vmSubGroup.AvailableProductGroups = model.GetAvailableProductGroups();
+                {                    
                     return View("Display", vmSubGroup);
                 }
             }
@@ -55,23 +55,20 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(SubGroupViewModel vmInput)
         {
-            SubGroupModel model = GetModel();
-            vmInput.AvailableProductGroups = model.GetAvailableProductGroups();
+            vmInput.AvailableProductGroups = _model.GetAvailableProductGroups();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
-        {
-            SubGroupModel model = GetModel();
-            return View(model.GetAllSubGroups());
+        {            
+            return View(_model.GetAllSubGroups());
         }
 
         [HttpGet]
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
-            SubGroupViewModel vm = new SubGroupViewModel();
-            SubGroupModel model = GetModel();
-            vm.AvailableProductGroups = model.GetAvailableProductGroups();
+            SubGroupViewModel vm = new SubGroupViewModel();            
+            vm.AvailableProductGroups = _model.GetAvailableProductGroups();
             if (vm.AvailableProductGroups.Count > 0)
                 return View(vm);
             else
@@ -81,18 +78,17 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(SubGroupViewModel vmInput)
-        {
-            SubGroupModel model = GetModel();
+        {            
             SubGroupViewModel vmResult = new SubGroupViewModel();
-            if (model.ModelState.IsValid)
+            if (_model.ModelState.IsValid)
             {
-                vmResult = model.Create(vmInput);
+                vmResult = _model.Create(vmInput);
                 if (vmResult.SubGroupID > 0)
                 {
                     return Search(vmResult.SubGroupID);
                 }
             }
-            vmInput.AvailableProductGroups = model.GetAvailableProductGroups();
+            vmInput.AvailableProductGroups = _model.GetAvailableProductGroups();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
             return View(vmInput);
         }
@@ -100,27 +96,20 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Update(SubGroupViewModel vmInput)
-        {
-            SubGroupModel model = GetModel();
-            if (model.ModelState.IsValid)
+        {            
+            if (_model.ModelState.IsValid)
             {
-                if (model.UpdateDB(vmInput))
+                if (_model.UpdateDB(vmInput))
                 {
                     vmInput.StatusErrorMessage = "Update Processed";
-                    vmInput.AvailableProductGroups = model.GetAvailableProductGroups();
+                    vmInput.AvailableProductGroups = _model.GetAvailableProductGroups();
                     return View("Display", vmInput);
                 }
                 else
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
-        }
-
-        private SubGroupModel GetModel()
-        {
-            IModelStateConverter converter = new ModelStateConverter(this);
-            return new SubGroupModel(converter.Convert(), _subGroupService);
         }
     }
 }
