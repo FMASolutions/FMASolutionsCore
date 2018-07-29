@@ -11,6 +11,13 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         {            
             AvailableCityAreas = new Dictionary<int,string>();
             AvailablePostCodes = new Dictionary<int,string>();
+
+
+
+
+
+            postCodeFromDB = true;
+            postCodeToCreate = new PostCodeViewModel();
         }   
 
         public Dictionary<int, string> AvailableCityAreas;
@@ -35,8 +42,13 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
 
         [Required(ErrorMessage = "Address Line 2 is mandatory")]
         [StringLength(100, ErrorMessage = "Address Line 2 should be no more than 100 characters")]
-        public string AddressLine2 { get; set; }    
+        public string AddressLine2 { get; set; }
         
         public string StatusErrorMessage { get; set; }
+
+
+
+        public bool postCodeFromDB {get; set;}
+        public PostCodeViewModel postCodeToCreate {get; set;}
     }
 }

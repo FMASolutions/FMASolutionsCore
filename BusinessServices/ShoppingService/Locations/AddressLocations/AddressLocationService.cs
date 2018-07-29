@@ -9,6 +9,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
     {
         public AddressLocationService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
+            _connectionSTring = connectionString;
+            _dbType = dbType;
             _uow = new UnitOfWork(connectionString, dbType);
             _cityAreaService = new CityAreaService(connectionString, dbType);
             _postCodeService = new PostCodeService(connectionString, dbType);
@@ -16,6 +18,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private IUnitOfWork _uow;
         ICityAreaService _cityAreaService;
         IPostCodeService _postCodeService;
+        private string _connectionSTring;
+        private SQLAppConfigTypes.SQLAppConfigTypes _dbType;
+
 
         #region ICityService
         public AddressLocation GetByID(int id)
@@ -74,6 +79,31 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return false;
             }
         }
+        public bool CreateNew(AddressLocation newAddress, PostCode newPostCode)
+        {
+            try
+            {
+                bool success = false;
+                if (_uow.PostCodeRepo.Create(new PostCodeEntity(0, newPostCode.CityID, newPostCode.PostCodeCode, newPostCode.PostCodeValue)))
+                {
+                    PostCodeEntity createResult = _uow.PostCodeRepo.GetByCode(newPostCode.PostCodeCode);
+                    newAddress.PostCodeID = createResult.PostCodeID;
+                    success = CreateNew(newAddress);
+                }
+                else
+                {
+                    newAddress.ModelState.AddError("PostCode","Failed to create post code");                                        
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                newAddress.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
+                newPostCode.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
+                return false;
+            }
+        }
         public List<AddressLocation> GetAll()
         {
             List<AddressLocation> returnList = null;
@@ -94,6 +124,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public List<PostCode> GetAvailablePostCodes()
         {
             return _postCodeService.GetAll();
+        }
+        public List<City> GetAvailableCities()
+        {
+            return _cityAreaService.GetAvailableCities();
         }
         public bool UpdateDB(AddressLocation newModel)
         {
@@ -149,7 +183,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private bool PostCodeIDExists(int id)
         {
             PostCodeEntity entity = _uow.PostCodeRepo.GetByID(id);
-            if(entity != null && entity.PostCodeID > 0)
+            if (entity != null && entity.PostCodeID > 0)
                 return true;
             else
                 return false;
@@ -176,12 +210,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 else if (CityAreaIDExists(model.CityAreaID) == false)
                 {
                     model.ModelState.AddError("City Area ID", "City Area ID Provided does not exists");
-                    return false;                
+                    return false;
                 }
                 else if (PostCodeIDExists(model.PostCodeID) == false)
                 {
                     model.ModelState.AddError("Post Code ID", "Post Code ID Provided does not exists");
-                    return false;                
+                    return false;
                 }
             }
             else
@@ -231,7 +265,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         private bool ValidateAllValues(AddressLocation model)
         {
-            if (ValidateID(model.AddressLocationID) == false || ValidateID(model.CityAreaID) == false || ValidateID(model.PostCodeID)== false )
+            if (ValidateID(model.AddressLocationID) == false || ValidateID(model.CityAreaID) == false || ValidateID(model.PostCodeID) == false)
             {
                 model.ModelState.AddError("InvalidID", "ID value was invalid");
                 return false;

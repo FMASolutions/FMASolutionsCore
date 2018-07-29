@@ -10,7 +10,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public AddressLocationModel(ICustomModelState modelState, IAddressLocationService service)
         {
             _modelState = modelState;
-            _addressLocationService = service;
+            _addressLocationService = service;            
         }
         private ICustomModelState _modelState;
         private IAddressLocationService _addressLocationService;
@@ -69,18 +69,46 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                     postCodes.Add(item.PostCodeID, item.PostCodeID.ToString() + " (" + item.PostCodeCode + ") - " + item.PostCodeValue);
             return postCodes;
         }
+
+        public Dictionary<int, string> GetAvailableCities()
+        {
+            Dictionary<int, string> cities = new Dictionary<int, string>();
+            var list = _addressLocationService.GetAvailableCities();
+            if (list != null)
+                foreach (var item in list)
+                    cities.Add(item.CityID, item.CityID.ToString() + " (" + item.CityCode + ") - " + item.CityName);
+            return cities;
+        }
         public AddressLocationViewModel Create(AddressLocationViewModel newAddressLocation)
         {
             AddressLocation addressLocation = ConvertToModel(newAddressLocation);
             addressLocation.AddressLocationID = 0; //NOT SURE I NEED TRHIS???????????????
             AddressLocationViewModel vmReturn = new AddressLocationViewModel();
-            if (_addressLocationService.CreateNew(addressLocation))
-                vmReturn = ConvertToViewModel(addressLocation);
+
+            if(newAddressLocation.postCodeFromDB == false)
+            {
+                PostCode postCode = new PostCode(_modelState, 0, newAddressLocation.postCodeToCreate.PostCodeCode, newAddressLocation.postCodeToCreate.CityID, newAddressLocation.postCodeToCreate.PostCodeValue);
+                if(_addressLocationService.CreateNew(addressLocation, postCode))
+                {
+                    vmReturn = ConvertToViewModel(addressLocation);
+                }
+                else
+                {
+                    vmReturn.StatusErrorMessage = "Unable to create Address Locations";
+                    foreach (string item in addressLocation.ModelState.ErrorDictionary.Values)
+                        vmReturn.StatusErrorMessage += " " + item;
+                }
+            }
             else
             {
-                vmReturn.StatusErrorMessage = "Unable to create Address Locations";
-                foreach (string item in addressLocation.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusErrorMessage += " " + item;
+                if (_addressLocationService.CreateNew(addressLocation))
+                    vmReturn = ConvertToViewModel(addressLocation);
+                else
+                {
+                    vmReturn.StatusErrorMessage = "Unable to create Address Locations";
+                    foreach (string item in addressLocation.ModelState.ErrorDictionary.Values)
+                        vmReturn.StatusErrorMessage += " " + item;
+                }
             }
             return vmReturn;
         }

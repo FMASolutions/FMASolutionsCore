@@ -73,7 +73,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             AddressLocationViewModel vm = new AddressLocationViewModel();
             vm.AvailableCityAreas = _model.GetAvailableCityAreas();
             vm.AvailablePostCodes = _model.GetAvailablePostCodes();
-            if (vm.AvailableCityAreas.Count > 0 && vm.AvailablePostCodes.Count > 0)
+            vm.postCodeToCreate.AvailableCities = _model.GetAvailableCities();
+            if (vm.AvailableCityAreas.Count > 0 && vm.AvailablePostCodes.Count > 0 && vm.postCodeToCreate.AvailableCities.Count > 0)
                 return View(vm);
             else
                 return View("Search");
@@ -94,6 +95,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             }
             vmInput.AvailableCityAreas = _model.GetAvailableCityAreas();
             vmInput.AvailablePostCodes = _model.GetAvailablePostCodes();
+            vmInput.postCodeToCreate.AvailableCities = _model.GetAvailableCities();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
             return View(vmInput);
         }

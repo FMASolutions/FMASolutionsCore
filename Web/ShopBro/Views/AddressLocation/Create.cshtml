@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    <h3>Create A Address Location</h3>            
+                    <h3>Create An Address Location</h3>            
                 </div>        
             </div>
         </div>
@@ -55,7 +55,14 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+         <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Use Existing Postcode: @Html.CheckBoxFor(m => m.postCodeFromDB, new {Class="mt-2", id="SubCheckBox", onclick="toggleVisability('SubCheckBox','SelectFromDB','CreateNew')"})                    
+                </div>
+            </div>
+        </div>
+        <div class="row" id="SelectFromDB">
             <div class="col-sm-12">
                 <div class="text-left">
                     Post Code: 
@@ -67,6 +74,31 @@
                     )
                 </div>
             </div>
+        </div>
+        <div class="row" id="CreateNew" style="display: none;">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Postcode Code: @Html.TextBoxFor(model => model.postCodeToCreate.PostCodeCode, new { placeholder = "Postcode Code", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.postCodeToCreate.PostCodeCode, "", new { Class = "error-text" })
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="text-left">
+                    City: 
+                    @Html.DropDownListFor(
+                        m => m.postCodeToCreate.CityID,
+                        new SelectList(Model.postCodeToCreate.AvailableCities, "Key", "Value"),
+                        "- Select City -",
+                        new { @class = "form-control" } 
+                    )
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="text-left">
+                    Postcode Value: @Html.TextBoxFor(model => model.postCodeToCreate.PostCodeValue, new { placeholder = "Post Code Value", Class="form-control mb-2"})
+                    @Html.ValidationMessageFor(model => model.postCodeToCreate.PostCodeValue, "", new { Class = "error-text" })
+                </div>
+            </div>  
         </div>
          <div class="row">
             <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Create") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Create</button></div>            
