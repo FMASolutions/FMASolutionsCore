@@ -23,16 +23,19 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         {
             try
             {
-
                 string query = @"
                 SELECT [SubGroupID], [SubGroupCode], [ProductGroupID], SubGroupName, SubGroupDescription
                 FROM SubGroups
                 WHERE SubGroupID = @SubGroupID
                 ";
+
+                Helper.logger.WriteToProcessLog("SubGroupRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<SubGroupEntity>(query, new { SubGroupID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in SubGroupRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
@@ -43,10 +46,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [SubGroupID], [SubGroupCode], [ProductGroupID], SubGroupName, SubGroupDescription
                 FROM SubGroups";
+
+                Helper.logger.WriteToProcessLog("SubGroupRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<SubGroupEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in SubGroupRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
@@ -59,6 +66,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 INSERT INTO SubGroups([SubGroupCode], [ProductGroupID], SubGroupName, SubGroupDescription)
                 VALUES (@SubGroupCode, @ProductGroupID, @SubGroupName, @SubGroupDescription)";
 
+                Helper.logger.WriteToProcessLog("SubGroupRepo.Create Started for code: " + entity.SubGroupCode + " full query = " + query);
+
                 int rowsAffected = _dbConnection.Execute(query, new
                 {
                     SubGroupCode = entity.SubGroupCode,
@@ -70,12 +79,12 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in SubGroupRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
-
         public bool Update(SubGroupEntity entity)
         {
             try
@@ -87,6 +96,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , SubGroupName = @SubGroupName
                 , SubGroupDescription = @SubGroupDescription
                 WHERE SubGroupID = @SubGroupID";
+
+                Helper.logger.WriteToProcessLog("SubGroupRepo.Update Started for ID: " + entity.SubGroupID.ToString() + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     SubGroupCode = entity.SubGroupCode,
@@ -99,8 +111,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in SubGroupRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
@@ -114,7 +127,17 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #region ISubGroupRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(SubGroupID),0)+1 FROM SubGroups");
+            try
+            {
+                Helper.logger.WriteToProcessLog("SubGroupRepo.GetNextAvailableID Started");
+
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(SubGroupID),0)+1 FROM SubGroups");
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in SubGroupRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public SubGroupEntity GetByCode(string code)
         {
@@ -124,10 +147,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [SubGroupID], [SubGroupCode], [ProductGroupID], SubGroupName, SubGroupDescription
                 FROM SubGroups 
                 WHERE SubGroupCode = @SubGroupCode";
+
+                Helper.logger.WriteToProcessLog("SubGroupRepo.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<SubGroupEntity>(query, new { SubGroupCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in SubGroupRepo.GetByCode: " + ex.Message, this);
                 return null;
             }
         }

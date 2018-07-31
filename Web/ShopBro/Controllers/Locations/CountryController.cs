@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            _model = GetNewModel();
             CountrySearchViewModel vmSearch = new CountrySearchViewModel();
             return View("Search", vmSearch);
         }
@@ -28,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             CountrySearchViewModel vmSearch = new CountrySearchViewModel();
             vmSearch.CountryID = id;
             return ProcessSearch(vmSearch);
@@ -36,6 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CountrySearchViewModel vmInput)
         {
+            _model = GetNewModel();
             CountryViewModel vmCountry = new CountryViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -53,10 +56,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(CountryViewModel vmInput)
         {
+            _model = GetNewModel();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
+            _model = GetNewModel();
             return View(_model.GetAllCountries());
         }
 
@@ -64,12 +69,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             return View();
         }
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CountryViewModel vm)
         {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 vm = _model.Create(vm);
@@ -83,6 +90,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CountryViewModel vm)
         {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vm))
@@ -95,6 +103,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vm.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vm);
+        }
+        
+        private CountryModel GetNewModel()
+        {
+            return new CountryModel(new ModelStateConverter(this).Convert(), _service);
         }
     }
 }

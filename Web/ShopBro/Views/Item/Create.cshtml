@@ -42,6 +42,7 @@
                         new SelectList(Model.AvailableSubGroups, "Key", "Value",Model.SubGroupID),                        
                         new { @class = "form-control" }
                     )
+                    @Html.ValidationMessageFor(model => model.SubGroupID, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>

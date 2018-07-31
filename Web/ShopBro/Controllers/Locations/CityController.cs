@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            _model = GetNewModel();
             CitySearchViewModel vmInput = new CitySearchViewModel();
             return View("Search", vmInput);
         }
@@ -28,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             CitySearchViewModel vmInput = new CitySearchViewModel();
             vmInput.CityID = id;
             return ProcessSearch(vmInput);
@@ -36,6 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CitySearchViewModel vmInput)
         {
+            _model = GetNewModel();
             CityViewModel vmCity = new CityViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -56,11 +59,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(CityViewModel vmInput)
         {
+            _model = GetNewModel();
             vmInput.AvailableCountries = _model.GetAvailableCountries();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
+            _model = GetNewModel();
             return View(_model.GetAllCities());
         }
 
@@ -68,6 +73,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             CityViewModel vm = new CityViewModel();
             vm.AvailableCountries = _model.GetAvailableCountries();
             if (vm.AvailableCountries.Count > 0)
@@ -80,6 +86,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CityViewModel vmInput)
         {
+            _model = GetNewModel();
             CityViewModel vmResult = new CityViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -98,6 +105,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CityViewModel vmInput)
         {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vmInput))
@@ -111,6 +119,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
+        }
+
+        private CityModel GetNewModel()
+        {
+            return new CityModel(new ModelStateConverter(this).Convert(), _service);
         }
     }
 }

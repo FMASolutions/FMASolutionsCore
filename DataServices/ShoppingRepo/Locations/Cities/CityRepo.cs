@@ -28,10 +28,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 FROM Cities
                 WHERE CityID = @CityID
                 ";
+
+                Helper.logger.WriteToProcessLog("CityRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CityEntity>(query, new { CityID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
@@ -42,10 +46,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [CityID], [CityCode], [CountryID], [CityName]
                 FROM Cities";
+
+                Helper.logger.WriteToProcessLog("CityRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<CityEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
@@ -62,14 +70,18 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 {
                     CityCode = entity.CityCode,
                     CountryID = entity.CountryID,
-                    CityName = entity.CityName                    
+                    CityName = entity.CityName
                 });
+
+                Helper.logger.WriteToProcessLog("CityRepo.Create Started for code: " + entity.CityCode + " full query = " + query);
+
                 if (rowsAffected > 0)
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
@@ -84,19 +96,23 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , CountryID = @CountryID
                 , CityName = @CityName                
                 WHERE CityID = @CityID";
+
+                Helper.logger.WriteToProcessLog("CityRepo.Update Started for ID: " + entity.CityID + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     CityCode = entity.CityCode,
                     CountryID = entity.CountryID,
-                    CityName = entity.CityName,                    
+                    CityName = entity.CityName,
                     CityID = entity.CityID
                 });
                 if (i >= 1)
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
@@ -110,7 +126,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #region ICityRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CityID),0)+1 FROM Cities");
+            try
+            {
+                Helper.logger.WriteToProcessLog("CityRepo.GetNextAvailableID Started");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CityID),0)+1 FROM Cities");
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in CityRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public CityEntity GetByCode(string code)
         {
@@ -120,10 +145,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [CityID], [CityCode], [CountryID], [CityName]
                 FROM Cities
                 WHERE CityCode = @CityCode";
+
+                Helper.logger.WriteToProcessLog("CityRepo.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CityEntity>(query, new { CityCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityRepo.GetByCode: " + ex.Message, this);
                 return null;
             }
         }

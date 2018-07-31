@@ -23,16 +23,19 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         {
             try
             {
-
                 string query = @"
                 SELECT [CustomerID], [CustomerTypeID], [CustomerCode], [CustomerName], [CustomerContactNumber], [CustomerEmailAddress]
                 FROM Customers
                 WHERE CustomerID = @CustomerID
                 ";
+
+                Helper.logger.WriteToProcessLog("CustomerRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CustomerEntity>(query, new { CustomerID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CustomerRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
@@ -43,10 +46,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [CustomerID], [CustomerTypeID], [CustomerCode], [CustomerName], [CustomerContactNumber], [CustomerEmailAddress]
                 FROM Customers";
+
+                Helper.logger.WriteToProcessLog("CustomerRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<CustomerEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CustomerRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
@@ -58,6 +65,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 INSERT INTO Customers([CustomerTypeID], [CustomerCode], [CustomerName], [CustomerContactNumber], [CustomerEmailAddress])
                 VALUES (@CustomerTypeID, @CustomerCode, @CustomerName, @CustomerContactNumber, @CustomerEmailAddress)";
+
+                Helper.logger.WriteToProcessLog("CustomerRepo.Create Started for code: " + entity.CustomerCode + " full query = " + query);
 
                 int rowsAffected = _dbConnection.Execute(query, new
                 {
@@ -71,8 +80,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CustomerRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
@@ -89,6 +99,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , CustomerContactNumber = @CustomerContactNumber
                 , CustomerEmailAddress = @CustomerEmailAddress
                 WHERE CustomerID = @CustomerID";
+
+                Helper.logger.WriteToProcessLog("CustomerRepo.Update Started for ID: " + entity.CustomerID.ToString() + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     CustomerTypeID = entity.CustomerTypeID,
@@ -102,8 +115,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CustomerRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
@@ -117,7 +131,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #region ICustomerRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CustomerID),0)+1 FROM Customers");
+            try
+            {
+                Helper.logger.WriteToProcessLog("CustomerRepo.GetNextAvailableID Started");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CustomerID),0)+1 FROM Customers");
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in CustomerRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public CustomerEntity GetByCode(string code)
         {
@@ -127,10 +150,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [CustomerID], [CustomerTypeID], [CustomerCode], [CustomerName], [CustomerContactNumber], [CustomerEmailAddress]
                 FROM Customers 
                 WHERE CustomerCode = @CustomerCode";
+
+                Helper.logger.WriteToProcessLog("CustomerRepo.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CustomerEntity>(query, new { CustomerCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CustomerRepo.GetByCode: " + ex.Message, this);
                 return null;
             }
         }

@@ -12,15 +12,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
     {
         public ProductGroupController(IProductGroupService service)
         {
-            _service = service;            
-            _model = new ProductGroupModel(new ModelStateConverter(this).Convert(), _service);
+            _service = service;
+            _model = new ProductGroupModel(new ModelStateConverter(this).Convert(),_service);               
         }
 
-        private IProductGroupService _service;
+        private IProductGroupService _service;        
         private ProductGroupModel _model;
-
         public IActionResult Index()
         {
+            _model = GetNewModel();
             ProductGroupSearchViewModel vmSearch = new ProductGroupSearchViewModel();
             return View("Search", vmSearch);
         }
@@ -28,6 +28,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             ProductGroupSearchViewModel vmSearch = new ProductGroupSearchViewModel();
             vmSearch.ProductGroupID = id;
             return ProcessSearch(vmSearch);
@@ -36,6 +37,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(ProductGroupSearchViewModel vmInput)
         {            
+            _model = GetNewModel();
             ProductGroupViewModel vmProductGroup = new ProductGroupViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -53,11 +55,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(ProductGroupViewModel vmInput)
         {
+            _model = GetNewModel();
             return View(vmInput);
 
         }
         public IActionResult DisplayAll()
         {
+            _model = GetNewModel();
             return View(_model.GetAllProductGroups());
         }
 
@@ -65,12 +69,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             return View();
         }
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(ProductGroupViewModel vm)
-        {            
+        {  
+            _model = GetNewModel(); 
             if (_model.ModelState.IsValid)
             {
                 vm = _model.Create(vm);
@@ -83,7 +89,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Update(ProductGroupViewModel vm)
-        {            
+        {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vm))
@@ -97,5 +104,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             }
             return View("DisplayForUpdate", vm);
         }
+        
+        private ProductGroupModel GetNewModel()
+        {
+            return new ProductGroupModel(new ModelStateConverter(this).Convert(),_service);
+        }
+
     }
 }

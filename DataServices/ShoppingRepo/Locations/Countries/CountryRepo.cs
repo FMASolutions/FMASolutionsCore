@@ -28,25 +28,33 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [CountryID], [CountryCode],[CountryName]
                 FROM Countries
                 WHERE CountryID = @CountryID";
+
+                Helper.logger.WriteToProcessLog("CountryRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CountryEntity>(query, new { CountryID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CountryRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
 
         public IEnumerable<CountryEntity> GetAll()
         {
-           try
+            try
             {
                 string query = @"
                 SELECT [CountryID], [CountryCode],[CountryName]
                 FROM Countries";
+
+                Helper.logger.WriteToProcessLog("CountryRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<CountryEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CountryRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
@@ -60,6 +68,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 INSERT INTO Countries(CountryCode, CountryName)
                 VALUES (@CountryCode, @CountryName)";
 
+                Helper.logger.WriteToProcessLog("CountryRepo.Create Started for code: " + entity.CountryCode + " full query = " + query);
+
                 int rowsAffected = _dbConnection.Execute(query, new
                 {
                     CountryCode = entity.CountryCode,
@@ -69,8 +79,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CountryRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
@@ -83,32 +94,45 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SET CountryCode = @CountryCode
                 , CountryName = @CountryName
                 WHERE CountryID = @CountryID";
+
+                Helper.logger.WriteToProcessLog("CountryRepo.Update Started for ID: " + entity.CountryID.ToString() + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     CountryCode = entity.CountryCode,
-                    CountryName = entity.CountryName,                    
+                    CountryName = entity.CountryName,
                     CountryID = entity.CountryID
                 });
                 if (i >= 1)
                     return true;
                 return false;
             }
-            catch(Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CountryRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
 
         public bool Delete(CountryEntity entity)
         {
-            throw new NotImplementedException();     
+            throw new NotImplementedException();
         }
         #endregion
 
         #region ICountryRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CountryID),0)+1 FROM Countries");
+            try
+            {
+                Helper.logger.WriteToProcessLog("CountryRepo.GetNextAvailableID Started");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CountryID),0)+1 FROM Countries");
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in CountryRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public CountryEntity GetByCode(string code)
         {
@@ -118,13 +142,17 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [CountryID], [CountryCode],[CountryName]
                 FROM Countries 
                 WHERE CountryCode = @CountryCode";
+
+                Helper.logger.WriteToProcessLog("Country.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CountryEntity>(query, new { CountryCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CountryRepo.GetByCode: " + ex.Message, this);
                 return null;
             }
         }
         #endregion
-    }    
+    }
 }

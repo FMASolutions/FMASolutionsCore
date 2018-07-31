@@ -28,10 +28,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 FROM PostCodes
                 WHERE PostCodeID = @PostCodeID
                 ";
+
+                Helper.logger.WriteToProcessLog("PostCodeRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<PostCodeEntity>(query, new { PostCodeID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in PostCodeRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
@@ -42,10 +46,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [PostCodeID],[PostCodeCode],[CityID],[PostCodeValue]
                 FROM PostCodes";
+
+                Helper.logger.WriteToProcessLog("PostCodeRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<PostCodeEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in PostCodeRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
@@ -58,18 +66,21 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 INSERT INTO PostCodes([PostCodeCode],[CityID],[PostCodeValue])
                 VALUES (@PostCodeCode, @CityID, @PostCodeValue)";
 
+                Helper.logger.WriteToProcessLog("PostCodeRepo.Create Started for VALUE: " + entity.PostCodeValue + " full query = " + query);
+
                 int rowsAffected = _dbConnection.Execute(query, new
                 {
                     PostCodeCode = entity.PostCodeCode,
                     CityID = entity.CityID,
-                    PostCodeValue = entity.PostCodeValue                    
+                    PostCodeValue = entity.PostCodeValue
                 });
                 if (rowsAffected > 0)
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in PostCodeRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
@@ -84,19 +95,23 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , CityID = @CityID
                 , PostCodeValue = @PostCodeValue
                 WHERE PostCodeID = @PostCodeID";
+
+                Helper.logger.WriteToProcessLog("PostCodeRepo.Update Started for ID: " + entity.PostCodeID.ToString() + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     PostCodeCode = entity.PostCodeCode,
                     CityID = entity.CityID,
-                    PostCodeValue = entity.PostCodeValue,  
+                    PostCodeValue = entity.PostCodeValue,
                     PostCodeID = entity.PostCodeID
                 });
                 if (i >= 1)
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in PostCodeRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
@@ -110,7 +125,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #region IPostCodeRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(PostCodeID),0)+1 FROM PostCodes");
+            try
+            {
+                Helper.logger.WriteToProcessLog("PostCodeRepo.GetNextAvailableID Started");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(PostCodeID),0)+1 FROM PostCodes");
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in PostCodeRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public PostCodeEntity GetByCode(string code)
         {
@@ -120,10 +144,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [PostCodeID],[PostCodeCode],[CityID],[PostCodeValue]
                 FROM PostCodes
                 WHERE PostCodeCode = @PostCodeCode";
+
+                Helper.logger.WriteToProcessLog("PostCodeRepo.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<PostCodeEntity>(query, new { PostCodeCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in PostCodeRepo.GetByCode: " + ex.Message, this);
                 return null;
             }
         }

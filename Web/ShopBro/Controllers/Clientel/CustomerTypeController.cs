@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            _model = GetNewModel();
             CustomerTypeSearchViewModel vmSearch = new CustomerTypeSearchViewModel();
             return View("Search", vmSearch);
         }
@@ -28,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             CustomerTypeSearchViewModel vmSearch = new CustomerTypeSearchViewModel();
             vmSearch.CustomerTypeID = id;
             return ProcessSearch(vmSearch);
@@ -36,6 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CustomerTypeSearchViewModel vmInput)
         {
+            _model = GetNewModel();
             CustomerTypeViewModel vmCustomerType = new CustomerTypeViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -53,10 +56,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(CustomerTypeViewModel vmInput)
         {
+            _model = GetNewModel();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
+            _model = GetNewModel();
             return View(_model.GetAllCustomerTypes());
         }
 
@@ -64,12 +69,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             return View();
         }
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CustomerTypeViewModel vm)
         {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 vm = _model.Create(vm);
@@ -83,6 +90,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CustomerTypeViewModel vm)
         {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vm))
@@ -95,6 +103,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vm.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vm);
+        }
+
+        private CustomerTypeModel GetNewModel()
+        {
+            return new CustomerTypeModel(new ModelStateConverter(this).Convert(),_service);
         }
     }
 }

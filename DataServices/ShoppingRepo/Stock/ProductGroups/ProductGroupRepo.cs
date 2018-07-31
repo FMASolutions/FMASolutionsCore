@@ -11,7 +11,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         {
             _dbConnection = connection;
         }
-
         public void Dispose()
         {
             _dbConnection.Dispose();
@@ -27,11 +26,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [ProductGroupID], [ProductGroupCode],[ProductGroupName],[ProductGroupDescription] 
                 FROM ProductGroups 
-                WHERE ProductGroupID = @ProductGroupID";
+                WHERE ProductGroupID = @ProductGroupID
+                ";
+
+                Helper.logger.WriteToProcessLog("ProductGroupRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<ProductGroupEntity>(query, new { ProductGroupID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in ProductGroupRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
@@ -42,15 +46,18 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [ProductGroupID], [ProductGroupCode],[ProductGroupName],[ProductGroupDescription] 
                 FROM ProductGroups";
+
+                Helper.logger.WriteToProcessLog("ProductGroupRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<ProductGroupEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in ProductGroupRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
 
-        //These 3 should be moved to IUnit of Work
         public bool Create(ProductGroupEntity entity)
         {
             try
@@ -58,6 +65,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 INSERT INTO ProductGroups(ProductGroupCode, ProductGroupName, ProductGroupDescription)
                 VALUES (@ProdGroupCode, @ProdGroupName, @ProdGroupDescription)";
+
+                Helper.logger.WriteToProcessLog("ProductGroupRepo.Create Started for code: " + entity.ProductGroupCode + " full query = " + query);
 
                 int rowsAffected = _dbConnection.Execute(query, new
                 {
@@ -69,8 +78,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in ProductGroupRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
@@ -84,6 +94,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , ProductGroupName = @ProductGroupName
                 , ProductGroupDescription = @ProductGroupDescription
                 WHERE ProductGroupID = @ProductGroupID";
+
+                Helper.logger.WriteToProcessLog("ProductGroupRepo.Update Started for ID: " + entity.ProductGroupID.ToString() + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     ProductGroupCode = entity.ProductGroupCode,
@@ -95,22 +108,33 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch(Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in ProductGroupRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
 
         public bool Delete(ProductGroupEntity entity)
         {
-            throw new NotImplementedException();     
+            throw new NotImplementedException();
         }
         #endregion
 
         #region IProductGroupRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ProductGroupID),0)+1 FROM ProductGroups");
+            try
+            {
+                Helper.logger.WriteToProcessLog("ProductGroupRepo.GetNextAvailableID Started");
+
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ProductGroupID),0)+1 FROM ProductGroups");
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in ProductGroupRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public ProductGroupEntity GetByCode(string code)
         {
@@ -120,10 +144,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [ProductGroupID], [ProductGroupCode],[ProductGroupName],[ProductGroupDescription] 
                 FROM ProductGroups 
                 WHERE ProductGroupCode = @ProductGroupCode";
+
+                Helper.logger.WriteToProcessLog("ProductGroupRepo.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<ProductGroupEntity>(query, new { ProductGroupCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in ProductGroupRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }

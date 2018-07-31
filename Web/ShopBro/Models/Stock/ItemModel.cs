@@ -68,7 +68,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
 
         public ItemViewModel Create(ItemViewModel newModel, IFormFile uploadFile, IHostingEnvironment he)
-        {
+        {            
             UploadAndUpdateImage(newModel, uploadFile, he);
             Item item = ConvertToModel(newModel);
             item.ItemID = 0; //NOT 100% SURE I NEED THIS????????????
@@ -77,10 +77,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             if (_itemService.CreateNew(item))
                 vmReturn = ConvertToViewModel(item);
             else
-            {
-                newModel.StatusErrorMessage = "Unable to create subgroup";
+            {                
                 foreach (string message in item.ModelState.ErrorDictionary.Values)
-                    newModel.StatusErrorMessage += " " + message;
+                    vmReturn.StatusErrorMessage += " " + message;
             }
             return vmReturn;
         }
@@ -132,15 +131,15 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         private void UploadAndUpdateImage(ItemViewModel newModel, IFormFile uploadFile, IHostingEnvironment he)
         {
-            if (uploadFile != null && uploadFile.Length > 0)
+            if (uploadFile != null && uploadFile.FileName.Length > 0)
             {
                 var uploads = System.IO.Path.Combine(he.WebRootPath, "SiteAssets/images/Items");
-                var filePath = System.IO.Path.Combine(uploads, uploadFile.FileName);
+                var filePath = System.IO.Path.Combine(uploads, newModel.ItemCode + uploadFile.FileName);                
                 using (var stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
                 {
                     uploadFile.CopyTo(stream);
                 }
-                newModel.ItemImageFilename = uploadFile.FileName;
+                newModel.ItemImageFilename = newModel.ItemCode + uploadFile.FileName;
             }
             else if (string.IsNullOrEmpty(newModel.ItemImageFilename) && uploadFile == null)
                 newModel.ItemImageFilename = "Default.png";

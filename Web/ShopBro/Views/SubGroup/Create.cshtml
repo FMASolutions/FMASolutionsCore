@@ -36,6 +36,7 @@
                         "- Select Product Group -",
                         new { @class = "form-control" } 
                     )
+                    @Html.ValidationMessageFor(model => model.ProductGroupID, "", new { Class = "error-text" })        
                 </div>
             </div>
         </div>

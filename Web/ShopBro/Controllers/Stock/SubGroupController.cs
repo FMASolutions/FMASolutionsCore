@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            _model = GetNewModel();
             SubGroupSearchViewModel vmInput = new SubGroupSearchViewModel();
             return View("Search", vmInput);
         }
@@ -28,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             SubGroupSearchViewModel vmInput = new SubGroupSearchViewModel();
             vmInput.SubGroupID = id;
             return ProcessSearch(vmInput);
@@ -35,7 +37,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         [HttpPost]
         public IActionResult ProcessSearch(SubGroupSearchViewModel vmInput)
-        {            
+        {       
+            _model = GetNewModel();     
             SubGroupViewModel vmSubGroup = new SubGroupViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -55,11 +58,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(SubGroupViewModel vmInput)
         {
+            _model = GetNewModel();
             vmInput.AvailableProductGroups = _model.GetAvailableProductGroups();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
-        {            
+        {          
+            _model = GetNewModel();  
             return View(_model.GetAllSubGroups());
         }
 
@@ -67,6 +72,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             SubGroupViewModel vm = new SubGroupViewModel();            
             vm.AvailableProductGroups = _model.GetAvailableProductGroups();
             if (vm.AvailableProductGroups.Count > 0)
@@ -78,7 +84,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(SubGroupViewModel vmInput)
-        {            
+        {      
+            _model = GetNewModel();      
             SubGroupViewModel vmResult = new SubGroupViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -96,7 +103,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Update(SubGroupViewModel vmInput)
-        {            
+        {         
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vmInput))
@@ -110,6 +118,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
+        }
+
+        private SubGroupModel GetNewModel()
+        {
+            return new SubGroupModel(new ModelStateConverter(this).Convert(), _service);
         }
     }
 }

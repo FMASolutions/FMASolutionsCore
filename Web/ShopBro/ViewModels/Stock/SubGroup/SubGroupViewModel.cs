@@ -16,9 +16,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
 
         [DisplayName("Sub Group ID ( 1 - 9,999,999 ) ")]
         public Int32 SubGroupID { get; set; }
-
-        [Range(1, 9999999, ErrorMessage = "Product Group Should be between 1 and 9,999,999")]
-        [DisplayName("Product Group ID ( 1 - 9,999,999 ) ")]
+          
         public Int32 ProductGroupID { get; set; }
 
         [Required(ErrorMessage = "Sub Group Code is Required")]

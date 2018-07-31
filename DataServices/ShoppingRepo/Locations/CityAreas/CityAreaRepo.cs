@@ -28,10 +28,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 FROM CityAreas
                 WHERE CityAreaID = @CityAreaID
                 ";
+
+                Helper.logger.WriteToProcessLog("CityAreaRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CityAreaEntity>(query, new { CityAreaID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityAreaRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
@@ -42,10 +46,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [CityAreaID], [CityAreaCode], [CityID], [CityAreaName]
                 FROM CityAreas";
+
+                Helper.logger.WriteToProcessLog("CityAreaRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<CityAreaEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityAreaRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
@@ -58,18 +66,21 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 INSERT INTO CityAreas([CityAreaCode], [CityID], [CityAreaName])
                 VALUES (@CityAreaCode, @CityID, @CityAreaName)";
 
+                Helper.logger.WriteToProcessLog("CityAreaRepo.Create Started for code: " + entity.CityAreaCode + " full query = " + query);
+
                 int rowsAffected = _dbConnection.Execute(query, new
                 {
                     CityAreaCode = entity.CityAreaCode,
                     CityID = entity.CityID,
-                    CityAreaName = entity.CityAreaName                    
+                    CityAreaName = entity.CityAreaName
                 });
                 if (rowsAffected > 0)
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityAreaRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
@@ -84,19 +95,23 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , CityID = @CityID
                 , CityAreaName = @CityAreaName                
                 WHERE CityAreaID = @CityAreaID";
+
+                Helper.logger.WriteToProcessLog("CityAreaRepo.Update Started for ID: " + entity.CityAreaID.ToString() + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     CityAreaCode = entity.CityAreaCode,
                     CityID = entity.CityID,
-                    CityAreaName = entity.CityAreaName,                    
+                    CityAreaName = entity.CityAreaName,
                     CityAreaID = entity.CityAreaID
                 });
                 if (i >= 1)
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityAreaRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
@@ -110,7 +125,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #region ICityAreaRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CityAreaID),0)+1 FROM CityAreas");
+            try
+            {
+                Helper.logger.WriteToProcessLog("CityAreaRepo.GetNextAvailableID Started");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CityAreaID),0)+1 FROM CityAreas");
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in CityAreaRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public CityAreaEntity GetByCode(string code)
         {
@@ -120,10 +144,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [CityAreaID], [CityAreaCode], [CityID], [CityAreaName]
                 FROM CityAreas
                 WHERE CityAreaCode = @CityAreaCode";
+
+                Helper.logger.WriteToProcessLog("CityAreaRepo.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<CityAreaEntity>(query, new { CityAreaCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in CityAreaRepo.GetByCode: " + ex.Message, this);
                 return null;
             }
         }

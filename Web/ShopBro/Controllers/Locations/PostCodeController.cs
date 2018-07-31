@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            _model = GetNewModel();
             PostCodeSearchViewModel vmInput = new PostCodeSearchViewModel();
             return View("Search", vmInput);
         }
@@ -28,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             PostCodeSearchViewModel vmInput = new PostCodeSearchViewModel();
             vmInput.PostCodeID = id;
             return ProcessSearch(vmInput);
@@ -36,6 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(PostCodeSearchViewModel vmInput)
         {
+            _model = GetNewModel();
             PostCodeViewModel vmPostCode = new PostCodeViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -56,11 +59,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(PostCodeViewModel vmInput)
         {
+            _model = GetNewModel();
             vmInput.AvailableCities = _model.GetAvailableCities();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
+            _model = GetNewModel();
             return View(_model.GetAllPostCodes());
         }
 
@@ -68,6 +73,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             PostCodeViewModel vm = new PostCodeViewModel();
             vm.AvailableCities = _model.GetAvailableCities();
             if (vm.AvailableCities.Count > 0)
@@ -80,6 +86,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(PostCodeViewModel vmInput)
         {
+            _model = GetNewModel();
             PostCodeViewModel vmResult = new PostCodeViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -98,6 +105,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(PostCodeViewModel vmInput)
         {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vmInput))
@@ -111,6 +119,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
+        }
+
+        private PostCodeModel GetNewModel()
+        {
+            return new PostCodeModel(new ModelStateConverter(this).Convert(), _service);
         }
     }
 }

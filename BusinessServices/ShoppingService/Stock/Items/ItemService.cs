@@ -65,7 +65,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                         _uow.SaveChanges();
                     }
                     else
-                        model.ModelState.AddError("CreateFailed", "Unable to create Item");
+                        model.ModelState.AddError("CreateFailed", "Failed to create Item");
                 }
                 return success;
             }

@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            _model = GetNewModel();
             CityAreaSearchViewModel vmInput = new CityAreaSearchViewModel();
             return View("Search", vmInput);
         }
@@ -28,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             CityAreaSearchViewModel vmInput = new CityAreaSearchViewModel();
             vmInput.CityAreaID = id;
             return ProcessSearch(vmInput);
@@ -36,7 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CityAreaSearchViewModel vmInput)
         {
-            ;
+            _model = GetNewModel();
             CityAreaViewModel vmCityArea = new CityAreaViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -57,11 +59,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(CityAreaViewModel vmInput)
         {
+            _model = GetNewModel();
             vmInput.AvailableCities = _model.GetAvailableCities();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
+            _model = GetNewModel();
             return View(_model.GetAllCityAreas());
         }
 
@@ -69,6 +73,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             CityAreaViewModel vm = new CityAreaViewModel();
             vm.AvailableCities = _model.GetAvailableCities();
             if (vm.AvailableCities.Count > 0)
@@ -81,6 +86,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(CityAreaViewModel vmInput)
         {
+            _model = GetNewModel();
             CityAreaViewModel vmResult = new CityAreaViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -99,6 +105,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(CityAreaViewModel vmInput)
         {
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vmInput))
@@ -112,6 +119,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
+        }
+
+        private CityAreaModel GetNewModel()
+        {
+            return new CityAreaModel(new ModelStateConverter(this).Convert(), _service);
         }
     }
 }

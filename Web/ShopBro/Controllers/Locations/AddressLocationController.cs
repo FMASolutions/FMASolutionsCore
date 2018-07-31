@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            _model = GetNewModel();
             AddressLocationSearchViewModel vmInput = new AddressLocationSearchViewModel();
             return View("Search", vmInput);
         }
@@ -28,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            _model = GetNewModel();
             AddressLocationSearchViewModel vmInput = new AddressLocationSearchViewModel();
             vmInput.AddressLocationID = id;
             return ProcessSearch(vmInput);
@@ -36,6 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(AddressLocationSearchViewModel vmInput)
         {
+            _model = GetNewModel();
             AddressLocationViewModel vmAddressLocation = new AddressLocationViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -56,13 +59,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(AddressLocationViewModel vmInput)
-        {            
+        {         
+            _model = GetNewModel();   
             vmInput.AvailableCityAreas = _model.GetAvailableCityAreas();
             vmInput.AvailablePostCodes = _model.GetAvailablePostCodes();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
+            _model = GetNewModel();
             return View(_model.GetAllAddressLocations());
         }
 
@@ -70,6 +75,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            _model = GetNewModel();
             AddressLocationViewModel vm = new AddressLocationViewModel();
             vm.AvailableCityAreas = _model.GetAvailableCityAreas();
             vm.AvailablePostCodes = _model.GetAvailablePostCodes();
@@ -83,7 +89,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(AddressLocationViewModel vmInput)
-        {            
+        {         
+            //_model = GetNewModel();
             AddressLocationViewModel vmResult = new AddressLocationViewModel();
             if (_model.ModelState.IsValid)
             {
@@ -103,7 +110,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Update(AddressLocationViewModel vmInput)
-        {            
+        {     
+            _model = GetNewModel();       
             if (_model.ModelState.IsValid)
             {
                 if (_model.UpdateDB(vmInput))
@@ -118,6 +126,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
             }
             return View("DisplayForUpdate", vmInput);
+        }
+
+        private AddressLocationModel GetNewModel()
+        {
+            return new AddressLocationModel(new ModelStateConverter(this).Convert(),_service);
         }
     }
 }

@@ -28,10 +28,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 FROM AddressLocations
                 WHERE AddressLocationID = @AddressLocationID
                 ";
+
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
+
                 return _dbConnection.QueryFirst<AddressLocationEntity>(query, new { AddressLocationID = id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetByID: " + ex.Message, this);
                 return null;
             }
         }
@@ -42,10 +46,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCodeID]
                 FROM AddressLocations";
+
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetAll Started: " + query);
+
                 return _dbConnection.Query<AddressLocationEntity>(query);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetAll: " + ex.Message, this);
                 return null;
             }
         }
@@ -57,6 +65,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 INSERT INTO AddressLocations([AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCodeID])
                 VALUES (@AddressLocationCode, @AddressLine1, @AddressLine2, @CityAreaID, @PostCodeID)";
+
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.Create Started for code: " + entity.AddressLocationCode + " full query = " + query);
 
                 int rowsAffected = _dbConnection.Execute(query, new
                 {
@@ -70,8 +80,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.Create: " + ex.Message, this);
                 return false;
             }
         }
@@ -88,6 +99,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , CityAreaID = @CityAreaID
                 , PostCodeID = @PostCodeID
                 WHERE AddressLocationID = @AddressLocationID";
+
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.Update Started for ID: " + entity.AddressLocationID.ToString() + " full query = " + query);
+
                 int i = _dbConnection.Execute(query, new
                 {
                     AddressLocationCode = entity.AddressLocationCode,
@@ -101,8 +115,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     return true;
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.Update: " + ex.Message, this);
                 return false;
             }
         }
@@ -116,7 +131,16 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #region IAddressLocationRepo
         public Int32 GetNextAvailableID()
         {
-            return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(AddressLocationID),0)+1 FROM AddressLocations");
+            try
+            {
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetNextAvailableID Started");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(AddressLocationID),0)+1 FROM AddressLocations");
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetNextAvailableID: " + ex.Message, this);
+                return -1;
+            }
         }
         public AddressLocationEntity GetByCode(string code)
         {
@@ -126,10 +150,14 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCodeID]
                 FROM AddressLocations
                 WHERE AddressLocationCode = @AddressLocationCode";
+
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetByCode Started for Code: " + code + " full query = " + query);
+
                 return _dbConnection.QueryFirst<AddressLocationEntity>(query, new { AddressLocationCode = code });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetByCode: " + ex.Message, this);
                 return null;
             }
         }

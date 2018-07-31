@@ -36,6 +36,7 @@
                         "- Select City -",
                         new { @class = "form-control" } 
                     )
+                    @Html.ValidationMessageFor(model => model.CityID, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
