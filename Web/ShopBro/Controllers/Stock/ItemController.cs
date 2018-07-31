@@ -16,7 +16,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             _service = service;
             _hostingEnv = he;
-            _model = new ItemModel(new ModelStateConverter(this).Convert(),service);
+            _model = new ItemModel(new ModelStateConverter(this).Convert(), service);
         }
         private IItemService _service;
         private IHostingEnvironment _hostingEnv;
@@ -42,7 +42,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult ProcessSearch(ItemSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("ItemController.ProcessSearch Started");
-            _model = GetNewModel();     
+            _model = GetNewModel();
             ItemViewModel vmSearchResult = new ItemViewModel();
 
             if (_model.ModelState.IsValid)
@@ -51,7 +51,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 vmSearchResult = _model.Search(vmInput.ItemID, vmInput.ItemCode);
                 if (vmSearchResult.ItemID > 0)
                 {
-                    Program.loggerExtension.WriteToUserRequestLog("ItemController.ProcessSearch Item Found: " + vmSearchResult.ItemID.ToString() );
+                    Program.loggerExtension.WriteToUserRequestLog("ItemController.ProcessSearch Item Found: " + vmSearchResult.ItemID.ToString());
                     vmSearchResult.AvailableSubGroups = _model.GetAvailableSubGroups();
                     return View("Display", vmSearchResult);
                 }
@@ -63,9 +63,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
 
         public IActionResult DisplayAll()
-        {     
-            Program.loggerExtension.WriteToUserRequestLog("ItemController.DisplayAll Request Received");  
-            _model = GetNewModel();     
+        {
+            Program.loggerExtension.WriteToUserRequestLog("ItemController.DisplayAll Request Received");
+            _model = GetNewModel();
             return View(_model.GetAllItems());
         }
 
@@ -73,9 +73,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(ItemViewModel vmInput)
         {
-            Program.loggerExtension.WriteToUserRequestLog("ItemController.DisplayForUpdate POST Request Received For Item ID: " + vmInput.ItemID.ToString());
+            Program.loggerExtension.WriteToUserRequestLog("ItemController.DisplayForUpdate POST Request Received For ID: " + vmInput.ItemID.ToString());
             _model = GetNewModel();
-            ItemViewModel vm = _model.Search(vmInput.ItemID, vmInput.ItemCode);            
+            ItemViewModel vm = _model.Search(vmInput.ItemID, vmInput.ItemCode);
             return View(vm);
         }
 
@@ -85,7 +85,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("ItemController.Create GET Request Received");
             _model = GetNewModel();
-            ItemViewModel vm = new ItemViewModel();            
+            ItemViewModel vm = new ItemViewModel();
             vm.AvailableSubGroups = _model.GetAvailableSubGroups();
             if (vm.AvailableSubGroups.Count > 0)
                 return View(vm);
@@ -96,13 +96,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult Create(ItemViewModel vmInput, IFormFile uploadFile = null)
-        {   
+        {
             Program.loggerExtension.WriteToUserRequestLog("ItemController.Create POST Request Received");
-            _model = GetNewModel();        
+            _model = GetNewModel();
             ItemViewModel vmResult = new ItemViewModel();
             if (_model.ModelState.IsValid)
             {
-                Program.loggerExtension.WriteToUserRequestLog("ItemController.Create POST Request For: " +  vmInput.ItemCode.ToString());
                 vmResult = _model.Create(vmInput, uploadFile, _hostingEnv);
 
                 if (vmResult.ItemID > 0)
@@ -114,36 +113,35 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             Program.loggerExtension.WriteToUserRequestLog("ItemController.Create Failed, Reason: " + vmResult.StatusErrorMessage);
             vmInput.AvailableSubGroups = _model.GetAvailableSubGroups();
             vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
-            
+
             return View(vmInput);
         }
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
-        public IActionResult Update(ItemViewModel vmInputs, IFormFile UploadFile = null)
-        {          
+        public IActionResult Update(ItemViewModel vmInput, IFormFile UploadFile = null)
+        {
             Program.loggerExtension.WriteToUserRequestLog("ItemController.Update POST Request Received");
-            _model = GetNewModel();  
+            _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
-                Program.loggerExtension.WriteToUserRequestLog("ItemController.Update POST Request For: " + vmInputs.ItemCode);
-                if (_model.UpdateDB(vmInputs, UploadFile, _hostingEnv))
+                if (_model.UpdateDB(vmInput, UploadFile, _hostingEnv))
                 {
-                    Program.loggerExtension.WriteToUserRequestLog("ItemController.Update POST Request For: " + vmInputs.ItemCode + " successful!");
-                    vmInputs.StatusErrorMessage = "Update Processed";
-                    vmInputs.AvailableSubGroups = _model.GetAvailableSubGroups();
-                    return View("Display", vmInputs);
+                    Program.loggerExtension.WriteToUserRequestLog("ItemController.Update POST Request For: " + vmInput.ItemCode + " successful!");
+                    vmInput.StatusErrorMessage = "Update Processed";
+                    vmInput.AvailableSubGroups = _model.GetAvailableSubGroups();
+                    return View("Display", vmInput);
                 }
                 else
-                {                    
+                {
                     foreach (string item in _model.ModelState.ErrorDictionary.Values)
                     {
-                        vmInputs.StatusErrorMessage += item + " ";
+                        vmInput.StatusErrorMessage += item + " ";
                     }
-                    Program.loggerExtension.WriteToUserRequestLog("ItemController.Update Failed, Reason: " + vmInputs.StatusErrorMessage);
+                    Program.loggerExtension.WriteToUserRequestLog("ItemController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
                 }
             }
-            return View("DisplayForUpdate", vmInputs);
+            return View("DisplayForUpdate", vmInput);
         }
 
         private ItemModel GetNewModel()

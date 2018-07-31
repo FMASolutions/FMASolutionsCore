@@ -21,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult Index()
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.Index Request Received");
             _model = GetNewModel();
             CountrySearchViewModel vmSearch = new CountrySearchViewModel();
             return View("Search", vmSearch);
@@ -29,6 +30,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id = 0)
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.Search Request Received with ID = " + id.ToString());
             _model = GetNewModel();
             CountrySearchViewModel vmSearch = new CountrySearchViewModel();
             vmSearch.CountryID = id;
@@ -38,6 +40,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(CountrySearchViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.ProcessSearch Started");
             _model = GetNewModel();
             CountryViewModel vmCountry = new CountryViewModel();
             if (_model.ModelState.IsValid)
@@ -45,8 +48,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 ModelState.Clear();
                 vmCountry = _model.Search(vmInput.CountryID, vmInput.CountryCode);
                 if (vmCountry.CountryID > 0)
+                {
+                    Program.loggerExtension.WriteToUserRequestLog("CountryController.ProcessSearch Item Found: " + vmCountry.CountryID.ToString());
                     return View("Display", vmCountry);
+                }
             }
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.ProcessSearch No Item Found ");
             CountrySearchViewModel searchVM = new CountrySearchViewModel();
             searchVM.StatusErrorMessage = vmCountry.StatusErrorMessage;
             return View("Search", searchVM);
@@ -56,11 +63,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(CountryViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.DisplayForUpdate POST Request Received For ID: " + vmInput.CountryID.ToString());
             _model = GetNewModel();
             return View(vmInput);
         }
         public IActionResult DisplayAll()
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.DisplayAll Request Received");
             _model = GetNewModel();
             return View(_model.GetAllCountries());
         }
@@ -69,42 +78,55 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.Create GET Request Received");
             _model = GetNewModel();
             return View();
         }
         [HttpPost]
         [Authorize(Policy = "Admin")]
-        public IActionResult Create(CountryViewModel vm)
+        public IActionResult Create(CountryViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.Create POST Request Received");
             _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
-                vm = _model.Create(vm);
-                if (vm.CountryID > 0)
-                    return View("Display", vm);
+                vmInput = _model.Create(vmInput);
+                if (vmInput.CountryID > 0)
+                {
+                    Program.loggerExtension.WriteToUserRequestLog("CountryController.Create Complete successfully for Code: " + vmInput.CountryCode);
+                    return View("Display", vmInput);
+                }
             }
-            return View(vm);
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
+            return View(vmInput);
         }
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
-        public IActionResult Update(CountryViewModel vm)
+        public IActionResult Update(CountryViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("CountryController.Update POST Request Received");
             _model = GetNewModel();
             if (_model.ModelState.IsValid)
             {
-                if (_model.UpdateDB(vm))
+                if (_model.UpdateDB(vmInput))
                 {
-                    vm.StatusErrorMessage = "Update processed";
-                    return View("Display", vm);
+                    Program.loggerExtension.WriteToUserRequestLog("CountryController.Update POST Request For: " + vmInput.CountryCode + " successful!");
+                    vmInput.StatusErrorMessage = "Update processed";
+                    return View("Display", vmInput);
                 }
                 else
+                {
                     foreach (string item in _model.ModelState.ErrorDictionary.Values)
-                        vm.StatusErrorMessage += item + " ";
+                    {
+                        vmInput.StatusErrorMessage += item + " ";
+                    }
+                    Program.loggerExtension.WriteToUserRequestLog("CountryController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                }
             }
-            return View("DisplayForUpdate", vm);
+            return View("DisplayForUpdate", vmInput);
         }
-        
+
         private CountryModel GetNewModel()
         {
             return new CountryModel(new ModelStateConverter(this).Convert(), _service);
