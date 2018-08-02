@@ -139,6 +139,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
                     
                     Program.loggerExtension.WriteToUserRequestLog("ItemController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
                     return View("DisplayForUpdate", vmInput);
                 }
             }

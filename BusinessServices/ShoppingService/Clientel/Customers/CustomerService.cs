@@ -78,7 +78,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             catch (Exception ex)
             {
-                model.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
+                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
                 return false;
             }
         }
@@ -149,14 +149,15 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             if (model.ModelState.IsValid)
             {
-                if (model.CustomerCode.Length > 5)
-                {
-                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
-                    return false;
-                }
-                else if (string.IsNullOrEmpty(model.CustomerCode) || string.IsNullOrEmpty(model.CustomerName) || string.IsNullOrEmpty(model.CustomerContactNumber) || string.IsNullOrEmpty(model.CustomerName) || model.CustomerTypeID <= 0)
+                
+                if (string.IsNullOrEmpty(model.CustomerCode) || string.IsNullOrEmpty(model.CustomerName) || string.IsNullOrEmpty(model.CustomerContactNumber) || string.IsNullOrEmpty(model.CustomerName) || model.CustomerTypeID <= 0)
                 {
                     model.ModelState.AddError("NullValues", "All values must be populated...");
+                    return false;
+                }
+                else if (model.CustomerCode.Length > 5)
+                {
+                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
                     return false;
                 }
                 else if (CodeExists(model.CustomerCode))

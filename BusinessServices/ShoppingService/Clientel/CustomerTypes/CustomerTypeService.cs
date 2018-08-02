@@ -73,7 +73,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             catch (Exception ex)
             {
-                model.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
+                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
                 return false;
             }
         }
@@ -182,15 +182,15 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private bool ValidateForCreate(CustomerType model)
         {
             if (model.ModelState.IsValid)
-            {
-                if (model.CustomerTypeCode.Length > 5)
-                {
-                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
-                    return false;
-                }
-                else if (string.IsNullOrEmpty(model.CustomerTypeCode) || string.IsNullOrEmpty(model.CustomerTypeName))
+            {                
+                if (string.IsNullOrEmpty(model.CustomerTypeCode) || string.IsNullOrEmpty(model.CustomerTypeName))
                 {
                     model.ModelState.AddError("NullValues", "All values must be populated...");
+                    return false;
+                }
+                else if (model.CustomerTypeCode.Length > 5)
+                {
+                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
                     return false;
                 }
                 else if (CodeExists(model.CustomerTypeCode))

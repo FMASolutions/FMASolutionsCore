@@ -136,6 +136,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
 
                     Program.loggerExtension.WriteToUserRequestLog("CityController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    vmInput.AvailableCountries = model.GetAvailableCountries();
                     return View("DisplayForUpdate", vmInput);
                 }
             }

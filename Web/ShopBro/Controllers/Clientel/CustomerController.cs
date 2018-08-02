@@ -136,6 +136,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
                         
                     Program.loggerExtension.WriteToUserRequestLog("CustomerController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
                     return View("DisplayForUpdate", vmInput);
                 }
             }

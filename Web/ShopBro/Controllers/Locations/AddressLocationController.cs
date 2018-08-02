@@ -142,6 +142,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                         vmInput.StatusErrorMessage += item + " ";
 
                     Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
+                    vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
+                    vmInput.postCodeToCreate.AvailableCities = model.GetAvailableCities();
                     return View("DisplayForUpdate", vmInput);
                 }
             }

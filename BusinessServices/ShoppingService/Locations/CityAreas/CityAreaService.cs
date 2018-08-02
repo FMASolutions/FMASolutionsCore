@@ -80,7 +80,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             catch (Exception ex)
             {
-                model.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
+                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
                 return false;
             }
         }
@@ -152,16 +152,17 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             if (model.ModelState.IsValid)
             {
-                if (model.CityAreaCode.Length > 5)
-                {
-                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
-                    return false;
-                }
-                else if (string.IsNullOrEmpty(model.CityAreaCode) || string.IsNullOrEmpty(model.CityAreaName) ||model.CityID <= 0)
+                if (string.IsNullOrEmpty(model.CityAreaCode) || string.IsNullOrEmpty(model.CityAreaName) ||model.CityID <= 0)
                 {
                     model.ModelState.AddError("NullValues", "All values must be populated...");
                     return false;
                 }
+                else if (model.CityAreaCode.Length > 5)
+                {
+                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
+                    return false;
+                }
+                
                 else if (CodeExists(model.CityAreaCode))
                 {
                     model.ModelState.AddError("CodeExists", "The code provided already exists and must be unique.");

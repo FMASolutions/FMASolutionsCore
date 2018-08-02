@@ -163,15 +163,15 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private bool ValidateForCreate(Item model)
         {
             if (model.ModelState.IsValid)
-            {
-                if (model.ItemCode.Length > 5)
-                {
-                    model.ModelState.AddError("CodeLength", "Code should not be greater than 5 characters");
-                    return false;
-                }
-                else if (string.IsNullOrEmpty(model.ItemCode) || model.SubGroupID <= 0 || string.IsNullOrEmpty(model.ItemName) || string.IsNullOrEmpty(model.ItemDescription) || model.ItemUnitPrice <= 0 || model.ItemUnitPriceWithMaxDiscount <= 0 || model.ItemAvailableQty <= 0 || model.ItemReorderQtyReminder <= 0 || string.IsNullOrEmpty(model.ItemImageFilename))
+            {                
+                if (string.IsNullOrEmpty(model.ItemCode) || model.SubGroupID <= 0 || string.IsNullOrEmpty(model.ItemName) || string.IsNullOrEmpty(model.ItemDescription) || model.ItemUnitPrice <= 0 || model.ItemUnitPriceWithMaxDiscount <= 0 || model.ItemAvailableQty <= 0 || model.ItemReorderQtyReminder <= 0 || string.IsNullOrEmpty(model.ItemImageFilename))
                 {
                     model.ModelState.AddError("MissingValue", "One or more values are missing");
+                    return false;
+                }
+                else if (model.ItemCode.Length > 5)
+                {
+                    model.ModelState.AddError("CodeLength", "Code should not be greater than 5 characters");
                     return false;
                 }
                 else if (CodeExists(model.ItemCode))

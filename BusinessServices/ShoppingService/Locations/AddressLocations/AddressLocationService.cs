@@ -86,7 +86,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             catch (Exception ex)
             {
-                model.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
+                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
                 return false;
             }
         }
@@ -110,8 +110,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             catch (Exception ex)
             {
-                newAddress.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
-                newPostCode.ModelState.AddError(ex.InnerException.GetType().ToString(), ex.Message);
+                newAddress.ModelState.AddError(ex.GetType().ToString(), ex.Message);
+                newPostCode.ModelState.AddError(ex.GetType().ToString(), ex.Message);
                 return false;
             }
         }
@@ -203,16 +203,17 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             if (model.ModelState.IsValid)
             {
-                if (model.AddressLocationCode.Length > 5)
-                {
-                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
-                    return false;
-                }
-                else if (string.IsNullOrEmpty(model.AddressLocationCode) || string.IsNullOrEmpty(model.AddressLine1) || string.IsNullOrEmpty(model.AddressLine2) || model.CityAreaID <= 0 || model.PostCodeID <= 0)
+                if (string.IsNullOrEmpty(model.AddressLocationCode) || string.IsNullOrEmpty(model.AddressLine1) || string.IsNullOrEmpty(model.AddressLine2) || model.CityAreaID <= 0 || model.PostCodeID <= 0)
                 {
                     model.ModelState.AddError("NullValues", "All values must be populated...");
                     return false;
                 }
+                else if (model.AddressLocationCode.Length > 5)
+                {
+                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
+                    return false;
+                }
+                
                 else if (CodeExists(model.AddressLocationCode))
                 {
                     model.ModelState.AddError("CodeExists", "The code provided already exists and must be unique.");
