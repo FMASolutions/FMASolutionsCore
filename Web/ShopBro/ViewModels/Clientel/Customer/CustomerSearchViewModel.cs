@@ -12,8 +12,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             this.CustomerCode = "";
         }
 
-        [Range(1, 9999999, ErrorMessage = "ID Should be between 1 and 9,999,999")]
-        [DisplayName(" ID ( 1 - 9,999,999 ) ")]
         public Int32 CustomerID { get; set; }
 
         [StringLength(5, ErrorMessage = "Code should be no more than 5 Characters")]

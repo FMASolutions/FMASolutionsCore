@@ -5,11 +5,12 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public class PostCodeRepo : IPostCodeRepo, IDisposable
+    public class PostCodeRepo : BaseRepository, IPostCodeRepo, IDisposable
     {
-        public PostCodeRepo(IDbConnection connection)
+        public PostCodeRepo(IDbTransaction transaction)
+            :base(transaction)
         {
-            _dbConnection = connection;
+            _dbConnection = Connection;
         }
         public void Dispose()
         {
@@ -31,7 +32,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("PostCodeRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
 
-                return _dbConnection.QueryFirst<PostCodeEntity>(query, new { PostCodeID = id });
+                return _dbConnection.QueryFirst<PostCodeEntity>(query, new { PostCodeID = id }, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -49,7 +50,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("PostCodeRepo.GetAll Started: " + query);
 
-                return _dbConnection.Query<PostCodeEntity>(query);
+                return _dbConnection.Query<PostCodeEntity>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -73,7 +74,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     PostCodeCode = entity.PostCodeCode,
                     CityID = entity.CityID,
                     PostCodeValue = entity.PostCodeValue
-                });
+                }, transaction: Transaction);
                 if (rowsAffected > 0)
                     return true;
                 return false;
@@ -104,7 +105,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     CityID = entity.CityID,
                     PostCodeValue = entity.PostCodeValue,
                     PostCodeID = entity.PostCodeID
-                });
+                }, transaction: Transaction);
                 if (i >= 1)
                     return true;
                 return false;
@@ -128,7 +129,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 Helper.logger.WriteToProcessLog("PostCodeRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(PostCodeID),0)+1 FROM PostCodes");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(PostCodeID),0)+1 FROM PostCodes", transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -147,7 +148,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("PostCodeRepo.GetByCode Started for Code: " + code + " full query = " + query);
 
-                return _dbConnection.QueryFirst<PostCodeEntity>(query, new { PostCodeCode = code });
+                return _dbConnection.QueryFirst<PostCodeEntity>(query, new { PostCodeCode = code }, transaction: Transaction);
             }
             catch (Exception ex)
             {

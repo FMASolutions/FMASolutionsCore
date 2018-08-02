@@ -14,17 +14,13 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
 
         public Dictionary<int, string> AvailableCities;
 
-        [DisplayName("Post Code ID (1 - 9,999,999")]
         public Int32 PostCodeID {get; set;}
 
-        [DisplayName("City ID ( 1 - 9,999,999 ) ")]
         public Int32 CityID { get; set; }
 
-        [Required(ErrorMessage = "Postcode Code Is Required")]
         [StringLength(5, ErrorMessage = "City Code should be no more than 5 Characters")]
         public string PostCodeCode { get; set; }
 
-        [Required(ErrorMessage = "Post Code Value is mandatory")]
         [StringLength(100, ErrorMessage = "City Name should be no more than 100 characters")]
         public string PostCodeValue { get; set; }    
         

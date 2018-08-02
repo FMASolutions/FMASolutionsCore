@@ -1,7 +1,7 @@
-using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
-using FMASolutionsCore.DataServices.ShoppingRepo;
 using System;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+using FMASolutionsCore.DataServices.ShoppingRepo;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
@@ -11,6 +11,16 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             _uow = new UnitOfWork(connectionString, dbType);
         }
+        public void Dispose()
+        {
+            if(!_disposing)
+            {
+                _disposing = true;
+                _uow.Dispose();
+            }
+        }
+
+        private bool _disposing = false;
         private IUnitOfWork _uow;
 
         public ProductGroup GetByID(int id)

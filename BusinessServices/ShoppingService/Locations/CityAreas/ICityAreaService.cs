@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
-    public interface ICityAreaService
+    public interface ICityAreaService : IDisposable
     {
         CityArea GetByID(int id);
         CityArea GetByCode(string code);

@@ -12,7 +12,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             this.ItemCode = "";
         }
 
-        [DisplayName(" ID ( 1 - 9,999,999 ) ")]
         public Int32 ItemID { get; set; }
 
         [StringLength(5, ErrorMessage = "Code should be no more than 5 Characters")]

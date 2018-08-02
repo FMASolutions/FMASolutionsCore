@@ -5,11 +5,12 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public class ProductGroupRepo : IProductGroupRepo, IDisposable
+    public class ProductGroupRepo : BaseRepository, IProductGroupRepo, IDisposable
     {
-        public ProductGroupRepo(IDbConnection connection)
-        {
-            _dbConnection = connection;
+        public ProductGroupRepo(IDbTransaction transaction) 
+            : base(transaction)
+        {   
+            _dbConnection = Connection;
         }
         public void Dispose()
         {
@@ -31,7 +32,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("ProductGroupRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
 
-                return _dbConnection.QueryFirst<ProductGroupEntity>(query, new { ProductGroupID = id });
+                return _dbConnection.QueryFirst<ProductGroupEntity>(query, new { ProductGroupID = id }, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -49,7 +50,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("ProductGroupRepo.GetAll Started: " + query);
 
-                return _dbConnection.Query<ProductGroupEntity>(query);
+                return _dbConnection.Query<ProductGroupEntity>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -73,7 +74,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     ProdGroupCode = entity.ProductGroupCode,
                     ProdGroupName = entity.ProductGroupName,
                     ProdGroupDescription = entity.ProductGroupDescription
-                });
+                }, transaction: Transaction);
                 if (rowsAffected > 0)
                     return true;
                 return false;
@@ -103,7 +104,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     ProductGroupName = entity.ProductGroupName,
                     ProductGroupDescription = entity.ProductGroupDescription,
                     ProductGroupID = entity.ProductGroupID
-                });
+                }, transaction: Transaction);
                 if (i >= 1)
                     return true;
                 return false;
@@ -128,7 +129,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             {
                 Helper.logger.WriteToProcessLog("ProductGroupRepo.GetNextAvailableID Started");
 
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ProductGroupID),0)+1 FROM ProductGroups");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ProductGroupID),0)+1 FROM ProductGroups", transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -147,7 +148,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("ProductGroupRepo.GetByCode Started for Code: " + code + " full query = " + query);
 
-                return _dbConnection.QueryFirst<ProductGroupEntity>(query, new { ProductGroupCode = code });
+                return _dbConnection.QueryFirst<ProductGroupEntity>(query, new { ProductGroupCode = code }, transaction: Transaction);
             }
             catch (Exception ex)
             {

@@ -12,52 +12,44 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _dbConnection = _connectionFactory.CreateDBConnection(dbType, connectionString);
             _dbConnection.Open();
             _transaction = _dbConnection.BeginTransaction();
-            _productGroupRepo = new ProductGroupRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _subGroupRepo = new SubGroupRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _itemRepo = new ItemRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _customerTypeRepo = new CustomerTypeRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _countryRepo = new CountryRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _cityRepo = new CityRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _cityAreaRepo = new CityAreaRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _postCodeRepo = new PostCodeRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _addressLocationRepo = new AddressLocationRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-            _customerRepo = new CustomerRepo(new SQLFactoryStandard().CreateDBConnection(dbType, connectionString));
-        }
 
-        private IProductGroupRepo _productGroupRepo;
-        private ISubGroupRepo _subGroupRepo;
-        private IItemRepo _itemRepo;
-        private ICustomerTypeRepo _customerTypeRepo;
-        private ICountryRepo _countryRepo;
-        private ICityRepo _cityRepo;
-        private ICityAreaRepo _cityAreaRepo;
-        private IPostCodeRepo _postCodeRepo;
-        private IAddressLocationRepo _addressLocationRepo;
-        private ICustomerRepo _customerRepo;
+            //When adding a new Repository Always remember to add it to the private "Reset" method @ the bottom
+            _productGroupRepo = new ProductGroupRepo(_transaction);
+            _subGroupRepo = new SubGroupRepo(_transaction);
+            _itemRepo = new ItemRepo(_transaction);
+            _customerTypeRepo = new CustomerTypeRepo(_transaction);
+            _countryRepo = new CountryRepo(_transaction);
+            _cityRepo = new CityRepo(_transaction);
+            _cityAreaRepo = new CityAreaRepo(_transaction);
+            _postCodeRepo = new PostCodeRepo(_transaction);
+            _addressLocationRepo = new AddressLocationRepo(_transaction);
+            _customerRepo = new CustomerRepo(_transaction);
+        }
+        ~UnitOfWork()
+        {
+            dispose(false);
+        }
         private IDbConnection _dbConnection;
         private IDbTransaction _transaction;
         private SQLFactory _connectionFactory;
 
+        public IProductGroupRepo ProductGroupRepo { get { return _productGroupRepo ?? (_productGroupRepo = new ProductGroupRepo(_transaction)); } }
+        public ISubGroupRepo SubGroupRepo { get { return _subGroupRepo ?? (_subGroupRepo = new SubGroupRepo(_transaction)); } }
+        public IItemRepo ItemRepo { get { return _itemRepo ?? (_itemRepo = new ItemRepo(_transaction)); } }
+        public ICustomerTypeRepo CustomerTypeRepo { get { return _customerTypeRepo ?? (_customerTypeRepo = new CustomerTypeRepo(_transaction)); } }
+        public ICountryRepo CountryRepo { get { return _countryRepo ?? (_countryRepo = new CountryRepo(_transaction)); } }
+        public ICityRepo CityRepo { get { return _cityRepo ?? (_cityRepo = new CityRepo(_transaction)); } }
+        public ICityAreaRepo CityAreaRepo { get { return _cityAreaRepo ?? (_cityAreaRepo = new CityAreaRepo(_transaction)); } }
+        public IPostCodeRepo PostCodeRepo { get { return _postCodeRepo ?? (_postCodeRepo = new PostCodeRepo(_transaction)); } }
+        public IAddressLocationRepo AddressLocationRepo { get { return _addressLocationRepo ?? (_addressLocationRepo = new AddressLocationRepo(_transaction)); } }
+        public ICustomerRepo CustomerRepo { get { return _customerRepo ?? (_customerRepo = new CustomerRepo(_transaction)); } }
+        bool _disposing = false;
 
-        public IProductGroupRepo ProductGroupRepo { get { return _productGroupRepo; } }
-        public ISubGroupRepo SubGroupRepo { get { return _subGroupRepo; } }
-        public IItemRepo ItemRepo { get { return _itemRepo; } }
-        public ICustomerTypeRepo CustomerTypeRepo { get { return _customerTypeRepo; } }
-        public ICountryRepo CountryRepo { get { return _countryRepo; } }
-        public ICityRepo CityRepo { get { return _cityRepo; } }
-        public ICityAreaRepo CityAreaRepo { get { return _cityAreaRepo; } }
-        public IPostCodeRepo PostCodeRepo { get { return _postCodeRepo; } }
-        public IAddressLocationRepo AddressLocationRepo { get { return _addressLocationRepo; } }
-        public ICustomerRepo CustomerRepo { get { return _customerRepo; } }
-        bool _disposed = false;
-
-        public void SaveChanges(bool createFollowUpTransaction = true)
+        public void SaveChanges()
         {
             try
             {
                 _transaction.Commit();
-                if (createFollowUpTransaction)
-                    _transaction = _dbConnection.BeginTransaction();
             }
             catch (Exception)
             {
@@ -68,16 +60,65 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             {
                 _transaction.Dispose();
                 _transaction = _dbConnection.BeginTransaction();
+                ResetRepos();
             }
+        }
+        public void RollBack(bool createFollowUpTransaction = true)
+        {
+            _transaction.Rollback();
+            if (createFollowUpTransaction)
+                _transaction = _dbConnection.BeginTransaction();
         }
         public void Dispose()
         {
-            if (!_disposed)
+            dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void dispose(bool disposing)
+        {
+            if (!_disposing)
             {
-                _dbConnection.Dispose();
-                _transaction.Dispose();
-                _disposed = true;
+                if (disposing)
+                {
+                    if (_transaction != null)
+                    {
+                        _transaction.Dispose();
+                        _transaction = null;
+                    }
+                    if (_dbConnection != null)
+                    {
+                        _dbConnection.Dispose();
+                        _dbConnection = null;
+                    }
+                }
+                _disposing = true;
             }
         }
+
+        
+        private void ResetRepos()
+        {
+            _productGroupRepo = null;
+            _subGroupRepo = null;
+            _itemRepo = null;
+            _customerTypeRepo = null;
+            _countryRepo = null;
+            _cityRepo = null;
+            _cityAreaRepo = null;
+            _postCodeRepo = null;
+            _addressLocationRepo = null;
+            _customerRepo = null;
+        }
+        private IProductGroupRepo _productGroupRepo;
+        private ISubGroupRepo _subGroupRepo;
+        private IItemRepo _itemRepo;
+        private ICustomerTypeRepo _customerTypeRepo;
+        private ICountryRepo _countryRepo;
+        private ICityRepo _cityRepo;
+        private ICityAreaRepo _cityAreaRepo;
+        private IPostCodeRepo _postCodeRepo;
+        private IAddressLocationRepo _addressLocationRepo;
+        private ICustomerRepo _customerRepo;
     }
 }

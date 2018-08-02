@@ -1,7 +1,7 @@
-using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
-using FMASolutionsCore.DataServices.ShoppingRepo;
 using System;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+using FMASolutionsCore.DataServices.ShoppingRepo;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
@@ -15,6 +15,17 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _cityAreaService = new CityAreaService(connectionString, dbType);
             _postCodeService = new PostCodeService(connectionString, dbType);
         }
+        public void Dispose()
+        {
+            if(!_disposing)
+            {
+                _disposing = true;
+                _cityAreaService.Dispose();
+                _postCodeService.Dispose();
+                _uow.Dispose();
+            }
+        }
+        private bool _disposing = false;
         private IUnitOfWork _uow;
         ICityAreaService _cityAreaService;
         IPostCodeService _postCodeService;

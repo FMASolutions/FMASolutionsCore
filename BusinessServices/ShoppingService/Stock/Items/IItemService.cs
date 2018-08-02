@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
-    public interface IItemService
+    public interface IItemService : IDisposable
     {
         Item GetByID(int id);
         Item GetByCode(string code);

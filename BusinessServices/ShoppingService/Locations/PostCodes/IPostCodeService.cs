@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
-    public interface IPostCodeService
+    public interface IPostCodeService : IDisposable
     {
         PostCode GetByID(int id);
         PostCode GetByCode(string code);

@@ -5,11 +5,12 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public class CustomerTypeRepo : ICustomerTypeRepo, IDisposable
+    public class CustomerTypeRepo : BaseRepository, ICustomerTypeRepo, IDisposable
     {
-        public CustomerTypeRepo(IDbConnection connection)
+        public CustomerTypeRepo(IDbTransaction transaction)
+            :base(transaction)
         {
-            _dbConnection = connection;
+            _dbConnection = Connection;
         }
 
         public void Dispose()
@@ -31,7 +32,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CustomerTypeRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
 
-                return _dbConnection.QueryFirst<CustomerTypeEntity>(query, new { CustomerTypeID = id });
+                return _dbConnection.QueryFirst<CustomerTypeEntity>(query, new { CustomerTypeID = id }, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -50,7 +51,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CustomerTypeRepo.GetAll Started: " + query);
 
-                return _dbConnection.Query<CustomerTypeEntity>(query);
+                return _dbConnection.Query<CustomerTypeEntity>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -74,7 +75,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 {
                     CustomerTypeCode = entity.CustomerTypeCode,
                     CustomerTypeName = entity.CustomerTypeName
-                });
+                }, transaction: Transaction);
                 if (rowsAffected > 0)
                     return true;
                 return false;
@@ -102,7 +103,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     CustomerTypeCode = entity.CustomerTypeCode,
                     CustomerTypeName = entity.CustomerTypeName,
                     CustomerTypeID = entity.CustomerTypeID
-                });
+                }, transaction: Transaction);
                 if (i >= 1)
                     return true;
                 return false;
@@ -126,7 +127,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 Helper.logger.WriteToProcessLog("CustomerTypeRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CustomerTypeID),0)+1 FROM CustomerTypes");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CustomerTypeID),0)+1 FROM CustomerTypes", transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -145,7 +146,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CustomerTypeRepo.GetByCode Started for Code: " + code + " full query = " + query);
 
-                return _dbConnection.QueryFirst<CustomerTypeEntity>(query, new { CustomerTypeCode = code });
+                return _dbConnection.QueryFirst<CustomerTypeEntity>(query, new { CustomerTypeCode = code }, transaction: Transaction);
             }
             catch (Exception ex)
             {

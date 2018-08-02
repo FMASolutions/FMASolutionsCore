@@ -5,12 +5,16 @@ using FMASolutionsCore.BusinessServices.ShoppingService;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class AddressLocationModel : IModel
+    public class AddressLocationModel : IModel, System.IDisposable
     {
         public AddressLocationModel(ICustomModelState modelState, IAddressLocationService service)
         {
             _modelState = modelState;
             _addressLocationService = service;            
+        }
+        public void Dispose()
+        {
+            _addressLocationService.Dispose();
         }
         private ICustomModelState _modelState;
         private IAddressLocationService _addressLocationService;
@@ -18,6 +22,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         public AddressLocationViewModel Search(int id = 0, string code = "")
         {
+
             AddressLocation searchResult = null;
             if (id > 0)
                 searchResult = _addressLocationService.GetByID(id);
@@ -35,7 +40,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
 
         public AddressLocationsViewModel GetAllAddressLocations()
-        {
+        {            
             List<AddressLocation> addressLocationList = _addressLocationService.GetAll();
             AddressLocationsViewModel vmReturn = new AddressLocationsViewModel();
 

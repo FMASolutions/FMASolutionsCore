@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
-    public interface IAddressLocationService
+    public interface IAddressLocationService : IDisposable
     {
         AddressLocation GetByID(int id);
         AddressLocation GetByCode(string code);

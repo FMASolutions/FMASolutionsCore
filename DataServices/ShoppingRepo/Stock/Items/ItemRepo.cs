@@ -6,11 +6,12 @@ using FMASolutionsCore.BusinessServices.AppLoggerExtension;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public class ItemRepo : IItemRepo, IDisposable
+    public class ItemRepo : BaseRepository, IItemRepo, IDisposable
     {
-        public ItemRepo(IDbConnection dbConnection)
+        public ItemRepo(IDbTransaction transaction)
+            : base(transaction)
         {
-            _dbConnection = dbConnection;
+            _dbConnection = Connection;
         }
 
         public void Dispose()
@@ -32,7 +33,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("ItemRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
 
-                return _dbConnection.QueryFirst<ItemEntity>(query, new { ItemID = id });
+                return _dbConnection.QueryFirst<ItemEntity>(query, new { ItemID = id }, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -50,7 +51,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("ItemRepo.GetAll Running Query: " + query);
 
-                return _dbConnection.Query<ItemEntity>(query);
+                return _dbConnection.Query<ItemEntity>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -80,7 +81,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     ItemAvailableQty = entity.ItemAvailableQty,
                     ItemReorderQtyReminder = entity.ItemReorderQtyReminder,
                     ItemImageFilename = entity.ItemImageFilename
-                });
+                }, transaction: Transaction);
                 if (rowsAffected > 0)
                     return true;
                 return false;
@@ -123,7 +124,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     ,ItemAvailableQty = entity.ItemAvailableQty
                     ,ItemReorderQtyReminder = entity.ItemReorderQtyReminder
                     ,ItemImageFilename = entity.ItemImageFilename
-                });
+                }, transaction: Transaction);
                 if (i >= 1)
                     return true;
                 return false;
@@ -148,7 +149,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             {
                 Helper.logger.WriteToProcessLog("ItemRepo.GetNextAvailableID Started");
 
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ItemID),0)+1 FROM Items");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ItemID),0)+1 FROM Items", transaction: Transaction);
             }
             catch(Exception ex)
             {
@@ -168,7 +169,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("ItemRepo.GetByCode Started for Code: " + code + " full query = " + query);
 
-                return _dbConnection.QueryFirst<ItemEntity>(query, new { ItemCode = code });
+                return _dbConnection.QueryFirst<ItemEntity>(query, new { ItemCode = code }, transaction: Transaction);
             }
             catch (Exception ex)
             {

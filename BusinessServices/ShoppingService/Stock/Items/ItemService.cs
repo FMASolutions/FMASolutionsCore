@@ -10,11 +10,21 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public ItemService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _subGroupSerice = new SubGroupService(connectionString, dbType);
+            _subGroupService = new SubGroupService(connectionString, dbType);
         }
+        public void Dispose()
+        {
+            if(!_disposing)
+            {
+                _disposing = true;
+                _subGroupService.Dispose();
+                _uow.Dispose();
+            }
+        }
+        private bool _disposing = false;
 
         private IUnitOfWork _uow;
-        private ISubGroupService _subGroupSerice;
+        private ISubGroupService _subGroupService;
 
         #region IItemService
         public Item GetByID(int id)
@@ -103,7 +113,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         public List<SubGroup> GetAllAvailableSubGroups()
         {
-            return _subGroupSerice.GetAll();
+            return _subGroupService.GetAll();
         }
 
         public bool UpdateDB(Item newModel)

@@ -5,11 +5,12 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public class CustomerRepo : ICustomerRepo, IDisposable
+    public class CustomerRepo : BaseRepository, ICustomerRepo, IDisposable
     {
-        public CustomerRepo(IDbConnection connection)
+        public CustomerRepo(IDbTransaction transaction)
+            :base(transaction)
         {
-            _dbConnection = connection;
+            _dbConnection = Connection;
         }
         public void Dispose()
         {
@@ -31,7 +32,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CustomerRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
 
-                return _dbConnection.QueryFirst<CustomerEntity>(query, new { CustomerID = id });
+                return _dbConnection.QueryFirst<CustomerEntity>(query, new { CustomerID = id }, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -49,7 +50,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CustomerRepo.GetAll Started: " + query);
 
-                return _dbConnection.Query<CustomerEntity>(query);
+                return _dbConnection.Query<CustomerEntity>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -75,7 +76,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     CustomerName = entity.CustomerName,
                     CustomerContactNumber = entity.CustomerContactNumber,
                     CustomerEmailAddress = entity.CustomerEmailAddress
-                });
+                }, transaction: Transaction);
                 if (rowsAffected > 0)
                     return true;
                 return false;
@@ -110,7 +111,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     CustomerContactNumber = entity.CustomerContactNumber,
                     CustomerEmailAddress = entity.CustomerEmailAddress,
                     CustomerID = entity.CustomerID                    
-                });
+                }, transaction: Transaction);
                 if (i >= 1)
                     return true;
                 return false;
@@ -134,7 +135,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 Helper.logger.WriteToProcessLog("CustomerRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CustomerID),0)+1 FROM Customers");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CustomerID),0)+1 FROM Customers", transaction: Transaction);
             }
             catch(Exception ex)
             {
@@ -153,7 +154,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CustomerRepo.GetByCode Started for Code: " + code + " full query = " + query);
 
-                return _dbConnection.QueryFirst<CustomerEntity>(query, new { CustomerCode = code });
+                return _dbConnection.QueryFirst<CustomerEntity>(query, new { CustomerCode = code }, transaction: Transaction);
             }
             catch (Exception ex)
             {

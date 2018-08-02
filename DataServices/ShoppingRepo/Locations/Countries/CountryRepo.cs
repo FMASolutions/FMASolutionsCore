@@ -5,11 +5,12 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public class CountryRepo : ICountryRepo, IDisposable
+    public class CountryRepo : BaseRepository, ICountryRepo, IDisposable
     {
-        public CountryRepo(IDbConnection connection)
+        public CountryRepo(IDbTransaction transaction)
+            :base(transaction)
         {
-            _dbConnection = connection;
+            _dbConnection = Connection;
         }
 
         public void Dispose()
@@ -31,7 +32,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CountryRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
 
-                return _dbConnection.QueryFirst<CountryEntity>(query, new { CountryID = id });
+                return _dbConnection.QueryFirst<CountryEntity>(query, new { CountryID = id }, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -50,7 +51,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("CountryRepo.GetAll Started: " + query);
 
-                return _dbConnection.Query<CountryEntity>(query);
+                return _dbConnection.Query<CountryEntity>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -74,7 +75,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 {
                     CountryCode = entity.CountryCode,
                     CountryName = entity.CountryName
-                });
+                }, transaction: Transaction);
                 if (rowsAffected > 0)
                     return true;
                 return false;
@@ -102,7 +103,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     CountryCode = entity.CountryCode,
                     CountryName = entity.CountryName,
                     CountryID = entity.CountryID
-                });
+                }, transaction: Transaction);
                 if (i >= 1)
                     return true;
                 return false;
@@ -126,7 +127,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 Helper.logger.WriteToProcessLog("CountryRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CountryID),0)+1 FROM Countries");
+                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CountryID),0)+1 FROM Countries", transaction: Transaction);
             }
             catch (Exception ex)
             {
@@ -145,7 +146,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 
                 Helper.logger.WriteToProcessLog("Country.GetByCode Started for Code: " + code + " full query = " + query);
 
-                return _dbConnection.QueryFirst<CountryEntity>(query, new { CountryCode = code });
+                return _dbConnection.QueryFirst<CountryEntity>(query, new { CountryCode = code }, transaction: Transaction);
             }
             catch (Exception ex)
             {

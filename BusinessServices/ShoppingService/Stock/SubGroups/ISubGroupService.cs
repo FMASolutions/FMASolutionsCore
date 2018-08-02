@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
-    public interface ISubGroupService
+    public interface ISubGroupService : IDisposable
     {
         SubGroup GetByID(int id);
         SubGroup GetByCode(string code);

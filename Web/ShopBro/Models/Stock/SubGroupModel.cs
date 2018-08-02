@@ -5,12 +5,16 @@ using FMASolutionsCore.BusinessServices.ShoppingService;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class SubGroupModel : IModel
+    public class SubGroupModel : IModel, System.IDisposable
     {
         public SubGroupModel(ICustomModelState modelState, ISubGroupService service)
         {
             _modelState = modelState;
             _subGroupService = service;
+        }
+        public void Dispose()
+        {
+            _subGroupService.Dispose();
         }
         private ICustomModelState _modelState;
         private ISubGroupService _subGroupService;
