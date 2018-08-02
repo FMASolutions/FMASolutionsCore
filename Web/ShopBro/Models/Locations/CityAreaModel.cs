@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FMASolutionsCore.Web.ShopBro.ViewModels;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
@@ -5,12 +6,16 @@ using FMASolutionsCore.BusinessServices.ShoppingService;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class CityAreaModel : IModel
+    public class CityAreaModel : IModel, IDisposable
     {
         public CityAreaModel(ICustomModelState modelState, ICityAreaService service)
         {
             _modelState = modelState;
             _cityAreaService = service;
+        }
+        public void Dispose()
+        {
+            _cityAreaService.Dispose();
         }
         private ICustomModelState _modelState;
         private ICityAreaService _cityAreaService;

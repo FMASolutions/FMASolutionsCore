@@ -1,3 +1,4 @@
+using System;
 using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.Web.ShopBro.ViewModels;
@@ -5,12 +6,16 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class CustomerTypeModel
+    public class CustomerTypeModel : IModel, IDisposable
     {
         public CustomerTypeModel(ICustomModelState modelState, ICustomerTypeService customerTypeService)
         {
             _modelState = modelState;
             _customerTypeService = customerTypeService;
+        }
+        public void Dispose()
+        {
+            _customerTypeService.Dispose();
         }
 
         public ICustomModelState ModelState { get { return _modelState; } set { _modelState = value; } }

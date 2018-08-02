@@ -16,9 +16,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
 
         private IAddressLocationService _service;
+
         public IActionResult Index()
         {
             Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Index Request Received");
+
             AddressLocationSearchViewModel vmInput = new AddressLocationSearchViewModel();
             return View("Search", vmInput);
         }
@@ -27,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Search(int id = 0)
         {
             Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Search Request Received with ID = " + id.ToString());
+
             AddressLocationSearchViewModel vmInput = new AddressLocationSearchViewModel();
             vmInput.AddressLocationID = id;
             return ProcessSearch(vmInput);
@@ -35,36 +38,33 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(AddressLocationSearchViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.ProcessSearch Started");
+
             using (AddressLocationModel model = GetNewModel())
             {
-                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.ProcessSearch Started");
-                AddressLocationViewModel vmAddressLocation = new AddressLocationViewModel();
-                if (model.ModelState.IsValid)
+                AddressLocationViewModel vmSearchResult = model.Search(vmInput.AddressLocationID, vmInput.AddressLocationCode);
+
+                if (vmSearchResult.AddressLocationID > 0)
                 {
                     ModelState.Clear();
-                    vmAddressLocation = model.Search(vmInput.AddressLocationID, vmInput.AddressLocationCode);
-                    if (vmAddressLocation.AddressLocationID > 0)
-                    {
-                        Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.ProcessSearch Item Found: " + vmAddressLocation.AddressLocationID.ToString());
-                        vmAddressLocation.AvailableCityAreas = model.GetAvailableCityAreas();
-                        vmAddressLocation.AvailablePostCodes = model.GetAvailablePostCodes();
-                        return View("Display", vmAddressLocation);
-                    }
+                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.ProcessSearch Item Found: " + vmSearchResult.AddressLocationID.ToString());
+                    return View("Display", vmSearchResult);
                 }
                 Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.ProcessSearch No Item Found ");
-                AddressLocationSearchViewModel vmSearch = new AddressLocationSearchViewModel();
-                vmSearch.StatusErrorMessage = vmAddressLocation.StatusErrorMessage;
-                return View("Search", vmSearch);
+                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                return View("Search", vmSearchResult);
             }
         }
+
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult DisplayForUpdate(AddressLocationViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.DisplayForUpdate POST Request Received For ID: " + vmInput.AddressLocationID.ToString());
+
             using (AddressLocationModel model = GetNewModel())
             {
-                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.DisplayForUpdate POST Request Received For ID: " + vmInput.AddressLocationID.ToString());
                 vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
                 vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
                 return View(vmInput);
@@ -72,9 +72,10 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         public IActionResult DisplayAll()
         {
+            Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.DisplayAll Request Received");
+
             using (AddressLocationModel model = GetNewModel())
             {
-                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.DisplayAll Request Received");
                 return View(model.GetAllAddressLocations());
             }
         }
@@ -83,17 +84,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
+            Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create GET Request Received");
+
             using (AddressLocationModel model = GetNewModel())
             {
-                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create GET Request Received");
                 AddressLocationViewModel vm = new AddressLocationViewModel();
                 vm.AvailableCityAreas = model.GetAvailableCityAreas();
                 vm.AvailablePostCodes = model.GetAvailablePostCodes();
                 vm.postCodeToCreate.AvailableCities = model.GetAvailableCities();
-                if (vm.AvailableCityAreas.Count > 0 && vm.AvailablePostCodes.Count > 0 && vm.postCodeToCreate.AvailableCities.Count > 0)
-                    return View(vm);
-                else
-                    return View("Search");
+                return View(vm);
             }
         }
 
@@ -101,19 +100,17 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Create(AddressLocationViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create POST Request Received");
+
             using (AddressLocationModel model = GetNewModel())
             {
-                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create POST Request Received");
-                AddressLocationViewModel vmResult = new AddressLocationViewModel();
-                if (model.ModelState.IsValid)
+                AddressLocationViewModel vmResult = model.Create(vmInput);
+                if (vmResult.AddressLocationID > 0)
                 {
-                    vmResult = model.Create(vmInput);
-                    if (vmResult.AddressLocationID > 0)
-                    {
-                        Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create Complete successfully for Code: " + vmInput.AddressLocationCode);
-                        return Search(vmResult.AddressLocationID);
-                    }
+                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create Complete successfully for Code: " + vmInput.AddressLocationCode);
+                    return Search(vmResult.AddressLocationID);
                 }
+
                 Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
                 vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
                 vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
@@ -127,29 +124,26 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Update(AddressLocationViewModel vmInput)
         {
+            Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update POST Request Received");
+
             using (AddressLocationModel model = GetNewModel())
             {
-                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update POST Request Received");
-                if (model.ModelState.IsValid)
+                if (model.UpdateDB(vmInput))
                 {
-                    if (model.UpdateDB(vmInput))
-                    {
-                        Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update POST Request For: " + vmInput.AddressLocationCode + " successful!");
-                        vmInput.StatusErrorMessage = "Update Processed";
-                        vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
-                        vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
-                        return View("Display", vmInput);
-                    }
-                    else
-                    {
-                        foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        {
-                            vmInput.StatusErrorMessage += item + " ";
-                        }
-                        Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
-                    }
+                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update POST Request For: " + vmInput.AddressLocationCode + " successful!");
+                    vmInput.StatusErrorMessage = "Update Processed";
+                    vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
+                    vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
+                    return View("Display", vmInput);
                 }
-                return View("DisplayForUpdate", vmInput);
+                else
+                {
+                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                        vmInput.StatusErrorMessage += item + " ";
+
+                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    return View("DisplayForUpdate", vmInput);
+                }
             }
         }
 

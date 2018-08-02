@@ -1,15 +1,21 @@
+using System;
+using System.Collections.Generic;
+using FMASolutionsCore.Web.ShopBro.ViewModels;
 using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
-using FMASolutionsCore.Web.ShopBro.ViewModels;
-using System.Collections.Generic;
+
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class ProductGroupModel
+    public class ProductGroupModel : IModel, IDisposable
     {
         public ProductGroupModel(ICustomModelState modelState, IProductGroupService service)
         {
             _productGroupService = service;
             _modelState = modelState;
+        }
+        public void Dispose()
+        {
+            _productGroupService.Dispose();
         }
 
         public ICustomModelState ModelState { get { return _modelState; } }

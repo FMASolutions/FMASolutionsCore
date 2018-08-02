@@ -1,3 +1,4 @@
+using System;
 using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.Web.ShopBro.ViewModels;
@@ -5,14 +6,17 @@ using System.Collections.Generic;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class CountryModel
+    public class CountryModel : IModel, IDisposable
     {
         public CountryModel(ICustomModelState modelState, ICountryService countryService)
         {
             _modelState = modelState;
             _countryService = countryService;
         }
-
+        public void Dispose()
+        {
+            _countryService.Dispose();
+        }
         public ICustomModelState ModelState { get { return _modelState; } set { _modelState = value; } }
         private ICustomModelState _modelState;
         private ICountryService _countryService;

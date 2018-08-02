@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
@@ -7,12 +8,16 @@ using FMASolutionsCore.BusinessServices.ShoppingService;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class ItemModel
+    public class ItemModel : IModel, IDisposable
     {
         public ItemModel(ICustomModelState modelState, IItemService itemService)
         {
             _modelState = modelState;
             _itemService = itemService;
+        }
+        public void Dispose()
+        {
+            _itemService.Dispose();
         }
 
         private ICustomModelState _modelState;

@@ -12,17 +12,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
     {
         public PostCodeController(IPostCodeService service)
         {
-            _model = new PostCodeModel(new ModelStateConverter(this).Convert(), service);
             _service = service;
         }
 
         private IPostCodeService _service;
-        private PostCodeModel _model;
 
         public IActionResult Index()
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Index Request Received");
-            _model = GetNewModel();
+
             PostCodeSearchViewModel vmInput = new PostCodeSearchViewModel();
             return View("Search", vmInput);
         }
@@ -31,7 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Search(int id = 0)
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Search Request Received with ID = " + id.ToString());
-            _model = GetNewModel();
+
             PostCodeSearchViewModel vmInput = new PostCodeSearchViewModel();
             vmInput.PostCodeID = id;
             return ProcessSearch(vmInput);
@@ -41,23 +39,22 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult ProcessSearch(PostCodeSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.ProcessSearch Started");
-            _model = GetNewModel();
-            PostCodeViewModel vmPostCode = new PostCodeViewModel();
-            if (_model.ModelState.IsValid)
+
+            using (PostCodeModel model = GetNewModel())
             {
-                ModelState.Clear();
-                vmPostCode = _model.Search(vmInput.PostCodeID, vmInput.PostCodeCode);
-                if (vmPostCode.PostCodeID > 0)
+                PostCodeViewModel vmSearchResult = model.Search(vmInput.PostCodeID, vmInput.PostCodeCode);
+
+                if (vmSearchResult.PostCodeID > 0)
                 {
-                    Program.loggerExtension.WriteToUserRequestLog("PostCodeController.ProcessSearch Item Found: " + vmPostCode.PostCodeID.ToString());
-                    vmPostCode.AvailableCities = _model.GetAvailableCities();
-                    return View("Display", vmPostCode);
+                    ModelState.Clear();
+                    Program.loggerExtension.WriteToUserRequestLog("PostCodeController.ProcessSearch Item Found: " + vmSearchResult.PostCodeID.ToString());
+                    return View("Display", vmSearchResult);
                 }
+
+                Program.loggerExtension.WriteToUserRequestLog("PostCodeController.ProcessSearch No Item Found ");
+                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                return View("Search", vmInput);
             }
-            Program.loggerExtension.WriteToUserRequestLog("PostCodeController.ProcessSearch No Item Found ");
-            PostCodeSearchViewModel vmSearch = new PostCodeSearchViewModel();
-            vmSearch.StatusErrorMessage = vmPostCode.StatusErrorMessage;
-            return View("Search", vmSearch);
         }
 
         [HttpPost]
@@ -65,15 +62,21 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult DisplayForUpdate(PostCodeViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.DisplayForUpdate POST Request Received For ID: " + vmInput.PostCodeID.ToString());
-            _model = GetNewModel();
-            vmInput.AvailableCities = _model.GetAvailableCities();
-            return View(vmInput);
+
+            using (PostCodeModel model = GetNewModel())
+            {
+                vmInput.AvailableCities = model.GetAvailableCities();
+                return View(vmInput);
+            }
         }
         public IActionResult DisplayAll()
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.DisplayAll Request Received");
-            _model = GetNewModel();
-            return View(_model.GetAllPostCodes());
+
+            using (PostCodeModel model = GetNewModel())
+            {
+                return View(model.GetAllPostCodes());
+            }
         }
 
         [HttpGet]
@@ -81,13 +84,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Create()
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Create GET Request Received");
-            _model = GetNewModel();
-            PostCodeViewModel vm = new PostCodeViewModel();
-            vm.AvailableCities = _model.GetAvailableCities();
-            if (vm.AvailableCities.Count > 0)
+
+            using (PostCodeModel model = GetNewModel())
+            {
+                PostCodeViewModel vm = new PostCodeViewModel();
+                vm.AvailableCities = model.GetAvailableCities();
                 return View(vm);
-            else
-                return View("Search");
+            }
         }
 
         [HttpPost]
@@ -95,21 +98,21 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Create(PostCodeViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Create POST Request Received");
-            _model = GetNewModel();
-            PostCodeViewModel vmResult = new PostCodeViewModel();
-            if (_model.ModelState.IsValid)
+
+            using (PostCodeModel model = GetNewModel())
             {
-                vmResult = _model.Create(vmInput);
+                PostCodeViewModel vmResult = model.Create(vmInput);
                 if (vmResult.PostCodeID > 0)
                 {
-                    Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Create Complete successfully for Code: " + vmInput.PostCodeCode);
+                    Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Create Complete successfully for Value: " + vmInput.PostCodeValue);
                     return Search(vmResult.PostCodeID);
                 }
+
+                Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
+                vmInput.AvailableCities = model.GetAvailableCities();
+                vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
+                return View(vmInput);
             }
-            Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
-            vmInput.AvailableCities = _model.GetAvailableCities();
-            vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
-            return View(vmInput);
         }
 
         [HttpPost]
@@ -117,26 +120,25 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Update(PostCodeViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Update POST Request Received");
-            _model = GetNewModel();
-            if (_model.ModelState.IsValid)
+
+            using (PostCodeModel model = GetNewModel())
             {
-                if (_model.UpdateDB(vmInput))
+                if (model.UpdateDB(vmInput))
                 {
                     Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Update POST Request For: " + vmInput.PostCodeValue + " successful!");
                     vmInput.StatusErrorMessage = "Update Processed";
-                    vmInput.AvailableCities = _model.GetAvailableCities();
+                    vmInput.AvailableCities = model.GetAvailableCities();
                     return View("Display", vmInput);
                 }
                 else
                 {
-                    foreach (string item in _model.ModelState.ErrorDictionary.Values)
-                    {
+                    foreach (string item in model.ModelState.ErrorDictionary.Values)
                         vmInput.StatusErrorMessage += item + " ";
-                    }
+                        
                     Program.loggerExtension.WriteToUserRequestLog("PostCodeController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    return View("DisplayForUpdate", vmInput);
                 }
             }
-            return View("DisplayForUpdate", vmInput);
         }
 
         private PostCodeModel GetNewModel()

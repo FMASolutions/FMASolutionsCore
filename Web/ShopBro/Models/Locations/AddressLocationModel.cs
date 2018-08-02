@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FMASolutionsCore.Web.ShopBro.ViewModels;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
@@ -5,7 +6,7 @@ using FMASolutionsCore.BusinessServices.ShoppingService;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
-    public class AddressLocationModel : IModel, System.IDisposable
+    public class AddressLocationModel : IModel, IDisposable
     {
         public AddressLocationModel(ICustomModelState modelState, IAddressLocationService service)
         {
