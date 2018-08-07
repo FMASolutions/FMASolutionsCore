@@ -10,6 +10,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         }
         
         public List<CountryViewModel> Countries { get; set; }
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }

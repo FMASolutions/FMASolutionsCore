@@ -9,6 +9,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             SubGroups = new List<SubGroupViewModel>();
         }
         public List<SubGroupViewModel> SubGroups { get; set; }
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }

@@ -52,7 +52,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 }
 
                 Program.loggerExtension.WriteToUserRequestLog("CustomerController.ProcessSearch No Item Found ");
-                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmSearchResult.StatusMessage;
                 return View("Search", vmInput);
             }
         }
@@ -108,9 +108,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return Search(vmResult.CustomerID);
                 }
 
-                Program.loggerExtension.WriteToUserRequestLog("CustomerController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
+                Program.loggerExtension.WriteToUserRequestLog("CustomerController.Create Failed, Reason: " + vmInput.StatusMessage);
                 vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
-                vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmResult.StatusMessage;
                 return View(vmInput);
             }
         }
@@ -126,16 +126,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 if (model.UpdateDB(vmInput))
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CustomerController.Update POST Request For: " + vmInput.CustomerCode + " successful!");
-                    vmInput.StatusErrorMessage = "Update Processed";
+                    vmInput.StatusMessage = "Update Processed";
                     vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
                     return View("Display", vmInput);
                 }
                 else
                 {
                     foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusErrorMessage += item + " ";
+                        vmInput.StatusMessage += item + " ";
                         
-                    Program.loggerExtension.WriteToUserRequestLog("CustomerController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    Program.loggerExtension.WriteToUserRequestLog("CustomerController.Update Failed, Reason: " + vmInput.StatusMessage);
                     vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
                     return View("DisplayForUpdate", vmInput);
                 }

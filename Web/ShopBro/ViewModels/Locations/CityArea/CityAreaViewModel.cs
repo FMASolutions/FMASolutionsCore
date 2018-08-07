@@ -24,6 +24,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [StringLength(100, ErrorMessage = "City Name should be no more than 100 characters")]
         public string CityAreaName { get; set; }    
         
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }

@@ -51,7 +51,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return View("Display", vmSearchResult);
                 }
                 Program.loggerExtension.WriteToUserRequestLog("CityController.ProcessSearch No Item Found ");
-                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmSearchResult.StatusMessage;
                 return View("Search", vmSearchResult);
             }
         }
@@ -108,9 +108,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return Search(vmResult.CityID);
                 }
 
-                Program.loggerExtension.WriteToUserRequestLog("CityController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
+                Program.loggerExtension.WriteToUserRequestLog("CityController.Create Failed, Reason: " + vmInput.StatusMessage);
                 vmInput.AvailableCountries = model.GetAvailableCountries();
-                vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmResult.StatusMessage;
                 return View(vmInput);
             }
         }
@@ -126,16 +126,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 if (model.UpdateDB(vmInput))
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CityController.Update POST Request For: " + vmInput.CityCode + " successful!");
-                    vmInput.StatusErrorMessage = "Update Processed";
+                    vmInput.StatusMessage = "Update Processed";
                     vmInput.AvailableCountries = model.GetAvailableCountries();
                     return View("Display", vmInput);
                 }
                 else
                 {
                     foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusErrorMessage += item + " ";
+                        vmInput.StatusMessage += item + " ";
 
-                    Program.loggerExtension.WriteToUserRequestLog("CityController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    Program.loggerExtension.WriteToUserRequestLog("CityController.Update Failed, Reason: " + vmInput.StatusMessage);
                     vmInput.AvailableCountries = model.GetAvailableCountries();
                     return View("DisplayForUpdate", vmInput);
                 }

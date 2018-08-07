@@ -51,7 +51,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return View("Display", vmSearchResult);
                 }
                 Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.ProcessSearch No Item Found ");
-                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmSearchResult.StatusMessage;
                 return View("Search", vmSearchResult);
             }
         }
@@ -111,11 +111,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return Search(vmResult.AddressLocationID);
                 }
 
-                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
+                Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create Failed, Reason: " + vmInput.StatusMessage);
                 vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
                 vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
                 vmInput.postCodeToCreate.AvailableCities = model.GetAvailableCities();
-                vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmResult.StatusMessage;
                 return View(vmInput);
             }
         }
@@ -131,7 +131,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 if (model.UpdateDB(vmInput))
                 {
                     Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update POST Request For: " + vmInput.AddressLocationCode + " successful!");
-                    vmInput.StatusErrorMessage = "Update Processed";
+                    vmInput.StatusMessage = "Update Processed";
                     vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
                     vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
                     return View("Display", vmInput);
@@ -139,9 +139,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 else
                 {
                     foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusErrorMessage += item + " ";
+                        vmInput.StatusMessage += item + " ";
 
-                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update Failed, Reason: " + vmInput.StatusMessage);
                     vmInput.AvailableCityAreas = model.GetAvailableCityAreas();
                     vmInput.AvailablePostCodes = model.GetAvailablePostCodes();
                     vmInput.postCodeToCreate.AvailableCities = model.GetAvailableCities();

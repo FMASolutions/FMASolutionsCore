@@ -38,7 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {
                 returnVM = new SubGroupViewModel();
-                returnVM.StatusErrorMessage = "No result Found";                
+                returnVM.StatusMessage = "No result Found";                
             }
             return returnVM;
         }
@@ -56,7 +56,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
             }
             else
-                vmReturn.StatusErrorMessage = "No Sub Groups Found";
+                vmReturn.StatusMessage = "No Sub Groups Found";
             return vmReturn;
         }
 
@@ -70,30 +70,48 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return productGroups;
         }
 
-        public SubGroupViewModel Create(SubGroupViewModel newSubGroup)
+        public SubGroupViewModel Create(SubGroupViewModel vmUserInput)
         {
-            SubGroup subGroup = ConvertToModel(newSubGroup);
-            subGroup.SubGroupID = 0; //NOT SURE I NEED TRHIS???????????????
-            SubGroupViewModel vmReturn = new SubGroupViewModel();
-            if (_subGroupService.CreateNew(subGroup))
-                vmReturn = ConvertToViewModel(subGroup);
+            _modelState.ErrorDictionary.Clear();  
+            
+            SubGroup model = ConvertToModel(vmUserInput);
+            SubGroupViewModel vmResult = ConvertToViewModel(model);
+            
+            _modelState = model.ModelState;
+
+            if (_subGroupService.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete.";       
+            }
             else
             {
-                vmReturn.StatusErrorMessage = "Unable to create Sub Group";
-                foreach (string item in subGroup.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusErrorMessage += " " + item;
+                vmUserInput.StatusMessage = "Create Failed: ";
+                foreach(string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;                
+                        
             }
-            return vmReturn;
+            return vmResult;   
         }
 
-        public bool UpdateDB(SubGroupViewModel updatedSubGroup)
+        public SubGroupViewModel UpdateDB(SubGroupViewModel vmUserInput)
         {
-            SubGroup subGroup = ConvertToModel(updatedSubGroup);
-            if (_subGroupService.UpdateDB(subGroup))
-                return true;
+            _modelState.ErrorDictionary.Clear();
+            
+            SubGroup model = ConvertToModel(vmUserInput);
+            SubGroupViewModel vmResult =ConvertToViewModel(model);         
+            if (_subGroupService.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
             else
-                _modelState = subGroup.ModelState;
-            return false;
+            {//Return 
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach(string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
         }
         private SubGroupViewModel ConvertToViewModel(SubGroup model)
         {

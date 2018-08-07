@@ -34,7 +34,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {
                 CityAreaViewModel returnVM = new CityAreaViewModel();
-                returnVM.StatusErrorMessage = "No result Found";
+                returnVM.StatusMessage = "No result Found";
                 return returnVM;
             }
         }
@@ -52,7 +52,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
             }
             else
-                vmReturn.StatusErrorMessage = "No City Areas Found";
+                vmReturn.StatusMessage = "No City Areas Found";
             return vmReturn;
         }
 
@@ -75,9 +75,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 vmReturn = ConvertToViewModel(cityArea);
             else
             {
-                vmReturn.StatusErrorMessage = "Unable to create City Area";
+                vmReturn.StatusMessage = "Unable to create City Area";
                 foreach (string item in cityArea.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusErrorMessage += " " + item;
+                    vmReturn.StatusMessage += " " + item;
             }
             return vmReturn;
         }

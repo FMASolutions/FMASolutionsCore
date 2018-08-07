@@ -52,7 +52,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return View("Display", vmSearchResult);
                 }
                 Program.loggerExtension.WriteToUserRequestLog("ItemController.ProcessSearch No Item Found ");
-                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmSearchResult.StatusMessage;
                 return View("Search", vmInput);
             }
         }
@@ -111,9 +111,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return Search(vmResult.ItemID);
                 }
 
-                Program.loggerExtension.WriteToUserRequestLog("ItemController.Create Failed, Reason: " + vmResult.StatusErrorMessage);
+                Program.loggerExtension.WriteToUserRequestLog("ItemController.Create Failed, Reason: " + vmResult.StatusMessage);
                 vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
-                vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmResult.StatusMessage;
                 return View(vmInput);
             }
         }
@@ -129,16 +129,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 if (model.UpdateDB(vmInput, UploadFile, _hostingEnv))
                 {
                     Program.loggerExtension.WriteToUserRequestLog("ItemController.Update POST Request For: " + vmInput.ItemCode + " successful!");
-                    vmInput.StatusErrorMessage = "Update Processed";
+                    vmInput.StatusMessage = "Update Processed";
                     vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
                     return View("Display", vmInput);
                 }
                 else
                 {
                     foreach (string item in model.ModelState.ErrorDictionary.Values)                   
-                        vmInput.StatusErrorMessage += item + " ";
+                        vmInput.StatusMessage += item + " ";
                     
-                    Program.loggerExtension.WriteToUserRequestLog("ItemController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    Program.loggerExtension.WriteToUserRequestLog("ItemController.Update Failed, Reason: " + vmInput.StatusMessage);
                     vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
                     return View("DisplayForUpdate", vmInput);
                 }

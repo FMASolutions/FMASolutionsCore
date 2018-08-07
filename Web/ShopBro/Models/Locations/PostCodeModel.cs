@@ -34,7 +34,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {
                 PostCodeViewModel returnVM = new PostCodeViewModel();
-                returnVM.StatusErrorMessage = "No result Found";
+                returnVM.StatusMessage = "No result Found";
                 return returnVM;
             }
         }
@@ -52,7 +52,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
             }
             else
-                vmReturn.StatusErrorMessage = "No Postcodes Found";
+                vmReturn.StatusMessage = "No Postcodes Found";
             return vmReturn;
         }
 
@@ -75,9 +75,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 vmReturn = ConvertToViewModel(postCode);
             else
             {
-                vmReturn.StatusErrorMessage = "Unable to create Postcode";
+                vmReturn.StatusMessage = "Unable to create Postcode";
                 foreach (string item in postCode.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusErrorMessage += " " + item;
+                    vmReturn.StatusMessage += " " + item;
             }
             return vmReturn;
         }

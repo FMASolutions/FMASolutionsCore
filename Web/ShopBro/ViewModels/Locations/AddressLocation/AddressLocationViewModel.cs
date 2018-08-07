@@ -38,7 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [StringLength(100, ErrorMessage = "Address Line 2 should be no more than 100 characters")]
         public string AddressLine2 { get; set; }
         
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
 
 
 

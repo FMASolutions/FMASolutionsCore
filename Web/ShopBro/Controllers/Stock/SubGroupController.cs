@@ -52,7 +52,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 }
 
                 Program.loggerExtension.WriteToUserRequestLog("SubGroupController.ProcessSearch No Item Found ");
-                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmSearchResult.StatusMessage;
                 return View("Search", vmInput);
             }
         }
@@ -102,16 +102,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             using (SubGroupModel model = GetNewModel())
             {
                 SubGroupViewModel vmResult = model.Create(vmInput);
-                if (vmResult.SubGroupID > 0)
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Create Complete successfully for Code: " + vmInput.SubGroupCode);
-                    return Search(vmResult.SubGroupID);
+                    return View("Display", vmResult);
                 }
-
-                Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Create Failed, Reason: " + vmInput.StatusErrorMessage);
-                vmInput.AvailableProductGroups = model.GetAvailableProductGroups();
-                vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
-                return View(vmInput);
+                Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Create Failed, Reason: " + vmInput.StatusMessage);
+                return View(vmResult);
             }
         }
 
@@ -123,22 +120,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (SubGroupModel model = GetNewModel())
             {
-                if (model.UpdateDB(vmInput))
+                SubGroupViewModel vmResult = model.UpdateDB(vmInput);
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Update POST Request For: " + vmInput.SubGroupCode + " successful!");
-                    vmInput.StatusErrorMessage = "Update Processed";
-                    vmInput.AvailableProductGroups = model.GetAvailableProductGroups();
-                    return View("Display", vmInput);
+                    return View("Display", vmResult);
                 }
-                else
-                {
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusErrorMessage += item + " ";
-                        
-                    Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
-                    vmInput.AvailableProductGroups = model.GetAvailableProductGroups();
-                    return View("DisplayForUpdate", vmInput);
-                }
+                Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Update Failed, Reason: " + vmInput.StatusMessage);
+                return View("DisplayForUpdate", vmResult);
             }
         }
 

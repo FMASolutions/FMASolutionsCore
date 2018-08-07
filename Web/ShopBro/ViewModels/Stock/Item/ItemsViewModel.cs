@@ -9,7 +9,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             Items = new List<ItemViewModel>();
         }
         public List<ItemViewModel> Items;
-        public string StatusErrorMessage;
+        public string StatusMessage;
 
     }
 }

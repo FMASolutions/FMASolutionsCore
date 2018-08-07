@@ -16,6 +16,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [StringLength(5, ErrorMessage = "Country Code should be no more than 5 Characters")]
         public string CountryCode { get; set; }
 
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }

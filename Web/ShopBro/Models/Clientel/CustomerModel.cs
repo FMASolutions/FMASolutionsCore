@@ -34,7 +34,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {
                 CustomerViewModel returnVM = new CustomerViewModel();
-                returnVM.StatusErrorMessage = "No result Found";
+                returnVM.StatusMessage = "No result Found";
                 return returnVM;
             }
         }
@@ -52,7 +52,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
             }
             else
-                vmReturn.StatusErrorMessage = "No Customers Found";
+                vmReturn.StatusMessage = "No Customers Found";
             return vmReturn;
         }
 
@@ -75,9 +75,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 vmReturn = ConvertToViewModel(customer);
             else
             {
-                vmReturn.StatusErrorMessage = "Unable to create Customer";
+                vmReturn.StatusMessage = "Unable to create Customer";
                 foreach (string item in customer.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusErrorMessage += " " + item;
+                    vmReturn.StatusMessage += " " + item;
             }
             return vmReturn;
         }

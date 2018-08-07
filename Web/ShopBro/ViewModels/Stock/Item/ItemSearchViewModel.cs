@@ -17,6 +17,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [StringLength(5, ErrorMessage = "Code should be no more than 5 Characters")]
         public string ItemCode { get; set; }
 
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }

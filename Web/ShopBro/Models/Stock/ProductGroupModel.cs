@@ -36,7 +36,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {
                 ProductGroupViewModel returnVM = new ProductGroupViewModel();
-                returnVM.StatusErrorMessage = "No result found";
+                returnVM.StatusMessage = "No result found";
                 return returnVM;
             }
         }
@@ -53,7 +53,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
             }
             else
-                vmReturn.StatusErrorMessage = "No Product Groups Found";
+                vmReturn.StatusMessage = "No Product Groups Found";
             return vmReturn;
         }
 
@@ -66,9 +66,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 vmReturn = ConvertToViewModel(productGroup);
             else
             {
-                vmReturn.StatusErrorMessage = "Unable to create Product Group";
+                vmReturn.StatusMessage = "Unable to create Product Group";
                 foreach (string item in productGroup.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusErrorMessage += item + " ";
+                    vmReturn.StatusMessage += item + " ";
             }
             return vmReturn;
         }

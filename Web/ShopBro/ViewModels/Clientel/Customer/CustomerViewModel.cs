@@ -31,6 +31,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [StringLength(30, ErrorMessage = "Customer Contact Number should be no more than 30 Characters")]
         public string CustomerContactNumber { get; set; }
 
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }

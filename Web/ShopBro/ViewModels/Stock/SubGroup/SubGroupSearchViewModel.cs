@@ -16,6 +16,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
 
         public string SubGroupCode { get; set; }
 
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }

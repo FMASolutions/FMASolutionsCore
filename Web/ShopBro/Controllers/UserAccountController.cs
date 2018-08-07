@@ -24,7 +24,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             if (string.IsNullOrEmpty(vmUser.Username) || string.IsNullOrEmpty(vmUser.Password))
             {
-                vmUser.StatusErrorMessage = "username or password cannot be empty";
+                vmUser.StatusMessage = "username or password cannot be empty";
                 return View("Login", vmUser);
             }
 

@@ -37,7 +37,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {
                 ItemViewModel returnVM = new ItemViewModel();
-                returnVM.StatusErrorMessage = "No Result Found";
+                returnVM.StatusMessage = "No Result Found";
                 return returnVM;
             }
         }
@@ -54,7 +54,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
             }
             else
-                vmReturn.StatusErrorMessage = "No Items Found";
+                vmReturn.StatusMessage = "No Items Found";
             return vmReturn;
         }
 
@@ -84,7 +84,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {                
                 foreach (string message in item.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusErrorMessage += " " + message;
+                    vmReturn.StatusMessage += " " + message;
             }
             return vmReturn;
         }
@@ -119,7 +119,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         private Item ConvertToModel(ItemViewModel vm)
         {
-            Item item = new Item(new CustomModelState()
+            Item item = new Item(_modelState
                 , vm.ItemID
                 , vm.ItemCode
                 , vm.SubGroupID

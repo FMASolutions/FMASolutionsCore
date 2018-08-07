@@ -35,7 +35,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
             {
                 AddressLocationViewModel returnVM = new AddressLocationViewModel();
-                returnVM.StatusErrorMessage = "No result Found";
+                returnVM.StatusMessage = "No result Found";
                 return returnVM;
             }
         }
@@ -53,7 +53,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
             }
             else
-                vmReturn.StatusErrorMessage = "No Address Locations Found";
+                vmReturn.StatusMessage = "No Address Locations Found";
             return vmReturn;
         }
 
@@ -100,9 +100,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 }
                 else
                 {
-                    vmReturn.StatusErrorMessage = "Unable to create Address Locations";
+                    vmReturn.StatusMessage = "Unable to create Address Locations";
                     foreach (string item in addressLocation.ModelState.ErrorDictionary.Values)
-                        vmReturn.StatusErrorMessage += " " + item;
+                        vmReturn.StatusMessage += " " + item;
                 }
             }
             else
@@ -111,9 +111,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                     vmReturn = ConvertToViewModel(addressLocation);
                 else
                 {
-                    vmReturn.StatusErrorMessage = "Unable to create Address Locations";
+                    vmReturn.StatusMessage = "Unable to create Address Locations";
                     foreach (string item in addressLocation.ModelState.ErrorDictionary.Values)
-                        vmReturn.StatusErrorMessage += " " + item;
+                        vmReturn.StatusMessage += " " + item;
                 }
             }
             return vmReturn;

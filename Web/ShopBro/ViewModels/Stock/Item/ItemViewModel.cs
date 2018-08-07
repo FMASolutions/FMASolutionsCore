@@ -36,6 +36,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [Range(0, 9999999)]
         public int ItemReorderQtyReminder { get; set; }
         public string ItemImageFilename { get; set; }
-        public string StatusErrorMessage;
+        public string StatusMessage;
     }
 }

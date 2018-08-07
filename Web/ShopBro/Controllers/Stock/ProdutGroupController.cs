@@ -52,7 +52,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 }
 
                 Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.ProcessSearch No Item Found ");
-                vmInput.StatusErrorMessage = vmSearchResult.StatusErrorMessage;
+                vmInput.StatusMessage = vmSearchResult.StatusMessage;
                 return View("Search", vmInput);
             }
         }
@@ -98,8 +98,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return Search(vmResult.ProductGroupID);
                 }
 
-                Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Create Failed, Reason: " + vmResult.StatusErrorMessage);
-                vmInput.StatusErrorMessage = vmResult.StatusErrorMessage;
+                Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Create Failed, Reason: " + vmResult.StatusMessage);
+                vmInput.StatusMessage = vmResult.StatusMessage;
                 return View(vmInput);
             }
         }
@@ -115,15 +115,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 if (model.UpdateDB(vmInput))
                 {
                     Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Update POST Request For: " + vmInput.ProductGroupCode + " successful!");
-                    vmInput.StatusErrorMessage = "Update processed";
+                    vmInput.StatusMessage = "Update processed";
                     return View("Display", vmInput);
                 }
                 else
                 {
                     foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusErrorMessage += item + " ";
+                        vmInput.StatusMessage += item + " ";
                         
-                    Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Update Failed, Reason: " + vmInput.StatusErrorMessage);
+                    Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Update Failed, Reason: " + vmInput.StatusMessage);
                     return View("DisplayForUpdate", vmInput);
                 }
             }

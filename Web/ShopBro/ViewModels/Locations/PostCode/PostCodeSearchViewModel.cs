@@ -14,6 +14,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         [StringLength(5, ErrorMessage = "City Area Code should be no more than 5 Characters")]
         public string PostCodeCode { get; set; }
 
-        public string StatusErrorMessage { get; set; }
+        public string StatusMessage { get; set; }
     }
 }
