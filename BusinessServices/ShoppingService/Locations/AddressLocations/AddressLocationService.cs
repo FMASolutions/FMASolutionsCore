@@ -71,12 +71,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.AddressLocationID = _uow.AddressLocationRepo.GetNextAvailableID();
                     AddressLocationEntity entity = ConvertModelToEntity(model);
                     success = _uow.AddressLocationRepo.Create(entity);
                     if (success)
                     {
-                        model.AddressLocationID = entity.AddressLocationID;
+                        AddressLocation createdModel = GetByCode(model.AddressLocationCode);
+                        model.AddressLocationID = createdModel.AddressLocationID;
                         _uow.SaveChanges();
                     }
                     else

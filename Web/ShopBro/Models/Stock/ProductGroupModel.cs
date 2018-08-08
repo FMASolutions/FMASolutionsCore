@@ -10,27 +10,30 @@ namespace FMASolutionsCore.Web.ShopBro.Models
     {
         public ProductGroupModel(ICustomModelState modelState, IProductGroupService service)
         {
-            _productGroupService = service;
+            _service = service;
             _modelState = modelState;
         }
         public void Dispose()
         {
-            _productGroupService.Dispose();
+            _service.Dispose();
         }
-
-        public ICustomModelState ModelState { get { return _modelState; } }
-
+        
         private ICustomModelState _modelState;
-        private IProductGroupService _productGroupService;
-
+        private IProductGroupService _service;
+        public ICustomModelState ModelState { get { return _modelState; } }
+        
+        public ProductGroupViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new ProductGroup(_modelState));
+        }
         public ProductGroupViewModel Search(int id = 0, string code = "")
         {
             ProductGroup searchResult = null;
 
             if (id > 0)
-                searchResult = _productGroupService.GetByID(id);
+                searchResult = _service.GetByID(id);
             if (!string.IsNullOrEmpty(code) && searchResult == null)
-                searchResult = _productGroupService.GetByCode(code);
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -42,7 +45,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
         public ProductGroupsViewModel GetAllProductGroups()
         {
-            List<ProductGroup> productGroupList = _productGroupService.GetAll();
+            List<ProductGroup> productGroupList = _service.GetAll();
             ProductGroupsViewModel vmReturn = new ProductGroupsViewModel();
 
             if (productGroupList != null && productGroupList.Count > 0)
@@ -57,30 +60,47 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public ProductGroupViewModel Create(ProductGroupViewModel newProductGroup)
+        public ProductGroupViewModel Create(ProductGroupViewModel vmUserInput)
         {
-            ProductGroup productGroup = ConvertToModel(newProductGroup);
-            productGroup.ProductGroupID = 0; //NOT SURE I NEED THIS?????????????
-            ProductGroupViewModel vmReturn = new ProductGroupViewModel();
-            if (_productGroupService.CreateNew(productGroup))
-                vmReturn = ConvertToViewModel(productGroup);
+            _modelState.ErrorDictionary.Clear();
+
+            ProductGroup model = ConvertToModel(vmUserInput);
+            ProductGroupViewModel vmResult = new ProductGroupViewModel();
+
+            _modelState = model.ModelState;
+
+            if (_service.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete";
+            }
             else
             {
-                vmReturn.StatusMessage = "Unable to create Product Group";
-                foreach (string item in productGroup.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusMessage += item + " ";
+                vmResult.StatusMessage = "Create Failed";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
             }
-            return vmReturn;
+            return vmResult;
         }
 
-        public bool UpdateDB(ProductGroupViewModel updatedProductGroup)
+        public ProductGroupViewModel UpdateDB(ProductGroupViewModel vmUserInput)
         {
-            ProductGroup productGroup = ConvertToModel(updatedProductGroup);
-            if (_productGroupService.UpdateDB(productGroup))
-                return true;
+            _modelState.ErrorDictionary.Clear();
+
+            ProductGroup model = ConvertToModel(vmUserInput);
+            ProductGroupViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
             else
-                _modelState = productGroup.ModelState;
-            return false;
+            {//Return 
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
         }
 
         private ProductGroupViewModel ConvertToViewModel(ProductGroup sourceModel)

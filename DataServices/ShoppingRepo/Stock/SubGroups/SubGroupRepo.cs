@@ -126,20 +126,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region ISubGroupRepo
-        public Int32 GetNextAvailableID()
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("SubGroupRepo.GetNextAvailableID Started");
-
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(SubGroupID),0)+1 FROM SubGroups", transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in SubGroupRepo.GetNextAvailableID: " + ex.Message, this);
-                return -1;
-            }
-        }
         public SubGroupEntity GetByCode(string code)
         {
             try

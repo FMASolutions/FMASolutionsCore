@@ -11,24 +11,29 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public CountryModel(ICustomModelState modelState, ICountryService countryService)
         {
             _modelState = modelState;
-            _countryService = countryService;
+            _service = countryService;
         }
         public void Dispose()
         {
-            _countryService.Dispose();
+            _service.Dispose();
         }
-        public ICustomModelState ModelState { get { return _modelState; } set { _modelState = value; } }
-        private ICustomModelState _modelState;
-        private ICountryService _countryService;
 
+        private ICustomModelState _modelState;
+        private ICountryService _service;
+        public ICustomModelState ModelState { get { return _modelState; } set { _modelState = value; } }
+
+        public CountryViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new Country(_modelState));
+        }
         public CountryViewModel Search(int id = 0, string code = "")
         {
             Country searchResult = null;
 
             if (id > 0)
-                searchResult = _countryService.GetByID(id);
+                searchResult = _service.GetByID(id);
             if (!string.IsNullOrEmpty(code) && searchResult == null)
-                searchResult = _countryService.GetByCode(code);
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -40,7 +45,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
         public CountriesViewModel GetAllCountries()
         {
-            List<Country> countryList = _countryService.GetAll();
+            List<Country> countryList = _service.GetAll();
             CountriesViewModel vmReturn = new CountriesViewModel();
 
             if (countryList != null && countryList.Count > 0)
@@ -55,30 +60,67 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public CountryViewModel Create(CountryViewModel newCountry)
+        public CountryViewModel Create(CountryViewModel vmUserInput)
         {
-            Country country = ConvertToModel(newCountry);
-            country.CountryID = 0; //NOT SURE I NEED THIS?????????????
-            CountryViewModel vmReturn = new CountryViewModel();
-            if (_countryService.CreateNew(country))
-                vmReturn = ConvertToViewModel(country);
+            _modelState.ErrorDictionary.Clear();
+
+            Country model = ConvertToModel(vmUserInput);
+            CountryViewModel vmResult = ConvertToViewModel(model);
+
+            _modelState = model.ModelState;
+
+            if (_service.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete.";
+            }
             else
             {
-                vmReturn.StatusMessage = "Unable to create Country";
-                foreach (string item in country.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusMessage += item + " ";
+                vmUserInput.StatusMessage = "Create Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
             }
-            return vmReturn;
+            return vmResult;
         }
 
-        public bool UpdateDB(CountryViewModel updatedCountry)
+        public CountryViewModel UpdateDB(CountryViewModel vmUserInput)
         {
-            Country country = ConvertToModel(updatedCountry);
-            if (_countryService.UpdateDB(country))
-                return true;
+            _modelState.ErrorDictionary.Clear();
+
+            Country model = ConvertToModel(vmUserInput);
+            CountryViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
             else
-                _modelState = country.ModelState;
-            return false;
+            {
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
+        }
+
+        public CountryViewModel CountryViewModel(CountryViewModel vmUserInput)
+        {
+            _modelState.ErrorDictionary.Clear();
+
+            Country model = ConvertToModel(vmUserInput);
+            CountryViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
+            else
+            {
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
         }
 
         private CountryViewModel ConvertToViewModel(Country sourceModel)

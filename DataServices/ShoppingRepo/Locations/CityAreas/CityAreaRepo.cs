@@ -124,19 +124,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region ICityAreaRepo
-        public Int32 GetNextAvailableID()
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("CityAreaRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CityAreaID),0)+1 FROM CityAreas", transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in CityAreaRepo.GetNextAvailableID: " + ex.Message, this);
-                return -1;
-            }
-        }
         public CityAreaEntity GetByCode(string code)
         {
             try

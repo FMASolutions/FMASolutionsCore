@@ -22,7 +22,6 @@
             <div class="col-sm-12">
                 <div class="text-left">                    
                     Address Location ID: @Html.TextBoxFor(model => model.AddressLocationID, new { ReadOnly="true", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.AddressLocationID, "", new { Class = "error-text" })                  
                 </div>
             </div>
         </div>
@@ -30,15 +29,13 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Address Location Code: @Html.TextBoxFor(model => model.AddressLocationCode, new { placeholder = "Address Location Code", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.AddressLocationCode, "", new { Class = "error-text" })                  
-                </div>
+               </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
                     Address Line 1: @Html.TextBoxFor(model => model.AddressLine1, new { placeholder = "Address Line 1", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.AddressLine1, "", new { Class = "error-text" })                  
                 </div>
             </div>  
         </div>
@@ -46,7 +43,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Address Line 2: @Html.TextBoxFor(model => model.AddressLine2, new { placeholder = "Address Line 2", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.AddressLine2, "", new { Class = "error-text" })          
                 </div>
             </div>  
         </div>
@@ -59,6 +55,7 @@
                         new SelectList(Model.AvailableCityAreas, "Key", "Value",Model.CityAreaID),
                         new { @class = "form-control" } 
                     )
+                    @Html.ValidationMessageFor(model => model.CityAreaID, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -71,6 +68,7 @@
                         new SelectList(Model.AvailablePostCodes, "Key", "Value",Model.PostCodeID),
                         new { @class = "form-control" } 
                     )
+                    @Html.ValidationMessageFor(model => model.PostCodeID, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -80,4 +78,3 @@
         </div>
     </form>
 </div>
-

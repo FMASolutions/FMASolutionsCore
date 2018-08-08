@@ -130,19 +130,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region IAddressLocationRepo
-        public Int32 GetNextAvailableID()
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(AddressLocationID),0)+1 FROM AddressLocations", transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetNextAvailableID: " + ex.Message, this);
-                return -1;
-            }
-        }
         public AddressLocationEntity GetByCode(string code)
         {
             try

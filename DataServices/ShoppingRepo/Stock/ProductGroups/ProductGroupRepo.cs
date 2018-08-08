@@ -123,20 +123,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region IProductGroupRepo
-        public Int32 GetNextAvailableID()
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("ProductGroupRepo.GetNextAvailableID Started");
-
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ProductGroupID),0)+1 FROM ProductGroups", transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in ProductGroupRepo.GetNextAvailableID: " + ex.Message, this);
-                return -1;
-            }
-        }
         public ProductGroupEntity GetByCode(string code)
         {
             try

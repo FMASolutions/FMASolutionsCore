@@ -11,25 +11,31 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public CustomerTypeModel(ICustomModelState modelState, ICustomerTypeService customerTypeService)
         {
             _modelState = modelState;
-            _customerTypeService = customerTypeService;
+            _service = customerTypeService;
         }
         public void Dispose()
         {
-            _customerTypeService.Dispose();
+            _service.Dispose();
         }
 
-        public ICustomModelState ModelState { get { return _modelState; } set { _modelState = value; } }
         private ICustomModelState _modelState;
-        private ICustomerTypeService _customerTypeService;
+        private ICustomerTypeService _service;
+
+        public ICustomModelState ModelState { get { return _modelState; } set { _modelState = value; } }
+
+        public CustomerTypeViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new CustomerType(_modelState));
+        }
 
         public CustomerTypeViewModel Search(int id = 0, string code = "")
         {
             CustomerType searchResult = null;
 
             if (id > 0)
-                searchResult = _customerTypeService.GetByID(id);
+                searchResult = _service.GetByID(id);
             if (!string.IsNullOrEmpty(code) && searchResult == null)
-                searchResult = _customerTypeService.GetByCode(code);
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -41,7 +47,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
         public CustomerTypesViewModel GetAllCustomerTypes()
         {
-            List<CustomerType> customerTypeList = _customerTypeService.GetAll();
+            List<CustomerType> customerTypeList = _service.GetAll();
             CustomerTypesViewModel vmReturn = new CustomerTypesViewModel();
 
             if (customerTypeList != null && customerTypeList.Count > 0)
@@ -56,30 +62,47 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public CustomerTypeViewModel Create(CustomerTypeViewModel newCustomerType)
+        public CustomerTypeViewModel Create(CustomerTypeViewModel vmUserInput)
         {
-            CustomerType customerType = ConvertToModel(newCustomerType);
-            customerType.CustomerTypeID = 0; //NOT SURE I NEED THIS?????????????
-            CustomerTypeViewModel vmReturn = new CustomerTypeViewModel();
-            if (_customerTypeService.CreateNew(customerType))
-                vmReturn = ConvertToViewModel(customerType);
+            _modelState.ErrorDictionary.Clear();
+
+            CustomerType model = ConvertToModel(vmUserInput);
+            CustomerTypeViewModel vmResult = ConvertToViewModel(model);
+
+            _modelState = model.ModelState;
+
+            if (_service.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete.";
+            }
             else
             {
-                vmReturn.StatusMessage = "Unable to create Customer Type";
-                foreach (string item in customerType.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusMessage += item + " ";
+                vmUserInput.StatusMessage = "Create Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
             }
-            return vmReturn;
+            return vmResult;
         }
 
-        public bool UpdateDB(CustomerTypeViewModel updatedCustomerType)
+        public CustomerTypeViewModel UpdateDB(CustomerTypeViewModel vmUserInput)
         {
-            CustomerType customerType = ConvertToModel(updatedCustomerType);
-            if (_customerTypeService.UpdateDB(customerType))
-                return true;
+            _modelState.ErrorDictionary.Clear();
+
+            CustomerType model = ConvertToModel(vmUserInput);
+            CustomerTypeViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
             else
-                _modelState = customerType.ModelState;
-            return false;
+            {
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
         }
 
         private CustomerTypeViewModel ConvertToViewModel(CustomerType sourceModel)

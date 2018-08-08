@@ -1,5 +1,5 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.PostCodeSearchViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.GenericSearchViewModel
 @{
     ViewData["Title"] = "Post Code - Search Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
@@ -22,24 +22,12 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    Postcode ID: @Html.TextBoxFor(model => model.PostCodeID, new { placeholder = "Postcode ID", Class="form-control mb-2"})                    
+                    Postcode ID: @Html.TextBoxFor(model => model.ID, new { placeholder = "Postcode ID", Class="form-control mb-2"})                    
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    Postcode Code: @Html.TextBoxFor(model => model.PostCodeCode, new { placeholder = "Postcode Code", Class="form-control mb-2"})                    
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.PostCodeID, "", new { Class = "error-text" })                  
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.PostCodeCode, "", new { Class = "error-text" })                                 
+                    Postcode Code: @Html.TextBoxFor(model => model.Code, new { placeholder = "Postcode Code", Class="form-control mb-2"})                    
                 </div>
             </div>
         </div>

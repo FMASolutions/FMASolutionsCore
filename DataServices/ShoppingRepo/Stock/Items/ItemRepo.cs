@@ -143,20 +143,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region IItemRepo
-        public Int32 GetNextAvailableID()
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("ItemRepo.GetNextAvailableID Started");
-
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(ItemID),0)+1 FROM Items", transaction: Transaction);
-            }
-            catch(Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in ItemRepo.GetNextAvailableID: " + ex.Message, this);
-                return -1;
-            }
-        }
         public ItemEntity GetByCode(string code)
         {
             try

@@ -1,5 +1,5 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.ItemSearchViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.GenericSearchViewModel
 @{
     ViewData["Title"] = "Item - Search";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
@@ -22,24 +22,12 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    Item ID: @Html.TextBoxFor(model => model.ItemID, new { placeholder = "Item ID", Class="form-control mb-2"})                    
+                    Item ID: @Html.TextBoxFor(model => model.ID, new { placeholder = "Item ID", Class="form-control mb-2"})                    
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    Item Code: @Html.TextBoxFor(model => model.ItemCode, new { placeholder = "Item Code", Class="form-control mb-2"})                    
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.ItemID, "", new { Class = "error-text" })                  
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { Class = "error-text" })                                 
+                    Item Code: @Html.TextBoxFor(model => model.Code, new { placeholder = "Item Code", Class="form-control mb-2"})                    
                 </div>
             </div>
         </div>

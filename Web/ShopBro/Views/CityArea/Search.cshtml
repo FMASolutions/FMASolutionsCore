@@ -1,5 +1,5 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.CityAreaSearchViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.GenericSearchViewModel
 @{
     ViewData["Title"] = "City Area - Search Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
@@ -22,24 +22,12 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    City Area ID: @Html.TextBoxFor(model => model.CityAreaID, new { placeholder = "City Area ID", Class="form-control mb-2"})                    
+                    City Area ID: @Html.TextBoxFor(model => model.ID, new { placeholder = "City Area ID", Class="form-control mb-2"})                    
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    City Area Code: @Html.TextBoxFor(model => model.CityAreaCode, new { placeholder = "City Area Code", Class="form-control mb-2"})                    
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.CityAreaID, "", new { Class = "error-text" })                  
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.CityAreaCode, "", new { Class = "error-text" })                                 
+                    City Area Code: @Html.TextBoxFor(model => model.Code, new { placeholder = "City Area Code", Class="form-control mb-2"})                    
                 </div>
             </div>
         </div>

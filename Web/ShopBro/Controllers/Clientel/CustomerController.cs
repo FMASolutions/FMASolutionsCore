@@ -21,7 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerController.Index Request Received");
 
-            CustomerSearchViewModel vmInput = new CustomerSearchViewModel();
+            GenericSearchViewModel vmInput = new GenericSearchViewModel();
             return View("Search", vmInput);
         }
 
@@ -30,19 +30,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerController.Search Request Received with ID = " + id.ToString());
 
-            CustomerSearchViewModel vmInput = new CustomerSearchViewModel();
-            vmInput.CustomerID = id;
+            GenericSearchViewModel vmInput = new GenericSearchViewModel();
+            vmInput.ID = id;
             return ProcessSearch(vmInput);
         }
 
         [HttpPost]
-        public IActionResult ProcessSearch(CustomerSearchViewModel vmInput)
+        public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerController.ProcessSearch Started");
 
             using (CustomerModel model = GetNewModel())
             {
-                CustomerViewModel vmSearchResult = model.Search(vmInput.CustomerID, vmInput.CustomerCode);
+                CustomerViewModel vmSearchResult = model.Search(vmInput.ID, vmInput.Code);
 
                 if (vmSearchResult.CustomerID > 0)
                 {
@@ -65,8 +65,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (CustomerModel model = GetNewModel())
             {
-                vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
-                return View(vmInput);
+                CustomerViewModel vmResult = model.Search(vmInput.CustomerID);
+                if (vmResult.CustomerID > 0)
+                    return View(vmResult);
+                else
+                {
+                    GenericSearchViewModel vm = new GenericSearchViewModel();
+                    return View("Search", vm);
+                }
             }
         }
         public IActionResult DisplayAll()
@@ -87,8 +93,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (CustomerModel model = GetNewModel())
             {
-                CustomerViewModel vm = new CustomerViewModel();
-                vm.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
+                CustomerViewModel vm = model.GetEmptyViewModel();
                 return View(vm);
             }
         }
@@ -102,16 +107,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             using (CustomerModel model = GetNewModel())
             {
                 CustomerViewModel vmResult = model.Create(vmInput);
-                if (vmResult.CustomerID > 0)
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CustomerController.Create Complete successfully for Code: " + vmInput.CustomerCode);
-                    return Search(vmResult.CustomerID);
+                    return View("Display", vmResult);
                 }
 
-                Program.loggerExtension.WriteToUserRequestLog("CustomerController.Create Failed, Reason: " + vmInput.StatusMessage);
-                vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
-                vmInput.StatusMessage = vmResult.StatusMessage;
-                return View(vmInput);
+                Program.loggerExtension.WriteToUserRequestLog("CustomerController.Create Failed, Reason: " + vmResult.StatusMessage);
+                return View(vmResult);
             }
         }
 
@@ -123,22 +126,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (CustomerModel model = GetNewModel())
             {
-                if (model.UpdateDB(vmInput))
+                CustomerViewModel vmResult = model.UpdateDB(vmInput);
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CustomerController.Update POST Request For: " + vmInput.CustomerCode + " successful!");
-                    vmInput.StatusMessage = "Update Processed";
-                    vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
-                    return View("Display", vmInput);
+                    return View("Display", vmResult);
                 }
-                else
-                {
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusMessage += item + " ";
-                        
-                    Program.loggerExtension.WriteToUserRequestLog("CustomerController.Update Failed, Reason: " + vmInput.StatusMessage);
-                    vmInput.AvailableCustomerTypes = model.GetAvailableCustomerTypes();
-                    return View("DisplayForUpdate", vmInput);
-                }
+                Program.loggerExtension.WriteToUserRequestLog("CustomerController.Update Failed, Reason: " + vmInput.StatusMessage);
+                return View("DisplayForUpdate", vmResult);
             }
         }
 

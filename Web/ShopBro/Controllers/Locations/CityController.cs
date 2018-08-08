@@ -21,7 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("CityController.Index Request Received");
 
-            CitySearchViewModel vmInput = new CitySearchViewModel();
+            GenericSearchViewModel vmInput = new GenericSearchViewModel();
             return View("Search", vmInput);
         }
 
@@ -30,19 +30,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("CityController.Search Request Received with ID = " + id.ToString());
 
-            CitySearchViewModel vmInput = new CitySearchViewModel();
-            vmInput.CityID = id;
+            GenericSearchViewModel vmInput = new GenericSearchViewModel();
+            vmInput.ID = id;
             return ProcessSearch(vmInput);
         }
 
         [HttpPost]
-        public IActionResult ProcessSearch(CitySearchViewModel vmInput)
+        public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("CityController.ProcessSearch Started");
 
             using (CityModel model = GetNewModel())
             {
-                CityViewModel vmSearchResult = model.Search(vmInput.CityID, vmInput.CityCode);
+                CityViewModel vmSearchResult = model.Search(vmInput.ID, vmInput.Code);
 
                 if (vmSearchResult.CityID > 0)
                 {
@@ -51,11 +51,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     return View("Display", vmSearchResult);
                 }
                 Program.loggerExtension.WriteToUserRequestLog("CityController.ProcessSearch No Item Found ");
-                vmInput.StatusMessage = vmSearchResult.StatusMessage;
-                return View("Search", vmSearchResult);
+                return View("Search", vmInput);
             }
         }
-
 
         [HttpPost]
         [Authorize(Policy = "Admin")]
@@ -65,8 +63,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (CityModel model = GetNewModel())
             {
-                vmInput.AvailableCountries = model.GetAvailableCountries();
-                return View(vmInput);
+                CityViewModel vmResult = model.Search(vmInput.CityID);
+                if (vmResult.CityID > 0)
+                    return View(vmResult);
+                else
+                {
+                    GenericSearchViewModel vm = new GenericSearchViewModel();
+                    return View("Search", vm);
+                }
             }
         }
         public IActionResult DisplayAll()
@@ -87,8 +91,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (CityModel model = GetNewModel())
             {
-                CityViewModel vm = new CityViewModel();
-                vm.AvailableCountries = model.GetAvailableCountries();
+                CityViewModel vm = model.GetemptyViewModel();
                 return View(vm);
             }
         }
@@ -102,16 +105,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             using (CityModel model = GetNewModel())
             {
                 CityViewModel vmResult = model.Create(vmInput);
-                if (vmResult.CityID > 0)
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CityController.Create Complete successfully for Code: " + vmInput.CityCode);
-                    return Search(vmResult.CityID);
+                    return View("Display", vmResult);
                 }
 
                 Program.loggerExtension.WriteToUserRequestLog("CityController.Create Failed, Reason: " + vmInput.StatusMessage);
-                vmInput.AvailableCountries = model.GetAvailableCountries();
-                vmInput.StatusMessage = vmResult.StatusMessage;
-                return View(vmInput);
+                return View(vmResult);
             }
         }
 
@@ -123,22 +124,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (CityModel model = GetNewModel())
             {
-                if (model.UpdateDB(vmInput))
+                CityViewModel vmResult = model.UpdateDB(vmInput);
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CityController.Update POST Request For: " + vmInput.CityCode + " successful!");
-                    vmInput.StatusMessage = "Update Processed";
-                    vmInput.AvailableCountries = model.GetAvailableCountries();
-                    return View("Display", vmInput);
+                    return View("Display", vmResult);
                 }
-                else
-                {
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusMessage += item + " ";
-
-                    Program.loggerExtension.WriteToUserRequestLog("CityController.Update Failed, Reason: " + vmInput.StatusMessage);
-                    vmInput.AvailableCountries = model.GetAvailableCountries();
-                    return View("DisplayForUpdate", vmInput);
-                }
+                Program.loggerExtension.WriteToUserRequestLog("CityController.Update Failed, Reason: " + vmResult.StatusMessage);
+                return View("DisplayForUpdate", vmResult);
             }
         }
 

@@ -21,24 +21,21 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">                    
-                    Customer Type ID: @Html.TextBoxFor(model => model.CustomerTypeID, new { ReadOnly="true", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerTypeID, "", new { Class = "error-text" })                  
+                    Customer Type ID: @Html.TextBoxFor(model => model.CustomerTypeID, new { ReadOnly="true", Class="form-control mb-2"})           
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    Customer Type Code: @Html.TextBoxFor(model => model.CustomerTypeCode, new { placeholder = "Customer Type Code", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerTypeCode, "", new { Class = "error-text" })                  
+                    Customer Type Code: @Html.TextBoxFor(model => model.CustomerTypeCode, new { placeholder = "Customer Type Code", Class="form-control mb-2"})        
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    Customer Type Name: @Html.TextBoxFor(model => model.CustomerTypeName, new { placeholder = "Customer Type Name", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerTypeName, "", new { Class = "error-text" })                  
+                    Customer Type Name: @Html.TextBoxFor(model => model.CustomerTypeName, new { placeholder = "Customer Type Name", Class="form-control mb-2"})          
                 </div>
             </div>  
         </div>        

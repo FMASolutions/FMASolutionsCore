@@ -11,24 +11,28 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public CityModel(ICustomModelState modelState, ICityService service)
         {
             _modelState = modelState;
-            _cityService = service;
+            _service = service;
         }
         public void Dispose()
         {
-            _cityService.Dispose();
+            _service.Dispose();
         }
         private ICustomModelState _modelState;
-        private ICityService _cityService;
+        private ICityService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
 
+        public CityViewModel GetemptyViewModel()
+        {
+            return ConvertToViewModel(new City(_modelState));
+        }
         public CityViewModel Search(int id = 0, string code = "")
         {
             City searchResult = null;
-            if (id > 0)
-                searchResult = _cityService.GetByID(id);
-            if (searchResult == null && !string.IsNullOrEmpty(code))
-                searchResult = _cityService.GetByCode(code);
 
+            if (id > 0)
+                searchResult = _service.GetByID(id);
+            if (searchResult == null && !string.IsNullOrEmpty(code))
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -41,7 +45,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         public CitiesViewModel GetAllCities()
         {
-            List<City> cityList = _cityService.GetAll();
+            List<City> cityList = _service.GetAll();
             CitiesViewModel vmReturn = new CitiesViewModel();
 
             if (cityList != null && cityList.Count > 0)
@@ -56,40 +60,57 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public Dictionary<int, string> GetAvailableCountries()
+        public CityViewModel Create(CityViewModel vmUserInput)
+        {
+            _modelState.ErrorDictionary.Clear();
+
+            City model = ConvertToModel(vmUserInput);
+            CityViewModel vmResult = ConvertToViewModel(model);
+
+            _modelState = model.ModelState;
+
+            if (_service.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete.";
+            }
+            else
+            {
+                vmUserInput.StatusMessage = "Create Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
+        }
+
+        public CityViewModel UpdateDB(CityViewModel vmUserInput)
+        {
+            _modelState.ErrorDictionary.Clear();
+
+            City model = ConvertToModel(vmUserInput);
+            CityViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
+            else
+            { 
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
+        }
+
+        private Dictionary<int, string> GetAvailableCountries()
         {
             Dictionary<int, string> countries = new Dictionary<int, string>();
-            var list = _cityService.GetAvailableCountries();
+            var list = _service.GetAvailableCountries();
             if (list != null)
                 foreach (var item in list)
                     countries.Add(item.CountryID, item.CountryID.ToString() + " (" + item.CountryCode + ") - " + item.CountryName);
             return countries;
-        }
-
-        public CityViewModel Create(CityViewModel newCity)
-        {
-            City city = ConvertToModel(newCity);
-            city.CityID = 0; //NOT SURE I NEED TRHIS???????????????
-            CityViewModel vmReturn = new CityViewModel();
-            if (_cityService.CreateNew(city))
-                vmReturn = ConvertToViewModel(city);
-            else
-            {
-                vmReturn.StatusMessage = "Unable to create City";
-                foreach (string item in city.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusMessage += " " + item;
-            }
-            return vmReturn;
-        }
-
-        public bool UpdateDB(CityViewModel updatedCity)
-        {
-            City city = ConvertToModel(updatedCity);
-            if (_cityService.UpdateDB(city))
-                return true;
-            else
-                _modelState = city.ModelState;
-            return false;
         }
         private CityViewModel ConvertToViewModel(City model)
         {

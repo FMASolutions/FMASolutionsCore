@@ -122,19 +122,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region ICountryRepo
-        public Int32 GetNextAvailableID()
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("CountryRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(CountryID),0)+1 FROM Countries", transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in CountryRepo.GetNextAvailableID: " + ex.Message, this);
-                return -1;
-            }
-        }
         public CountryEntity GetByCode(string code)
         {
             try

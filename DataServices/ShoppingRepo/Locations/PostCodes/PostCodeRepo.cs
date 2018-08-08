@@ -124,19 +124,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region IPostCodeRepo
-        public Int32 GetNextAvailableID()
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("PostCodeRepo.GetNextAvailableID Started");
-                return _dbConnection.QueryFirst<Int32>("SELECT ISNULL(MAX(PostCodeID),0)+1 FROM PostCodes", transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in PostCodeRepo.GetNextAvailableID: " + ex.Message, this);
-                return -1;
-            }
-        }
         public PostCodeEntity GetByCode(string code)
         {
             try

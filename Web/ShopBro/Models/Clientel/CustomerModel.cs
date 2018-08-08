@@ -11,24 +11,30 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public CustomerModel(ICustomModelState modelState, ICustomerService service)
         {
             _modelState = modelState;
-            _customerService = service;
+            _service = service;
         }
         public void Dispose()
         {
-            _customerService.Dispose();
+            _service.Dispose();
         }
+
         private ICustomModelState _modelState;
-        private ICustomerService _customerService;
+        private ICustomerService _service;
+
         public ICustomModelState ModelState { get { return _modelState; } }
 
+        public CustomerViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new Customer(_modelState));
+        }
+        
         public CustomerViewModel Search(int id = 0, string code = "")
         {
             Customer searchResult = null;
             if (id > 0)
-                searchResult = _customerService.GetByID(id);
+                searchResult = _service.GetByID(id);
             if (searchResult == null && !string.IsNullOrEmpty(code))
-                searchResult = _customerService.GetByCode(code);
-
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -41,7 +47,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         public CustomersViewModel GetAllCustomers()
         {
-            List<Customer> customerList = _customerService.GetAll();
+            List<Customer> customerList = _service.GetAll();
             CustomersViewModel vmReturn = new CustomersViewModel();
 
             if (customerList != null && customerList.Count > 0)
@@ -56,41 +62,60 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public Dictionary<int, string> GetAvailableCustomerTypes()
+        public CustomerViewModel Create(CustomerViewModel vmUserInput)
+        {
+            _modelState.ErrorDictionary.Clear();
+
+            Customer model = ConvertToModel(vmUserInput);
+            CustomerViewModel vmResult = ConvertToViewModel(model);
+
+            _modelState = model.ModelState;
+
+            if (_service.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete.";
+            }
+            else
+            {
+                vmUserInput.StatusMessage = "Create Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
+        }
+
+        public CustomerViewModel UpdateDB(CustomerViewModel vmUserInput)
+        {
+            _modelState.ErrorDictionary.Clear();
+
+            Customer model = ConvertToModel(vmUserInput);
+            CustomerViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
+            else
+            {
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
+        }
+
+        private Dictionary<int, string> GetAvailableCustomerTypes()
         {
             Dictionary<int, string> customerTypes = new Dictionary<int, string>();
-            var list = _customerService.GetAvailableCustomerTypes();
-            if (list != null)   
+            var list = _service.GetAvailableCustomerTypes();
+            if (list != null)
                 foreach (var item in list)
                     customerTypes.Add(item.CustomerTypeID, item.CustomerTypeID.ToString() + " (" + item.CustomerTypeCode + ") - " + item.CustomerTypeName);
             return customerTypes;
         }
+        
 
-        public CustomerViewModel Create(CustomerViewModel newCustomer)
-        {
-            Customer customer = ConvertToModel(newCustomer);
-            customer.CustomerID = 0; //NOT SURE I NEED TRHIS???????????????
-            CustomerViewModel vmReturn = new CustomerViewModel();
-            if (_customerService.CreateNew(customer))
-                vmReturn = ConvertToViewModel(customer);
-            else
-            {
-                vmReturn.StatusMessage = "Unable to create Customer";
-                foreach (string item in customer.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusMessage += " " + item;
-            }
-            return vmReturn;
-        }
-
-        public bool UpdateDB(CustomerViewModel updatedCustomer)
-        {
-            Customer customer = ConvertToModel(updatedCustomer);
-            if (_customerService.UpdateDB(customer))
-                return true;
-            else
-                _modelState = customer.ModelState;
-            return false;
-        }
         private CustomerViewModel ConvertToViewModel(Customer model)
         {
             CustomerViewModel vm = new CustomerViewModel();

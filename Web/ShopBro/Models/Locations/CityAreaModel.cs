@@ -11,24 +11,28 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public CityAreaModel(ICustomModelState modelState, ICityAreaService service)
         {
             _modelState = modelState;
-            _cityAreaService = service;
+            _service = service;
         }
         public void Dispose()
         {
-            _cityAreaService.Dispose();
+            _service.Dispose();
         }
         private ICustomModelState _modelState;
-        private ICityAreaService _cityAreaService;
+        private ICityAreaService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
 
+        public CityAreaViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new CityArea(_modelState));
+        }
         public CityAreaViewModel Search(int id = 0, string code = "")
         {
             CityArea searchResult = null;
-            if (id > 0)
-                searchResult = _cityAreaService.GetByID(id);
-            if (searchResult == null && !string.IsNullOrEmpty(code))
-                searchResult = _cityAreaService.GetByCode(code);
 
+            if (id > 0)
+                searchResult = _service.GetByID(id);
+            if (searchResult == null && !string.IsNullOrEmpty(code))
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -41,7 +45,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         public CityAreasViewModel GetAllCityAreas()
         {
-            List<CityArea> cityAreaList = _cityAreaService.GetAll();
+            List<CityArea> cityAreaList = _service.GetAll();
             CityAreasViewModel vmReturn = new CityAreasViewModel();
 
             if (cityAreaList != null && cityAreaList.Count > 0)
@@ -56,40 +60,58 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public Dictionary<int, string> GetAvailableCities()
+        public CityAreaViewModel Create(CityAreaViewModel vmUserInput)
+        {
+            _modelState.ErrorDictionary.Clear();
+
+            CityArea model = ConvertToModel(vmUserInput);
+            CityAreaViewModel vmResult = ConvertToViewModel(model);
+
+            _modelState = model.ModelState;
+
+            if (_service.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete.";
+            }
+            else
+            {
+                vmUserInput.StatusMessage = "Create Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+
+            }
+            return vmResult;
+        }
+
+        public CityAreaViewModel UpdateDB(CityAreaViewModel vmUserInput)
+        {
+            _modelState.ErrorDictionary.Clear();
+
+            CityArea model = ConvertToModel(vmUserInput);
+            CityAreaViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
+            else
+            { 
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
+        }
+
+        private Dictionary<int, string> GetAvailableCities()
         {
             Dictionary<int, string> cities = new Dictionary<int, string>();
-            var list = _cityAreaService.GetAvailableCities();
+            var list = _service.GetAvailableCities();
             if (list != null)
                 foreach (var item in list)
                     cities.Add(item.CityID, item.CityID.ToString() + " (" + item.CityCode + ") - " + item.CityName);
             return cities;
-        }
-
-        public CityAreaViewModel Create(CityAreaViewModel newCityArea)
-        {
-            CityArea cityArea = ConvertToModel(newCityArea);
-            cityArea.CityAreaID = 0; //NOT SURE I NEED TRHIS???????????????
-            CityAreaViewModel vmReturn = new CityAreaViewModel();
-            if (_cityAreaService.CreateNew(cityArea))
-                vmReturn = ConvertToViewModel(cityArea);
-            else
-            {
-                vmReturn.StatusMessage = "Unable to create City Area";
-                foreach (string item in cityArea.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusMessage += " " + item;
-            }
-            return vmReturn;
-        }
-
-        public bool UpdateDB(CityAreaViewModel updatedCityArea)
-        {
-            CityArea cityArea = ConvertToModel(updatedCityArea);
-            if (_cityAreaService.UpdateDB(cityArea))
-                return true;
-            else
-                _modelState = cityArea.ModelState;
-            return false;
         }
         private CityAreaViewModel ConvertToViewModel(CityArea model)
         {

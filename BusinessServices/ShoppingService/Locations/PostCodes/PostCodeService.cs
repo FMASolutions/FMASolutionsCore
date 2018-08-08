@@ -63,12 +63,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.PostCodeID = _uow.PostCodeRepo.GetNextAvailableID();
                     PostCodeEntity entity = ConvertModelToEntity(model);
                     success = _uow.PostCodeRepo.Create(entity);
                     if (success)
                     {
-                        model.PostCodeID = entity.PostCodeID;
+                        PostCode createdModel = GetByCode(model.PostCodeCode);
+                        model.PostCodeID = createdModel.PostCodeID;
                         _uow.SaveChanges();
                     }
                     else

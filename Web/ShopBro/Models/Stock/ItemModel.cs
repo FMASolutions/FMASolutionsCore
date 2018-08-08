@@ -13,25 +13,29 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public ItemModel(ICustomModelState modelState, IItemService itemService)
         {
             _modelState = modelState;
-            _itemService = itemService;
+            _service = itemService;
         }
         public void Dispose()
         {
-            _itemService.Dispose();
+            _service.Dispose();
         }
 
         private ICustomModelState _modelState;
-        private IItemService _itemService;
+        private IItemService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
-
+        
+        public ItemViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new Item(_modelState));
+        }
         public ItemViewModel Search(int id = 0, string code = "")
         {
             Item searchResult = null;
-            if (id > 0)
-                searchResult = _itemService.GetByID(id);
-            if (searchResult == null && string.IsNullOrEmpty(code) == false)
-                searchResult = _itemService.GetByCode(code);
 
+            if (id > 0)
+                searchResult = _service.GetByID(id);
+            if (searchResult == null && string.IsNullOrEmpty(code) == false)
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -45,7 +49,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public ItemsViewModel GetAllItems()
         {
             ItemsViewModel vmReturn = new ItemsViewModel();
-            List<Item> itemsList = _itemService.GetAll();
+            List<Item> itemsList = _service.GetAll();
             if (itemsList != null && itemsList.Count > 0)
             {
                 foreach (var item in itemsList)
@@ -56,13 +60,59 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
                 vmReturn.StatusMessage = "No Items Found";
             return vmReturn;
+        }        
+
+        public ItemViewModel Create(ItemViewModel vmUserInput, IFormFile uploadFile, IHostingEnvironment he)
+        {            
+            UploadAndUpdateImage(vmUserInput, uploadFile, he);
+            _modelState.ErrorDictionary.Clear();
+
+            Item model = ConvertToModel(vmUserInput);
+            ItemViewModel vmResult = ConvertToViewModel(model);
+
+            _modelState = model.ModelState;
+
+            if (_service.CreateNew(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Create Complete.";
+            }
+            else
+            {
+                vmUserInput.StatusMessage = "Create Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+
+            }
+            return vmResult;
         }
 
-        public Dictionary<int, string> GetAvailableSubGroups()
+        public ItemViewModel UpdateDB(ItemViewModel vmUserInput, IFormFile uploadFile, IHostingEnvironment he)
+        {
+            UploadAndUpdateImage(vmUserInput, uploadFile, he);
+            _modelState.ErrorDictionary.Clear();
+
+            Item model = ConvertToModel(vmUserInput);
+            ItemViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
+            else
+            {//Return 
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
+        }
+
+        private Dictionary<int, string> GetAvailableSubGroups()
         {
             Dictionary<int, string> subGroups = null;
 
-            var list = _itemService.GetAllAvailableSubGroups();
+            var list = _service.GetAllAvailableSubGroups();
             if (list != null)
             {
                 subGroups = new Dictionary<int, string>();
@@ -71,35 +121,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             }
             return subGroups;
         }
-
-        public ItemViewModel Create(ItemViewModel newModel, IFormFile uploadFile, IHostingEnvironment he)
-        {            
-            UploadAndUpdateImage(newModel, uploadFile, he);
-            Item item = ConvertToModel(newModel);
-            item.ItemID = 0; //NOT 100% SURE I NEED THIS????????????
-            ItemViewModel vmReturn = new ItemViewModel();
-
-            if (_itemService.CreateNew(item))
-                vmReturn = ConvertToViewModel(item);
-            else
-            {                
-                foreach (string message in item.ModelState.ErrorDictionary.Values)
-                    vmReturn.StatusMessage += " " + message;
-            }
-            return vmReturn;
-        }
-
-        public bool UpdateDB(ItemViewModel updatedItem, IFormFile uploadFile, IHostingEnvironment he)
-        {
-            UploadAndUpdateImage(updatedItem, uploadFile, he);
-            Item item = ConvertToModel(updatedItem);
-            if (_itemService.UpdateDB(item))
-                return true;
-            else
-                _modelState = item.ModelState;
-            return false;
-        }
-
         private ItemViewModel ConvertToViewModel(Item model)
         {
             ItemViewModel returnVM = new ItemViewModel();

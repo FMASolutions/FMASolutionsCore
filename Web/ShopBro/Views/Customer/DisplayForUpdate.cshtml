@@ -21,16 +21,14 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">                    
-                    Customer ID: @Html.TextBoxFor(model => model.CustomerID, new { ReadOnly="true", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerID, "", new { Class = "error-text" })                  
+                    Customer ID: @Html.TextBoxFor(model => model.CustomerID, new { ReadOnly="true", Class="form-control mb-2"})             
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    Customer Code: @Html.TextBoxFor(model => model.CustomerCode, new { placeholder = "Customer Code", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerCode, "", new { Class = "error-text" })                  
+                    Customer Code: @Html.TextBoxFor(model => model.CustomerCode, new { placeholder = "Customer Code", Class="form-control mb-2"})        
                 </div>
             </div>
         </div>
@@ -43,30 +41,28 @@
                         new SelectList(Model.AvailableCustomerTypes, "Key", "Value",Model.CustomerTypeID),
                         new { @class = "form-control" } 
                     )
+                    @Html.ValidationMessageFor(model => model.CustomerTypeID, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    Customer Name: @Html.TextBoxFor(model => model.CustomerName, new { placeholder = "Customer Name", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { Class = "error-text" })                  
+                    Customer Name: @Html.TextBoxFor(model => model.CustomerName, new { placeholder = "Customer Name", Class="form-control mb-2"})   
                 </div>
             </div>  
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    Contact Number: @Html.TextBoxFor(model => model.CustomerContactNumber, new { placeholder = "Customer Contact Number", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerContactNumber, "", new { Class = "error-text" })                  
+                    Contact Number: @Html.TextBoxFor(model => model.CustomerContactNumber, new { placeholder = "Customer Contact Number", Class="form-control mb-2"})       
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    E-Mail Address: @Html.TextBoxFor(model => model.CustomerEmailAddress, new { placeholder = "Customer E-Mail Address", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CustomerEmailAddress, "", new { Class = "error-text" })                  
+                    E-Mail Address: @Html.TextBoxFor(model => model.CustomerEmailAddress, new { placeholder = "Customer E-Mail Address", Class="form-control mb-2"})            
                 </div>
             </div>
         </div>

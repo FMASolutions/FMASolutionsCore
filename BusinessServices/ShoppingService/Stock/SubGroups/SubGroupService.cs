@@ -64,12 +64,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.SubGroupID = _uow.SubGroupRepo.GetNextAvailableID();
                     SubGroupEntity entity = ConvertModelToEntity(model);
                     success = _uow.SubGroupRepo.Create(entity);
                     if (success)
                     {
-                        model.SubGroupID = entity.SubGroupID;
+                        SubGroup createdModel = GetByCode(model.SubGroupCode);
+                        model.SubGroupID = createdModel.SubGroupID;
                         _uow.SaveChanges();
                     }
                     else

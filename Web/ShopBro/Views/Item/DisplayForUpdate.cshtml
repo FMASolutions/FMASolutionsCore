@@ -29,7 +29,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Item Code: @Html.TextBoxFor(model => model.ItemCode, new { placeholder = "Item Code", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -50,7 +49,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Item Name: @Html.TextBoxFor(model => model.ItemName, new { placeholder = "Item Name", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.ItemName, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>    
@@ -58,7 +56,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Item Description: @Html.TextBoxFor(model => model.ItemDescription, new { placeholder = "Item Description", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.ItemDescription, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -66,7 +63,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Default Sale Price: @Html.TextBoxFor(model => model.ItemUnitPrice, new { placeholder = "Item Price", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.ItemUnitPrice, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -74,7 +70,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Minimum Sale Price: @Html.TextBoxFor(model => model.ItemUnitPriceWithMaxDiscount, new { placeholder = "Item Price (Minimum)", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.ItemUnitPriceWithMaxDiscount, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -82,7 +77,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Quantity: @Html.TextBoxFor(model => model.ItemAvailableQty, new { placeholder = "Item Quantity", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.ItemAvailableQty, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -90,7 +84,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Low Stock Reminder Quantity: @Html.TextBoxFor(model => model.ItemReorderQtyReminder, new { placeholder = "Reminder Quantity", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.ItemAvailableQty, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>

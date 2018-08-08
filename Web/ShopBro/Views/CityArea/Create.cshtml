@@ -22,7 +22,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     City Area Code: @Html.TextBoxFor(model => model.CityAreaCode, new { placeholder = "City Area Code", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CityAreaCode, "", new { Class = "error-text" })                  
                 </div>
             </div>
         </div>     
@@ -36,6 +35,7 @@
                         "- Select City -",
                         new { @class = "form-control" } 
                     )
+                    @Html.ValidationMessageFor(model => model.CityID, "", new { Class = "error-text" })
                 </div>
             </div>
         </div>
@@ -43,7 +43,6 @@
             <div class="col-sm-12">
                 <div class="text-left">
                     Name: @Html.TextBoxFor(model => model.CityAreaName, new { placeholder = "City Area Name", Class="form-control mb-2"})
-                    @Html.ValidationMessageFor(model => model.CityAreaName, "", new { Class = "error-text" })        
                 </div>
             </div>  
         </div>

@@ -24,7 +24,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("ItemController.Index Request Received");
 
-            ItemSearchViewModel vm = new ItemSearchViewModel();
+            GenericSearchViewModel vm = new GenericSearchViewModel();
             return View("Search", vm);
         }
 
@@ -32,18 +32,18 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("ItemController.Search Request Received with ID = " + id.ToString());
 
-            ItemSearchViewModel vm = new ItemSearchViewModel();
-            vm.ItemID = id;
+            GenericSearchViewModel vm = new GenericSearchViewModel();
+            vm.ID = id;
             return ProcessSearch(vm);
         }
 
-        public IActionResult ProcessSearch(ItemSearchViewModel vmInput)
+        public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("ItemController.ProcessSearch Started");
 
             using (ItemModel model = GetNewModel())
             {
-                ItemViewModel vmSearchResult = model.Search(vmInput.ItemID, vmInput.ItemCode);
+                ItemViewModel vmSearchResult = model.Search(vmInput.ID, vmInput.Code);
 
                 if (vmSearchResult.ItemID > 0)
                 {
@@ -51,6 +51,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     Program.loggerExtension.WriteToUserRequestLog("ItemController.ProcessSearch Item Found: " + vmSearchResult.ItemID.ToString());
                     return View("Display", vmSearchResult);
                 }
+
                 Program.loggerExtension.WriteToUserRequestLog("ItemController.ProcessSearch No Item Found ");
                 vmInput.StatusMessage = vmSearchResult.StatusMessage;
                 return View("Search", vmInput);
@@ -65,8 +66,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (ItemModel model = GetNewModel())
             {
-                vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
-                return View(vmInput);
+                ItemViewModel vmResult = model.Search(vmInput.ItemID,vmInput.ItemCode);
+                if(vmResult.ItemID > 0)
+                    return View(vmResult);
+                else
+                {
+                    GenericSearchViewModel vm = new GenericSearchViewModel();
+                    return View("Search",vm);
+                }
             }
         }
 
@@ -80,8 +87,6 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             }
         }
 
-
-
         [HttpGet]
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
@@ -90,8 +95,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (ItemModel model = GetNewModel())
             {
-                ItemViewModel vm = new ItemViewModel();
-                vm.AvailableSubGroups = model.GetAvailableSubGroups();
+                ItemViewModel vm = model.GetEmptyViewModel();
                 return View(vm);
             }
         }
@@ -105,16 +109,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             using (ItemModel model = GetNewModel())
             {
                 ItemViewModel vmResult = model.Create(vmInput, uploadFile, _hostingEnv);
-                if (vmResult.ItemID > 0)
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("ItemController.Create Complete successfully for Code: " + vmResult.ItemCode);
-                    return Search(vmResult.ItemID);
+                    return View("Display",vmResult);
                 }
-
                 Program.loggerExtension.WriteToUserRequestLog("ItemController.Create Failed, Reason: " + vmResult.StatusMessage);
-                vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
-                vmInput.StatusMessage = vmResult.StatusMessage;
-                return View(vmInput);
+                return View(vmResult);
             }
         }
 
@@ -126,22 +127,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (ItemModel model = GetNewModel())
             {
-                if (model.UpdateDB(vmInput, UploadFile, _hostingEnv))
+                ItemViewModel vmResult = model.UpdateDB(vmInput,UploadFile,_hostingEnv);
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("ItemController.Update POST Request For: " + vmInput.ItemCode + " successful!");
-                    vmInput.StatusMessage = "Update Processed";
-                    vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
-                    return View("Display", vmInput);
+                    return View("Display", vmResult);
                 }
-                else
-                {
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)                   
-                        vmInput.StatusMessage += item + " ";
-                    
                     Program.loggerExtension.WriteToUserRequestLog("ItemController.Update Failed, Reason: " + vmInput.StatusMessage);
-                    vmInput.AvailableSubGroups = model.GetAvailableSubGroups();
-                    return View("DisplayForUpdate", vmInput);
-                }
+                    return View("DisplayForUpdate", vmResult);
             }
         }
 

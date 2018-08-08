@@ -11,41 +11,41 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public SubGroupModel(ICustomModelState modelState, ISubGroupService service)
         {
             _modelState = modelState;
-            _subGroupService = service;
+            _service = service;
         }
         public void Dispose()
         {
-            _subGroupService.Dispose();
+            _service.Dispose();
         }
+
         private ICustomModelState _modelState;
-        private ISubGroupService _subGroupService;
+        private ISubGroupService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
 
+        public SubGroupViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new SubGroup(_modelState));
+        }
         public SubGroupViewModel Search(int id = 0, string code = "")
         {
-            SubGroup searchResult = null;            
-            SubGroupViewModel returnVM;
-            if (id > 0)
-                searchResult = _subGroupService.GetByID(id);
-            if (searchResult == null && !string.IsNullOrEmpty(code))
-                searchResult = _subGroupService.GetByCode(code);
+            SubGroup searchResult = null;
 
+            if (id > 0)
+                searchResult = _service.GetByID(id);
+            if (searchResult == null && !string.IsNullOrEmpty(code))
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
-            {
-                returnVM = ConvertToViewModel(searchResult);
-                returnVM.AvailableProductGroups = GetAvailableProductGroups();                
-            }
+                return ConvertToViewModel(searchResult);
             else
             {
-                returnVM = new SubGroupViewModel();
-                returnVM.StatusMessage = "No result Found";                
+                SubGroupViewModel returnVM = new SubGroupViewModel();
+                returnVM.StatusMessage = "No result Found";
+                return returnVM;
             }
-            return returnVM;
         }
-
         public SubGroupsViewModel GetAllSubGroups()
         {
-            List<SubGroup> subGroupList = _subGroupService.GetAll();
+            List<SubGroup> subGroupList = _service.GetAll();
             SubGroupsViewModel vmReturn = new SubGroupsViewModel();
 
             if (subGroupList != null && subGroupList.Count > 0)
@@ -60,58 +60,57 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public Dictionary<int, string> GetAvailableProductGroups()
-        {
-            Dictionary<int, string> productGroups = new Dictionary<int, string>();
-            var list = _subGroupService.GetAvailableProductGroups();
-            if (list != null)
-                foreach (var item in list)
-                    productGroups.Add(item.ProductGroupID, item.ProductGroupID.ToString() + " (" + item.ProductGroupCode + ") - " + item.ProductGroupName);
-            return productGroups;
-        }
-
         public SubGroupViewModel Create(SubGroupViewModel vmUserInput)
         {
-            _modelState.ErrorDictionary.Clear();  
-            
+            _modelState.ErrorDictionary.Clear();
+
             SubGroup model = ConvertToModel(vmUserInput);
             SubGroupViewModel vmResult = ConvertToViewModel(model);
-            
+
             _modelState = model.ModelState;
 
-            if (_subGroupService.CreateNew(model))
+            if (_service.CreateNew(model))
             {
                 vmResult = ConvertToViewModel(model);
-                vmResult.StatusMessage = "Create Complete.";       
+                vmResult.StatusMessage = "Create Complete.";
             }
             else
             {
                 vmUserInput.StatusMessage = "Create Failed: ";
-                foreach(string item in model.ModelState.ErrorDictionary.Values)
-                    vmResult.StatusMessage += Environment.NewLine + item;                
-                        
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
             }
-            return vmResult;   
+            return vmResult;
         }
 
         public SubGroupViewModel UpdateDB(SubGroupViewModel vmUserInput)
         {
             _modelState.ErrorDictionary.Clear();
-            
+
             SubGroup model = ConvertToModel(vmUserInput);
-            SubGroupViewModel vmResult =ConvertToViewModel(model);         
-            if (_subGroupService.UpdateDB(model))
+            SubGroupViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
             {
                 vmResult = ConvertToViewModel(model);
                 vmResult.StatusMessage = "Update Complete.";
             }
             else
-            {//Return 
+            {
                 vmResult.StatusMessage = "Update Failed: ";
-                foreach(string item in model.ModelState.ErrorDictionary.Values)
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
                     vmResult.StatusMessage += Environment.NewLine + item;
             }
             return vmResult;
+        }
+
+        private Dictionary<int, string> GetAvailableProductGroups()
+        {
+            Dictionary<int, string> productGroups = new Dictionary<int, string>();
+            var list = _service.GetAvailableProductGroups();
+            if (list != null)
+                foreach (var item in list)
+                    productGroups.Add(item.ProductGroupID, item.ProductGroupID.ToString() + " (" + item.ProductGroupCode + ") - " + item.ProductGroupName);
+            return productGroups;
         }
         private SubGroupViewModel ConvertToViewModel(SubGroup model)
         {

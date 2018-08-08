@@ -1,5 +1,5 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.SubGroupSearchViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.GenericSearchViewModel
 @{
     ViewData["Title"] = "Sub Group - Search Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
@@ -22,24 +22,12 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    SubGroup ID: @Html.TextBoxFor(model => model.SubGroupID, new { placeholder = "Sub Group ID", Class="form-control mb-2"})                    
+                    SubGroup ID: @Html.TextBoxFor(model => model.ID, new { placeholder = "Sub Group ID", Class="form-control mb-2"})                    
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    SubGroup Code: @Html.TextBoxFor(model => model.SubGroupCode, new { placeholder = "Sub Group Code", Class="form-control mb-2"})                    
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.SubGroupID, "", new { Class = "error-text" })                  
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="text-left">                                          
-                    @Html.ValidationMessageFor(model => model.SubGroupCode, "", new { Class = "error-text" })                                 
+                    SubGroup Code: @Html.TextBoxFor(model => model.Code, new { placeholder = "Sub Group Code", Class="form-control mb-2"})                    
                 </div>
             </div>
         </div>

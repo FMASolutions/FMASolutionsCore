@@ -63,12 +63,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.CustomerID = _uow.CustomerRepo.GetNextAvailableID();
                     CustomerEntity entity = ConvertModelToEntity(model);
                     success = _uow.CustomerRepo.Create(entity);
                     if (success)
                     {
-                        model.CustomerID = entity.CustomerID;
+                        Customer createdModel = GetByCode(model.CustomerCode);
+                        model.CustomerID = createdModel.CustomerID;
                         _uow.SaveChanges();
                     }
                     else

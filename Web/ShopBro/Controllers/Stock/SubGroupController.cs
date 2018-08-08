@@ -21,7 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Index Request Received");
 
-            SubGroupSearchViewModel vmInput = new SubGroupSearchViewModel();
+            GenericSearchViewModel vmInput = new GenericSearchViewModel();
             return View("Search", vmInput);
         }
 
@@ -30,19 +30,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Search Request Received with ID = " + id.ToString());
 
-            SubGroupSearchViewModel vmInput = new SubGroupSearchViewModel();
-            vmInput.SubGroupID = id;
+            GenericSearchViewModel vmInput = new GenericSearchViewModel();
+            vmInput.ID = id;
             return ProcessSearch(vmInput);
         }
 
         [HttpPost]
-        public IActionResult ProcessSearch(SubGroupSearchViewModel vmInput)
+        public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("SubGroupController.ProcessSearch Started");
 
             using (SubGroupModel model = GetNewModel())
             {
-                SubGroupViewModel vmSearchResult = model.Search(vmInput.SubGroupID, vmInput.SubGroupCode);
+                SubGroupViewModel vmSearchResult = model.Search(vmInput.ID, vmInput.Code);
 
                 if (vmSearchResult.SubGroupID > 0)
                 {
@@ -65,10 +65,17 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (SubGroupModel model = GetNewModel())
             {
-                vmInput.AvailableProductGroups = model.GetAvailableProductGroups();
-                return View(vmInput);
+                SubGroupViewModel vmResult = model.Search(vmInput.SubGroupID);
+                if(vmResult.SubGroupID > 0)
+                    return View(vmResult);
+                else
+                {
+                    GenericSearchViewModel vm = new GenericSearchViewModel();
+                    return View("Search",vm);
+                }
             }
         }
+        
         public IActionResult DisplayAll()
         {
             Program.loggerExtension.WriteToUserRequestLog("SubGroupController.DisplayAll Request Received");
@@ -87,8 +94,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (SubGroupModel model = GetNewModel())
             {
-                SubGroupViewModel vm = new SubGroupViewModel();
-                vm.AvailableProductGroups = model.GetAvailableProductGroups();
+                SubGroupViewModel vm = model.GetEmptyViewModel();
                 return View(vm);
             }
         }
@@ -107,7 +113,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Create Complete successfully for Code: " + vmInput.SubGroupCode);
                     return View("Display", vmResult);
                 }
-                Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Create Failed, Reason: " + vmInput.StatusMessage);
+                Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Create Failed, Reason: " + vmResult.StatusMessage);
                 return View(vmResult);
             }
         }
@@ -126,7 +132,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                     Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Update POST Request For: " + vmInput.SubGroupCode + " successful!");
                     return View("Display", vmResult);
                 }
-                Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Update Failed, Reason: " + vmInput.StatusMessage);
+                Program.loggerExtension.WriteToUserRequestLog("SubGroupController.Update Failed, Reason: " + vmResult.StatusMessage);
                 return View("DisplayForUpdate", vmResult);
             }
         }

@@ -11,25 +11,28 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public AddressLocationModel(ICustomModelState modelState, IAddressLocationService service)
         {
             _modelState = modelState;
-            _addressLocationService = service;            
+            _service = service;            
         }
         public void Dispose()
         {
-            _addressLocationService.Dispose();
+            _service.Dispose();
         }
+
         private ICustomModelState _modelState;
-        private IAddressLocationService _addressLocationService;
+        private IAddressLocationService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
 
+        public AddressLocationViewModel GetEmptyViewModel()
+        {
+            return ConvertToViewModel(new AddressLocation(_modelState));
+        }
         public AddressLocationViewModel Search(int id = 0, string code = "")
         {
-
             AddressLocation searchResult = null;
             if (id > 0)
-                searchResult = _addressLocationService.GetByID(id);
+                searchResult = _service.GetByID(id);
             if (searchResult == null && !string.IsNullOrEmpty(code))
-                searchResult = _addressLocationService.GetByCode(code);
-
+                searchResult = _service.GetByCode(code);
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -42,7 +45,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         public AddressLocationsViewModel GetAllAddressLocations()
         {            
-            List<AddressLocation> addressLocationList = _addressLocationService.GetAll();
+            List<AddressLocation> addressLocationList = _service.GetAll();
             AddressLocationsViewModel vmReturn = new AddressLocationsViewModel();
 
             if (addressLocationList != null && addressLocationList.Count > 0)
@@ -57,77 +60,67 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return vmReturn;
         }
 
-        public Dictionary<int, string> GetAvailableCityAreas()
+        public AddressLocationViewModel Create(AddressLocationViewModel vmUserInput)
         {
-            Dictionary<int, string> cityAreas = new Dictionary<int, string>();
-            var list = _addressLocationService.GetAvailableCityAreas();
-            if (list != null)
-                foreach (var item in list)
-                    cityAreas.Add(item.CityAreaID, item.CityAreaID.ToString() + " (" + item.CityAreaCode + ") - " + item.CityAreaName);
-            return cityAreas;
-        }
-        public Dictionary<int, string> GetAvailablePostCodes()
-        {
-            Dictionary<int, string> postCodes = new Dictionary<int, string>();
-            var list = _addressLocationService.GetAvailablePostCodes();
-            if (list != null)
-                foreach (var item in list)
-                    postCodes.Add(item.PostCodeID, item.PostCodeID.ToString() + " (" + item.PostCodeCode + ") - " + item.PostCodeValue);
-            return postCodes;
-        }
+            _modelState.ErrorDictionary.Clear();
+            AddressLocation model = ConvertToModel(vmUserInput);
+            AddressLocationViewModel vmResult = ConvertToViewModel(model);
 
-        public Dictionary<int, string> GetAvailableCities()
-        {
-            Dictionary<int, string> cities = new Dictionary<int, string>();
-            var list = _addressLocationService.GetAvailableCities();
-            if (list != null)
-                foreach (var item in list)
-                    cities.Add(item.CityID, item.CityID.ToString() + " (" + item.CityCode + ") - " + item.CityName);
-            return cities;
-        }
-        public AddressLocationViewModel Create(AddressLocationViewModel newAddressLocation)
-        {
-            AddressLocation addressLocation = ConvertToModel(newAddressLocation);
-            addressLocation.AddressLocationID = 0; //NOT SURE I NEED TRHIS???????????????
-            AddressLocationViewModel vmReturn = new AddressLocationViewModel();
+            _modelState = model.ModelState;
 
-            if(newAddressLocation.postCodeFromDB == false)
+            if(vmUserInput.PostCodeFromDB == false)
             {
-                PostCode postCode = new PostCode(_modelState, 0, newAddressLocation.postCodeToCreate.PostCodeCode, newAddressLocation.postCodeToCreate.CityID, newAddressLocation.postCodeToCreate.PostCodeValue);
-                if(_addressLocationService.CreateNew(addressLocation, postCode))
+                PostCode postCode = new PostCode(_modelState, 0, vmUserInput.PostCodeToCreate.PostCodeCode, vmUserInput.PostCodeToCreate.CityID, vmUserInput.PostCodeToCreate.PostCodeValue);
+                if(_service.CreateNew(model, postCode))
                 {
-                    vmReturn = ConvertToViewModel(addressLocation);
+                    vmResult = ConvertToViewModel(model);
+                    vmResult.StatusMessage = "Multi Create Complete.";
                 }
                 else
                 {
-                    vmReturn.StatusMessage = "Unable to create Address Locations";
-                    foreach (string item in addressLocation.ModelState.ErrorDictionary.Values)
-                        vmReturn.StatusMessage += " " + item;
+                    vmResult.StatusMessage = "Create Failed";
+                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                        vmResult.StatusMessage += Environment.NewLine + item;
                 }
             }
             else
             {
-                if (_addressLocationService.CreateNew(addressLocation))
-                    vmReturn = ConvertToViewModel(addressLocation);
+                if (_service.CreateNew(model))
+                {
+                    vmResult = ConvertToViewModel(model);
+                    vmResult.StatusMessage = "Create Complete.";
+                }
                 else
                 {
-                    vmReturn.StatusMessage = "Unable to create Address Locations";
-                    foreach (string item in addressLocation.ModelState.ErrorDictionary.Values)
-                        vmReturn.StatusMessage += " " + item;
+                    vmResult.StatusMessage = "Unable to create Address Locations";
+                    foreach (string item in model.ModelState.ErrorDictionary.Values)
+                        vmResult.StatusMessage += Environment.NewLine + item;
                 }
             }
-            return vmReturn;
+            return vmResult;
         }
 
-        public bool UpdateDB(AddressLocationViewModel updatedAddressLocation)
+        public AddressLocationViewModel UpdateDB(AddressLocationViewModel vmUserInput)
         {
-            AddressLocation addressLocation = ConvertToModel(updatedAddressLocation);
-            if (_addressLocationService.UpdateDB(addressLocation))
-                return true;
+            _modelState.ErrorDictionary.Clear();
+
+            AddressLocation model = ConvertToModel(vmUserInput);
+            AddressLocationViewModel vmResult = ConvertToViewModel(model);
+            if (_service.UpdateDB(model))
+            {
+                vmResult = ConvertToViewModel(model);
+                vmResult.StatusMessage = "Update Complete.";
+            }
             else
-                _modelState = addressLocation.ModelState;
-            return false;
+            {
+                vmResult.StatusMessage = "Update Failed: ";
+                foreach (string item in model.ModelState.ErrorDictionary.Values)
+                    vmResult.StatusMessage += Environment.NewLine + item;
+            }
+            return vmResult;
         }
+
+
         private AddressLocationViewModel ConvertToViewModel(AddressLocation model)
         {
             AddressLocationViewModel vm = new AddressLocationViewModel();
@@ -139,6 +132,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             vm.PostCodeID = model.PostCodeID;
             vm.AvailableCityAreas = GetAvailableCityAreas();
             vm.AvailablePostCodes = GetAvailablePostCodes();
+            vm.PostCodeToCreate.AvailableCities = GetAvailableCities();
             return vm;
         }
 
@@ -153,6 +147,34 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 , vm.AddressLine2
             );
             return addressLocation;
+        }
+        private Dictionary<int, string> GetAvailablePostCodes()
+        {
+            Dictionary<int, string> postCodes = new Dictionary<int, string>();
+            var list = _service.GetAvailablePostCodes();
+            if (list != null)
+                foreach (var item in list)
+                    postCodes.Add(item.PostCodeID, item.PostCodeID.ToString() + " (" + item.PostCodeCode + ") - " + item.PostCodeValue);
+            return postCodes;
+        }
+
+        private Dictionary<int, string> GetAvailableCities()
+        {
+            Dictionary<int, string> cities = new Dictionary<int, string>();
+            var list = _service.GetAvailableCities();
+            if (list != null)
+                foreach (var item in list)
+                    cities.Add(item.CityID, item.CityID.ToString() + " (" + item.CityCode + ") - " + item.CityName);
+            return cities;
+        }
+        private Dictionary<int, string> GetAvailableCityAreas()
+        {
+            Dictionary<int, string> cityAreas = new Dictionary<int, string>();
+            var list = _service.GetAvailableCityAreas();
+            if (list != null)
+                foreach (var item in list)
+                    cityAreas.Add(item.CityAreaID, item.CityAreaID.ToString() + " (" + item.CityAreaCode + ") - " + item.CityAreaName);
+            return cityAreas;
         }
     }
 }

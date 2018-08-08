@@ -21,7 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Index Request Received");
 
-            CustomerTypeSearchViewModel vmSearch = new CustomerTypeSearchViewModel();
+            GenericSearchViewModel vmSearch = new GenericSearchViewModel();
             return View("Search", vmSearch);
         }
 
@@ -30,19 +30,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Search Request Received with ID = " + id.ToString());
 
-            CustomerTypeSearchViewModel vmSearch = new CustomerTypeSearchViewModel();
-            vmSearch.CustomerTypeID = id;
+            GenericSearchViewModel vmSearch = new GenericSearchViewModel();
+            vmSearch.ID = id;
             return ProcessSearch(vmSearch);
         }
 
         [HttpPost]
-        public IActionResult ProcessSearch(CustomerTypeSearchViewModel vmInput)
+        public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.ProcessSearch Started");
 
             using (CustomerTypeModel model = GetNewModel())
             {
-                CustomerTypeViewModel vmSearchResult = model.Search(vmInput.CustomerTypeID, vmInput.CustomerTypeCode);
+                CustomerTypeViewModel vmSearchResult = model.Search(vmInput.ID, vmInput.Code);
 
                 if (vmSearchResult.CustomerTypeID > 0)
                 {
@@ -62,7 +62,17 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult DisplayForUpdate(CustomerTypeViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.DisplayForUpdate POST Request Received For ID: " + vmInput.CustomerTypeID.ToString());
-            return View(vmInput);
+            using (CustomerTypeModel model = GetNewModel())
+            {
+                CustomerTypeViewModel vmResult = model.Search(vmInput.CustomerTypeID);
+                if (vmResult.CustomerTypeID > 0)
+                    return View(vmResult);
+                else
+                {
+                    GenericSearchViewModel vm = new GenericSearchViewModel();
+                    return View("Search", vm);
+                }
+            }
         }
 
         public IActionResult DisplayAll()
@@ -74,13 +84,17 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return View(model.GetAllCustomerTypes());
             }
         }
-        
+
         [HttpGet]
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
             Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Create GET Request Received");
-            return View();
+            using (CustomerTypeModel model = GetNewModel())
+            {
+                CustomerTypeViewModel vm = model.GetEmptyViewModel();
+                return View(vm);
+            }
         }
 
         [HttpPost]
@@ -92,15 +106,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             using (CustomerTypeModel model = GetNewModel())
             {
                 CustomerTypeViewModel vmResult = model.Create(vmInput);
-                if (vmResult.CustomerTypeID > 0)
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Create Complete successfully for Code: " + vmResult.CustomerTypeCode);
-                    return Search(vmResult.CustomerTypeID);
+                    return View("Display", vmResult);
                 }
 
                 Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Create Failed, Reason: " + vmResult.StatusMessage);
-                vmInput.StatusMessage = vmResult.StatusMessage;
-                return View(vmInput);
+                return View(vmResult);
             }
         }
 
@@ -112,20 +125,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (CustomerTypeModel model = GetNewModel())
             {
-                if (model.UpdateDB(vmInput))
+                CustomerTypeViewModel vmResult = model.UpdateDB(vmInput);
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Update POST Request For: " + vmInput.CustomerTypeCode + " successful!");
-                    vmInput.StatusMessage = "Update processed";
-                    return View("Display", vmInput);
+                    return View("Display", vmResult);
                 }
-                else
-                {
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusMessage += item + " ";
-                        
-                    Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Update Failed, Reason: " + vmInput.StatusMessage);
-                    return View("DisplayForUpdate", vmInput);
-                }
+                Program.loggerExtension.WriteToUserRequestLog("CustomerTypeController.Update Failed, Reason: " + vmInput.StatusMessage);
+                return View("DisplayForUpdate", vmResult);
             }
         }
 

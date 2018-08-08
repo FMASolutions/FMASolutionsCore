@@ -21,7 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Index Request Received");
 
-            ProductGroupSearchViewModel vmSearch = new ProductGroupSearchViewModel();
+            GenericSearchViewModel vmSearch = new GenericSearchViewModel();
             return View("Search", vmSearch);
         }
 
@@ -30,19 +30,19 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Search Request Received with ID = " + id.ToString());
 
-            ProductGroupSearchViewModel vmSearch = new ProductGroupSearchViewModel();
-            vmSearch.ProductGroupID = id;
+            GenericSearchViewModel vmSearch = new GenericSearchViewModel();
+            vmSearch.ID = id;
             return ProcessSearch(vmSearch);
         }
 
         [HttpPost]
-        public IActionResult ProcessSearch(ProductGroupSearchViewModel vmInput)
+        public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.ProcessSearch Started");
 
             using (ProductGroupModel model = GetNewModel())
             {
-                ProductGroupViewModel vmSearchResult = model.Search(vmInput.ProductGroupID, vmInput.ProductGroupCode);
+                ProductGroupViewModel vmSearchResult = model.Search(vmInput.ID, vmInput.Code);
 
                 if (vmSearchResult.ProductGroupID > 0)
                 {
@@ -62,7 +62,18 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult DisplayForUpdate(ProductGroupViewModel vmInput)
         {
             Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.DisplayForUpdate POST Request Received For ID: " + vmInput.ProductGroupID.ToString());
-            return View(vmInput);
+            
+            using (ProductGroupModel model = GetNewModel())
+            {
+                ProductGroupViewModel vmResult = model.Search(vmInput.ProductGroupID);
+                if (vmResult.ProductGroupID > 0)
+                    return View(vmResult);
+                else
+                {
+                    GenericSearchViewModel vm = new GenericSearchViewModel();
+                    return View("Search", vm);
+                }
+            }
         }
 
         public IActionResult DisplayAll()
@@ -74,13 +85,18 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return View(model.GetAllProductGroups());
             }
         }
-        
+
         [HttpGet]
         [Authorize(Policy = "Admin")]
         public IActionResult Create()
         {
             Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Create GET Request Received");
-            return View();
+            
+            using (ProductGroupModel model = GetNewModel())
+            {
+                ProductGroupViewModel vm = model.GetEmptyViewModel();
+                return View(vm);
+            }
         }
 
         [HttpPost]
@@ -92,15 +108,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             using (ProductGroupModel model = GetNewModel())
             {
                 ProductGroupViewModel vmResult = model.Create(vmInput);
-                if (vmResult.ProductGroupID > 0)
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Create Complete successfully for Code: " + vmResult.ProductGroupCode);
-                    return Search(vmResult.ProductGroupID);
+                    return View("Display", vmResult);
                 }
-
                 Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Create Failed, Reason: " + vmResult.StatusMessage);
-                vmInput.StatusMessage = vmResult.StatusMessage;
-                return View(vmInput);
+                return View(vmResult);
             }
         }
 
@@ -112,20 +126,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             using (ProductGroupModel model = GetNewModel())
             {
-                if (model.UpdateDB(vmInput))
+                ProductGroupViewModel vmResult = model.UpdateDB(vmInput);
+                if (model.ModelState.IsValid)
                 {
                     Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Update POST Request For: " + vmInput.ProductGroupCode + " successful!");
-                    vmInput.StatusMessage = "Update processed";
-                    return View("Display", vmInput);
+                    return View("Display", vmResult);
                 }
-                else
-                {
-                    foreach (string item in model.ModelState.ErrorDictionary.Values)
-                        vmInput.StatusMessage += item + " ";
-                        
-                    Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Update Failed, Reason: " + vmInput.StatusMessage);
-                    return View("DisplayForUpdate", vmInput);
-                }
+                Program.loggerExtension.WriteToUserRequestLog("ProductGroupController.Update Failed, Reason: " + vmInput.StatusMessage);
+                return View("DisplayForUpdate", vmResult);
             }
         }
 
@@ -133,6 +141,5 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             return new ProductGroupModel(new ModelStateConverter(this).Convert(), _service);
         }
-
     }
 }

@@ -58,12 +58,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.CountryID = _uow.CountryRepo.GetNextAvailableID();
                     CountryEntity entity = ConvertModelToEntity(model);
                     success = _uow.CountryRepo.Create(entity);
                     if (success)
                     {
-                        model.CountryID = entity.CountryID;
+                        Country createdModel = GetByCode(model.CountryCode);
+                        model.CountryID = createdModel.CountryID;
                         _uow.SaveChanges();
                     }
                     else

@@ -63,12 +63,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if (ValidateForCreate(model))
                 {
-                    model.CityID = _uow.CityRepo.GetNextAvailableID();
                     CityEntity entity = ConvertModelToEntity(model);
                     success = _uow.CityRepo.Create(entity);
                     if (success)
                     {
-                        model.CityID = entity.CityID;
+                        City createdModel = GetByCode(model.CityCode);
+                        model.CityID = createdModel.CityID;
                         _uow.SaveChanges();
                     }
                     else
