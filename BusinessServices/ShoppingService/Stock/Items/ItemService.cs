@@ -169,9 +169,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                     model.ModelState.AddError("MissingValue", "One or more values are missing");
                     return false;
                 }
-                else if (model.ItemCode.Length > 5)
+                else if (model.ItemCode.Length > 7)
                 {
-                    model.ModelState.AddError("CodeLength", "Code should not be greater than 5 characters");
+                    model.ModelState.AddError("CodeLength", "Code should not be greater than 7 characters");
                     return false;
                 }
                 else if (CodeExists(model.ItemCode))
@@ -221,7 +221,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             else if (ValidateCode(model.ItemCode) == false)
             {
-                model.ModelState.AddError("InvalidCode", "Code value was invalid, it can't be more than 5 characters or empty");
+                model.ModelState.AddError("InvalidCode", "Code value was invalid, it can't be more than 7 characters or empty");
                 return false;
             }
             else if (string.IsNullOrEmpty(model.ItemCode) || model.SubGroupID <= 0 || string.IsNullOrEmpty(model.ItemName) || string.IsNullOrEmpty(model.ItemDescription) || model.ItemUnitPrice <= 0 || model.ItemUnitPriceWithMaxDiscount <= 0 || model.ItemAvailableQty <= 0 || model.ItemReorderQtyReminder <= 0 || string.IsNullOrEmpty(model.ItemImageFilename))
@@ -242,7 +242,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             if (string.IsNullOrEmpty(code)) return false;
             if (string.IsNullOrWhiteSpace(code)) return false;
-            if (code.Length > 5) return false;
+            if (code.Length > 7) return false;
             else return true;
         }
         private bool DetectValueChange(Item model, ItemEntity entity)

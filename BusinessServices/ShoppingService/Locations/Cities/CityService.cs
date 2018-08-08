@@ -155,9 +155,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                     model.ModelState.AddError("NullValues", "All values must be populated...");
                     return false;
                 }
-                else if (model.CityCode.Length > 5)
+                else if (model.CityCode.Length > 7)
                 {
-                    model.ModelState.AddError("CodeLength", "Code should not be greather than 5 characters");
+                    model.ModelState.AddError("CodeLength", "Code should not be greather than 7 characters");
                     return false;
                 }
                 
@@ -213,7 +213,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             if (string.IsNullOrEmpty(code)) return false;
             if (string.IsNullOrWhiteSpace(code)) return false;
-            if (code.Length > 5) return false;
+            if (code.Length > 7) return false;
             else return true;
         }
         private bool ValidateAllValues(City model)
@@ -225,7 +225,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             else if (ValidateCode(model.CityCode) == false)
             {
-                model.ModelState.AddError("InvalidCode", "Code value was invalid, it can't be more than 5 characters or empty");
+                model.ModelState.AddError("InvalidCode", "Code value was invalid, it can't be more than 7 characters or empty");
                 return false;
             }
             else if (string.IsNullOrEmpty(model.CityCode) || string.IsNullOrEmpty(model.CityName))
