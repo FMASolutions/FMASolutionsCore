@@ -24,6 +24,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _postCodeRepo = new PostCodeRepo(_transaction);
             _addressLocationRepo = new AddressLocationRepo(_transaction);
             _customerRepo = new CustomerRepo(_transaction);
+            _customerAddressRepo = new CustomerAddressRepo(_transaction);
         }
         ~UnitOfWork()
         {
@@ -43,6 +44,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public IPostCodeRepo PostCodeRepo { get { return _postCodeRepo ?? (_postCodeRepo = new PostCodeRepo(_transaction)); } }
         public IAddressLocationRepo AddressLocationRepo { get { return _addressLocationRepo ?? (_addressLocationRepo = new AddressLocationRepo(_transaction)); } }
         public ICustomerRepo CustomerRepo { get { return _customerRepo ?? (_customerRepo = new CustomerRepo(_transaction)); } }
+        public ICustomerAddressRepo CustomerAddressRepo { get { return _customerAddressRepo ?? (_customerAddressRepo = new CustomerAddressRepo(_transaction)); } }
         bool _disposing = false;
 
         public void SaveChanges()
@@ -96,7 +98,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
         }
 
-        
+
         private void ResetRepos()
         {
             _productGroupRepo = null;
@@ -109,6 +111,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _postCodeRepo = null;
             _addressLocationRepo = null;
             _customerRepo = null;
+            _customerAddressRepo = null;
         }
         private IProductGroupRepo _productGroupRepo;
         private ISubGroupRepo _subGroupRepo;
@@ -120,5 +123,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private IPostCodeRepo _postCodeRepo;
         private IAddressLocationRepo _addressLocationRepo;
         private ICustomerRepo _customerRepo;
+        private ICustomerAddressRepo _customerAddressRepo;
     }
 }
