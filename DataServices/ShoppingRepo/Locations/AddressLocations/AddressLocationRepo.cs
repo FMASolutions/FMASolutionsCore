@@ -25,7 +25,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCodeID]
+                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
                 FROM AddressLocations
                 WHERE AddressLocationID = @AddressLocationID
                 ";
@@ -45,7 +45,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCodeID]
+                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
                 FROM AddressLocations";
 
                 Helper.logger.WriteToProcessLog("AddressLocationRepo.GetAll Started: " + query);
@@ -64,8 +64,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                INSERT INTO AddressLocations([AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCodeID])
-                VALUES (@AddressLocationCode, @AddressLine1, @AddressLine2, @CityAreaID, @PostCodeID)";
+                INSERT INTO AddressLocations([AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode])
+                VALUES (@AddressLocationCode, @AddressLine1, @AddressLine2, @CityAreaID, @PostCode)";
 
                 Helper.logger.WriteToProcessLog("AddressLocationRepo.Create Started for code: " + entity.AddressLocationCode + " full query = " + query);
 
@@ -75,7 +75,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     AddressLine1 = entity.AddressLine1,
                     AddressLine2 = entity.AddressLine2,
                     CityAreaID = entity.CityAreaID,
-                    PostCodeID = entity.PostCodeID
+                    PostCode = entity.PostCode
                 }, transaction: Transaction);
                 if (rowsAffected > 0)
                     return true;
@@ -98,7 +98,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 , AddressLine1 = @AddressLine1
                 , AddressLine2 = @AddressLine2
                 , CityAreaID = @CityAreaID
-                , PostCodeID = @PostCodeID
+                , PostCode = @PostCode
                 WHERE AddressLocationID = @AddressLocationID";
 
                 Helper.logger.WriteToProcessLog("AddressLocationRepo.Update Started for ID: " + entity.AddressLocationID.ToString() + " full query = " + query);
@@ -109,7 +109,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     AddressLine1 = entity.AddressLine1,
                     AddressLine2 = entity.AddressLine2,
                     CityAreaID = entity.CityAreaID,
-                    PostCodeID = entity.PostCodeID,
+                    PostCode = entity.PostCode,
                     AddressLocationID = entity.AddressLocationID
                 }, transaction: Transaction);
                 if (i >= 1)
@@ -135,7 +135,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCodeID]
+                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
                 FROM AddressLocations
                 WHERE AddressLocationCode = @AddressLocationCode";
 

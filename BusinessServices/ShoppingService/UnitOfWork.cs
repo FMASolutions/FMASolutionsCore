@@ -20,8 +20,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _customerTypeRepo = new CustomerTypeRepo(_transaction);
             _countryRepo = new CountryRepo(_transaction);
             _cityRepo = new CityRepo(_transaction);
-            _cityAreaRepo = new CityAreaRepo(_transaction);
-            _postCodeRepo = new PostCodeRepo(_transaction);
+            _cityAreaRepo = new CityAreaRepo(_transaction);            
             _addressLocationRepo = new AddressLocationRepo(_transaction);
             _customerRepo = new CustomerRepo(_transaction);
             _customerAddressRepo = new CustomerAddressRepo(_transaction);
@@ -40,8 +39,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public ICustomerTypeRepo CustomerTypeRepo { get { return _customerTypeRepo ?? (_customerTypeRepo = new CustomerTypeRepo(_transaction)); } }
         public ICountryRepo CountryRepo { get { return _countryRepo ?? (_countryRepo = new CountryRepo(_transaction)); } }
         public ICityRepo CityRepo { get { return _cityRepo ?? (_cityRepo = new CityRepo(_transaction)); } }
-        public ICityAreaRepo CityAreaRepo { get { return _cityAreaRepo ?? (_cityAreaRepo = new CityAreaRepo(_transaction)); } }
-        public IPostCodeRepo PostCodeRepo { get { return _postCodeRepo ?? (_postCodeRepo = new PostCodeRepo(_transaction)); } }
+        public ICityAreaRepo CityAreaRepo { get { return _cityAreaRepo ?? (_cityAreaRepo = new CityAreaRepo(_transaction)); } }        
         public IAddressLocationRepo AddressLocationRepo { get { return _addressLocationRepo ?? (_addressLocationRepo = new AddressLocationRepo(_transaction)); } }
         public ICustomerRepo CustomerRepo { get { return _customerRepo ?? (_customerRepo = new CustomerRepo(_transaction)); } }
         public ICustomerAddressRepo CustomerAddressRepo { get { return _customerAddressRepo ?? (_customerAddressRepo = new CustomerAddressRepo(_transaction)); } }
@@ -107,8 +105,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _customerTypeRepo = null;
             _countryRepo = null;
             _cityRepo = null;
-            _cityAreaRepo = null;
-            _postCodeRepo = null;
+            _cityAreaRepo = null;            
             _addressLocationRepo = null;
             _customerRepo = null;
             _customerAddressRepo = null;
@@ -119,8 +116,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private ICustomerTypeRepo _customerTypeRepo;
         private ICountryRepo _countryRepo;
         private ICityRepo _cityRepo;
-        private ICityAreaRepo _cityAreaRepo;
-        private IPostCodeRepo _postCodeRepo;
+        private ICityAreaRepo _cityAreaRepo;        
         private IAddressLocationRepo _addressLocationRepo;
         private ICustomerRepo _customerRepo;
         private ICustomerAddressRepo _customerAddressRepo;

@@ -11,8 +11,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         ICustomerTypeRepo CustomerTypeRepo {get;}
         ICountryRepo CountryRepo {get;}
         ICityRepo CityRepo {get;}
-        ICityAreaRepo CityAreaRepo {get;}
-        IPostCodeRepo PostCodeRepo {get;}
+        ICityAreaRepo CityAreaRepo {get;}        
         IAddressLocationRepo AddressLocationRepo {get;}
         ICustomerAddressRepo CustomerAddressRepo {get;}
         ICustomerRepo CustomerRepo {get;}

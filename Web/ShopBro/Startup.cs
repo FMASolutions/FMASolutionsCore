@@ -43,8 +43,7 @@ namespace FMASolutionsCore.Web.ShopBro
             services.AddTransient<ICustomerTypeService>(s => new CustomerTypeService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<ICountryService>(s => new CountryService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<ICityService>(s => new CityService(shopDBConnectionString,shopSQLDBType));
-            services.AddTransient<ICityAreaService>(s => new CityAreaService(shopDBConnectionString,shopSQLDBType));
-            services.AddTransient<IPostCodeService>(s => new PostCodeService(shopDBConnectionString,shopSQLDBType));
+            services.AddTransient<ICityAreaService>(s => new CityAreaService(shopDBConnectionString,shopSQLDBType));            
             services.AddTransient<IAddressLocationService>(s => new AddressLocationService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<ICustomerService>(s => new CustomerService(shopDBConnectionString,shopSQLDBType));
         }
