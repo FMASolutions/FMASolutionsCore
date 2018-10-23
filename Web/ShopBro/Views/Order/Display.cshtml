@@ -1,0 +1,90 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.OrderViewModel
+@{
+    ViewData["Title"] = "Item - Update Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="text-left">
+                    <h2>Order: @Model.OrderID</h2>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="text-left">
+                    <h3>Status: @Model.OrderStatus</h3>
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusMessage != null)
+        {
+            <Label class="error-text">@Model.StatusMessage </Label>
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                    
+                    Customer: @Html.TextBoxFor(model => model.AvailableCustomers[Model.CustomerID], new { ReadOnly="true", Class="form-control mb-2"})
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <table id="ExistingItemsTable">
+                        <tr>
+                            <td>Item Description</td>
+                            <td>Qty</td>
+                            <td>Unit Price</td>
+                        </tr>
+                        @foreach (var item in Model.ExistingItems)
+                        {
+                            <tr id="ItemRow@(item.ItemID)">
+                                <td><span class="form-control">@(item.ItemDescription)</span></td>
+                                <td><span class="form-control">@(item.Qty)</span></td>
+                                <td><span class="form-control">@(item.UnitPrice)</span></td>         
+                            </tr>  
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="text-left">
+                    Item Selector: 
+                    @Html.DropDownListFor(
+                        m => m.NewItemID,
+                        new SelectList(Model.AvailableItems, "Key", "Value",Model.NewItemID),                        
+                        new { @class = "form-control", @id="ItemInput" }
+                    )
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="text-left">
+                    Qty: <input type="text" class="form-control" placeholder="Qty" id="QtyInput">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="text-left">
+                    Unit Price:  <input type="text" class="form-control" placeholder="Qty" id="UnitPriceInput">
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <button class="btn btn-outline-dark btn-block mb-3" id="AddItemInputButton">Add New Item</button>
+                </div>
+            </div>
+        </div>    
+        <div class="row">
+            <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
+            <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+        </div>
+    </form>
+</div>
+ <script src="~/SiteAssets/js/order.js"></script>
