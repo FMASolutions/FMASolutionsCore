@@ -23,12 +23,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
             OrderItemViewModel item1 = new OrderItemViewModel();
             OrderItemViewModel item2 = new OrderItemViewModel();
-            item1.ItemID = 1;
-            item2.ItemID = 2;
+            item1.ItemID = 31;
+            item2.ItemID = 83;
             item1.Qty = 5;
             item2.Qty = 3;
-            item1.ItemDescription = "Item 1 description here";
-            item2.ItemDescription = "Item 2 description here";
+            item1.ItemDescription = "Jet Wash";
+            item2.ItemDescription = "Shower Head";
             item1.UnitPrice = 3.50m;
             item2.UnitPrice = 4.75m;
             currentItems.Add(item1);
@@ -38,8 +38,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             availableCustomers.Add(1,"FMA Solutions LTD!");
             availableCustomers.Add(2,"Some Other Company");
 
-            availableItems.Add(1,"Item 1 description here");
-            availableItems.Add(2,"Item 2 description here");
+            availableItems.Add(63,"Jet Washer Pro");
+            availableItems.Add(81,"Blagger");
+            availableItems.Add(44,"PS4");
+            availableItems.Add(736,"Xbox");
+            availableItems.Add(189,"WiiU");
+
             
             vm.CustomerID = 1;
             vm.ExistingItems = currentItems;
