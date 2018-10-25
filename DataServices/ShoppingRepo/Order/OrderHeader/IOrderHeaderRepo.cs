@@ -1,8 +1,9 @@
 using FMASolutionsCore.DataServices.DataRepository;
+
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public interface ISubGroupRepo : IDataRepository<SubGroupEntity>
+    public interface IOrderHeaderRepo : IDataRepository<OrderHeaderEntity>
     {        
-        SubGroupEntity GetByCode(string code);        
+           
     }
 }
