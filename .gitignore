@@ -10,6 +10,9 @@
 *.sln.docstates
 *.FMAAppConfig
 *.sql
+*.png
+*.jpeg
+*.jpg
 Logs/
 
 # User-specific files (MonoDevelop/Xamarin Studio)

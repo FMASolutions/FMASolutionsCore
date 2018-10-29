@@ -8,18 +8,18 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 {
     public class OrderModel : IModel, IDisposable
     {
-        public OrderModel(ICustomModelState modelState, IItemService itemService)
+        public OrderModel(ICustomModelState modelState, IOrderService orderService)
         {
             _modelState = modelState;
-            _service = itemService;
+            _service = orderService;
         }
         public void Dispose()
-        {
+        {           
             _service.Dispose();
         }
 
         private ICustomModelState _modelState;
-        private IItemService _service;
+        private IOrderService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
         
 

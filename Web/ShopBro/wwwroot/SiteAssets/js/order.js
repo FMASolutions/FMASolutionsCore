@@ -3,42 +3,51 @@ var ColumnHeadings = ["Item Description", "Qty", "Price"];
 var AvailableItemList = [];
 
 $(document).ready(function() {
-    document.getElementById("AddItemInputButton").addEventListener("click",addRow);
+    $('#DDAddItemButton').on("click",addRowFromDD);
     setupGlobals();
 });
 
-
 function setupGlobals(){
-    var table = document.getElementById("ExistingItemsTable");
-    var rows = table.rows;
+    $('#OrderItemsRaw').children().each(function(){
+        ExistingItemList.push({
+            "ID": $(this).children('span.OrderItemItemRowIDRaw')[0].innerText,
+            "IDText": "ItemRow" + $(this).children('span.OrderItemItemRowIDRaw')[0].innerText,
+            "Description":  $(this).children('span.OrderItemDescriptionRaw')[0].innerText,
+            "Qty":  $(this).children('span.OrderItemQtyRaw')[0].innerText,
+            "Price":  $(this).children('span.OrderItemUnitPriceRaw')[0].innerText,
+            "ItemID": $(this).children('span.OrderItemItemIDRaw')[0].innerText
+        });
+    });
 
-    var i = 0;
-    while (i < rows.length) {
-        var row = rows[i];
+    $('#ItemsRaw').children().each(function(){
+        AvailableItemList.push({
+            "ItemID": $(this).children('span.ItemIDRaw')[0].innerText,
+            "SubGroupID": $(this).children('span.SubGroupIDRaw')[0].innerText,
+            "ItemName": $(this).children('span.ItemNameRaw')[0].innerText,
+            "ItemDescription": $(this).children('span.ItemDescriptionRaw')[0].innerText,
+            "ItemUnitPrice": $(this).children('span.ItemUnitPriceRaw')[0].innerText,
+            "ItemMinPrice": $(this).children('span.ItemUnitPriceWithMaxDiscountRaw')[0].innerText,
+            "ItemAvailQty": $(this).children('span.ItemAvailableQtyRaw')[0].innerText,
+            "ItemImageLocation": $(this).children('span.ItemImageFilenameRaw')[0].innerText
+        });
 
-        if (i > 0) //Ignore first row as it contains headers
-        {
-            ExistingItemList.push({
-                "ID": rows[i].id.replace("ItemRow", ""),
-                "IDText": rows[i].id,
-                "Description": row.cells[0].textContent,
-                "Qty": row.cells[1].textContent,
-                "Price": row.cells[2].textContent
-            })
-        }
-        i++;
-    }
+        
+    });
 }
 
-function addRow() {
+function addRowFromDD() {
 
     var qty = $("#QtyInput").val();
     var itemDescription = $("[id*='SelectedItem'] :selected")[0].text
     var price = $("#UnitPriceInput").val();
     var itemID = $("#SelectedItem")[0].value;
+    
+    AddItemToExistingList(qty, itemDescription, price, itemID);
 
     
-
+}
+function AddItemToExistingList(qty, itemDescription, price, itemID){
+    
     ExistingItemList.push({
         "ID": itemID,
         "IDText": "ItemRow" + itemID,

@@ -4,90 +4,120 @@
     ViewData["Title"] = "Item - Update Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
 }
+<div id="DataRoot" style="display:none">
+    <div id="OrderItemsRaw">
+        @for (var i = 0; i < Model.ExistingItems.Count; i++)
+        {
+            <div class="OrderItemRaw">
+                <span class="OrderItemDescriptionRaw">@(Model.ExistingItems[i].ItemDescription)</span>
+                <span class="OrderItemUnitPriceRaw">@(Model.ExistingItems[i].UnitPrice)</span>
+                <span class="OrderItemQtyRaw">@(Model.ExistingItems[i].Qty)</span>
+                <span class="OrderItemItemIDRaw">@(Model.ExistingItems[i].ItemID)</span>
+                <span class="OrderItemItemRowIDRaw">@(Model.ExistingItems[i].OrderItemRowID)</span>                
+            </div>
+        }
+    </div>
+    <div id="ItemsRaw">
+        @for (var i = 0; i < Model.AvailableItems.Count; i++)
+        {
+            <div class="ItemRaw">
+                <span class="ItemIDRaw">@(Model.AvailableItems[i].ItemID)</span>
+                <span class="ItemCodeRaw">@(Model.AvailableItems[i].ItemCode)</span>
+                <span class="SubGroupIDRaw">@(Model.AvailableItems[i].SubGroupID)</span>
+                <span class="ItemNameRaw">@(Model.AvailableItems[i].ItemName)</span>
+                <span class="ItemDescriptionRaw">@(Model.AvailableItems[i].ItemDescription)</span>
+                <span class="ItemUnitPriceRaw">@(Model.AvailableItems[i].ItemUnitPrice)</span>
+                <span class="ItemUnitPriceWithMaxDiscountRaw">@(Model.AvailableItems[i].ItemUnitPriceWithMaxDiscount)</span>
+                <span class="ItemAvailableQtyRaw">@(Model.AvailableItems[i].ItemAvailableQty)</span>
+                <span class="ItemImageFilenameRaw">@(Model.AvailableItems[i].ItemImageFilename)</span>
+            </div>
+        }
+    </div>
+</div>
 
 <div class="container rounded">
-        <div class="row">
-            <div class="col-sm-8">
-                <div class="text-left">
-                    <h2>Order: @Model.OrderID</h2>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="text-left">
-                    <h3>Status: @Model.OrderStatus</h3>
-                </div>        
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="text-left">
+                <h2>Order: @Model.OrderID</h2>
             </div>
         </div>
-        @if (Model != null && Model.StatusMessage != null)
-        {
-            <Label class="error-text">@Model.StatusMessage </Label>
-        }
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="text-left">                    
-                    Customer: @Html.TextBoxFor(model => model.AvailableCustomers[Model.CustomerID], new { ReadOnly="true", Class="form-control mb-2"})
-                </div>
+        <div class="col-sm-4">
+            <div class="text-left">
+                <h3>Status: @Model.OrderStatus</h3>
+            </div>        
+        </div>
+    </div>
+    @if (Model != null && Model.StatusMessage != null)
+    {
+        <Label class="error-text">@Model.StatusMessage </Label>
+    }
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="text-left">                    
+                Customer: @Html.TextBoxFor(model => model.AvailableCustomers[Model.CustomerID], new { ReadOnly="true", Class="form-control mb-2"})
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="text-left">
-                    <table id="ExistingItemsTable">
-                        <thead>
-                        <tr>
-                            <td>Item Description</td>
-                            <td>Qty</td>
-                            <td>Unit Price</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @for (var i = 0; i < Model.ExistingItems.Count; i++)
-                        {
-                            <tr id="ItemRow@(Model.ExistingItems[i].ItemID)">
-                                <td><span class="form-control">@(Model.ExistingItems[i].ItemDescription)</span></td>
-                                <td><span class="form-control">@(Model.ExistingItems[i].Qty)</span></td>
-                                <td><span class="form-control">@(Model.ExistingItems[i].UnitPrice)</span></td>
-                                <td><span class="form-control" onclick=deleteExistingRow("ItemRow@(Model.ExistingItems[i].ItemID)")>Remove</span></td> 
-                            </tr>  
-                        }
-                        </tbody>
-                    </table>
-                </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="text-left">
+                <table id="ExistingItemsTable">
+                    <thead>
+                    <tr>
+                        <td>Item Description</td>
+                        <td>Qty</td>
+                        <td>Unit Price</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for (var i = 0; i < Model.ExistingItems.Count; i++)
+                    {
+                        <tr id="ItemRow@(Model.ExistingItems[i].ItemID)">
+                            <td><span class="form-control">@(Model.ExistingItems[i].ItemDescription)</span></td>
+                            <td><span class="form-control">@(Model.ExistingItems[i].Qty)</span></td>
+                            <td><span class="form-control">@(Model.ExistingItems[i].UnitPrice)</span></td>
+                            <td><span class="form-control" onclick=deleteExistingRow("ItemRow@(Model.ExistingItems[i].ItemID)")>Remove</span></td> 
+                        </tr>  
+                    }
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="text-left" id="AvailableItemDropdown">
-                    Item Selector: 
-                    @Html.DropDownListFor(
-                        m => m.SelectedItem,
-                        new SelectList(Model.AvailableItems, "Key", "Value",Model.SelectedItem),                        
-                        new { @class = "form-control" }
-                    )
-                </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="text-left" id="AvailableItemDropdown">
+                Item Selector: 
+                @Html.DropDownListFor(
+                    m => m.SelectedItem,
+                    new SelectList(Model.AvailableItems, "ItemID", "ItemName",Model.SelectedItem),                        
+                    new { @class = "form-control" }
+                )
             </div>
-            <div class="col-sm-3">
-                <div class="text-left">
-                    Qty: <input type="text" class="form-control" placeholder="Qty" id="QtyInput">
-                </div>
-            </div>
-            <div class="col-sm-3">
-                <div class="text-left">
-                    Unit Price:  <input type="text" class="form-control" placeholder="Qty" id="UnitPriceInput">
-                </div>
-            </div>
-        </div> 
-        
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="text-left">
-                    <button class="btn btn-outline-dark btn-block mb-3" id="AddItemInputButton">Add New Item</button>
-                </div>
-            </div>
-        </div>   
-        <div class="row">
-            <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
-            <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
         </div>
+        <div class="col-sm-3">
+            <div class="text-left">
+                Qty: <input type="text" class="form-control" placeholder="Qty" id="QtyInput">
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="text-left">
+                Unit Price:  <input type="text" class="form-control" placeholder="Qty" id="UnitPriceInput">
+            </div>
+        </div>
+    </div> 
+    
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="text-left">
+                <button class="btn btn-outline-dark btn-block mb-3" id="DDAddItemButton">Add New Item</button>
+            </div>
+        </div>
+    </div>   
+    <div class="row">
+        <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
+        <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+    </div>
 </div>
  <script src="~/SiteAssets/js/order.js"></script>

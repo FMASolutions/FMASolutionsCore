@@ -11,6 +11,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public int ItemID{get;set;}
         public string ItemDescription {get;set;}
         public string StatusMessage {get; set;}
+        public int OrderItemRowID {get;set;}
 
     }
 }
