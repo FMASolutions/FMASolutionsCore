@@ -3,8 +3,8 @@ using FMASolutionsCore.DataServices.DataRepository;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
-    public interface IOrderItemRepo
+    public interface IOrderItemRepo : IDataRepository<OrderItemEntity>
     {
-        
+        int GetLatestOrderItemByOrder(int orderHeaderID);
     }
 }

@@ -24,6 +24,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _addressLocationRepo = new AddressLocationRepo(_transaction);
             _customerRepo = new CustomerRepo(_transaction);
             _customerAddressRepo = new CustomerAddressRepo(_transaction);
+            _orderHeaderRepo = new OrderHeaderRepo(_transaction);
+            _orderItemRepo = new OrderItemRepo(_transaction);
         }
         ~UnitOfWork()
         {
@@ -43,6 +45,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public IAddressLocationRepo AddressLocationRepo { get { return _addressLocationRepo ?? (_addressLocationRepo = new AddressLocationRepo(_transaction)); } }
         public ICustomerRepo CustomerRepo { get { return _customerRepo ?? (_customerRepo = new CustomerRepo(_transaction)); } }
         public ICustomerAddressRepo CustomerAddressRepo { get { return _customerAddressRepo ?? (_customerAddressRepo = new CustomerAddressRepo(_transaction)); } }
+        public IOrderHeaderRepo OrderHeaderRepo {get {return _orderHeaderRepo ?? (_orderHeaderRepo = new OrderHeaderRepo(_transaction));}}
+        public IOrderItemRepo OrderItemRepo {get {return _orderItemRepo ?? (_orderItemRepo = new OrderItemRepo(_transaction));}}
         bool _disposing = false;
 
         public void SaveChanges()
@@ -109,6 +113,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _addressLocationRepo = null;
             _customerRepo = null;
             _customerAddressRepo = null;
+            _orderHeaderRepo = null;
+            _orderItemRepo  = null;
         }
         private IProductGroupRepo _productGroupRepo;
         private ISubGroupRepo _subGroupRepo;
@@ -120,5 +126,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private IAddressLocationRepo _addressLocationRepo;
         private ICustomerRepo _customerRepo;
         private ICustomerAddressRepo _customerAddressRepo;
+        private IOrderHeaderRepo _orderHeaderRepo;
+        private IOrderItemRepo _orderItemRepo;
     }
 }

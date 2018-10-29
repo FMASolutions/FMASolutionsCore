@@ -1,0 +1,220 @@
+using System;
+using System.Collections.Generic;
+using FMASolutionsCore.DataServices.ShoppingRepo;
+using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+
+namespace FMASolutionsCore.BusinessServices.ShoppingService
+{
+    public class OrderService : IOrderService
+    {
+        public OrderService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
+        {
+            _uow = new UnitOfWork(connectionString, dbType);
+            _itemService = new ItemService(connectionString, dbType);
+            _customerService = new CustomerService(connectionString, dbType);
+        }
+        public void Dispose()
+        {
+            if(!_disposing)
+            {
+                _disposing = true;
+                _itemService.Dispose();
+                _uow.Dispose();
+            }
+        }
+
+        private bool _disposing = false;
+        private IUnitOfWork _uow;
+        IItemService _itemService;
+        ICustomerService _customerService;
+
+        public Order GetByID(int id)
+        {
+            Order returnOrder = null;
+            OrderHeaderEntity headerEntity = _uow.OrderHeaderRepo.GetByID(id);
+
+            if(headerEntity.OrderHeaderID > 0)
+            {
+                returnOrder = new Order();
+                returnOrder.Header = ConvertHeaderEntityToModel(headerEntity);
+
+                IEnumerable<OrderItemEntity> orderItems = _uow.OrderHeaderRepo.GetAllItemsForOrder(id);
+                if(orderItems != null)
+                {
+                    foreach(var item in orderItems)
+                    {
+                        returnOrder.OrderItems.Add(ConvertItemEntityToModel(item));                        
+                    }
+                }
+            }
+            return returnOrder;
+        }
+        public int CreateHeader(OrderHeader model)
+        {
+            try
+            {
+                bool success = false;
+                if (ValidateHeaderForCreate(model))
+                {
+                    OrderHeaderEntity entity = ConvertHeaderModelToEntity(model);
+                    success = _uow.OrderHeaderRepo.Create(entity);
+                    if (success)
+                    {   
+                        _uow.SaveChanges();                     
+                        OrderHeaderEntity createdModel = _uow.OrderHeaderRepo.GetLatestOrder();
+                        model.OrderHeaderID = createdModel.OrderHeaderID;                        
+                    }
+                    else
+                    {
+                        model.ModelState.AddError("CreateFailed", "Unable to create new Order Header");
+                        return -1;
+                    }
+                }
+                return model.OrderHeaderID;
+            }
+            catch (Exception ex)
+            {
+                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
+                return -1;
+            }            
+        }
+        public int AddItemToOrder(OrderItem item)
+        {
+            try
+            {
+                bool success = false;
+                if(ValidateItemForCreate(item))
+                {
+                    OrderItemEntity entity = ConvertItemModelToEntity(item);
+                    success = _uow.OrderItemRepo.Create(entity);
+                    if(success)
+                    {   
+                        _uow.SaveChanges();                     
+                        item.OrderItemID = _uow.OrderItemRepo.GetLatestOrderItemByOrder(item.OrderHeaderID);
+                    }   
+                    else
+                    {                        
+                        item.ModelState.AddError("CreateFailed","Unable to add Item To Order");
+                        return -1;
+                    }
+                }
+                return item.OrderItemID;
+            }
+            catch(Exception ex)
+            {
+                item.ModelState.AddError(ex.GetType().ToString(), ex.Message);
+                return -1;
+            }
+        }
+        public bool RemoveItemFromOrder(OrderItem item)
+        {
+            if (item.OrderItemID > 0)
+                return _uow.OrderItemRepo.Delete(ConvertItemModelToEntity(item));            
+            else
+            {
+                item.ModelState.AddError("Unable To Remove","Unable to remove item from oreder, please specify OrderItemID");
+                return false;
+            }
+        }
+
+        public List<Order> GetAll()
+        {
+            var headers = _uow.OrderHeaderRepo.GetAll();
+
+            if(headers != null)            
+            {
+                List<Order> returnOrders = new List<Order>();
+                foreach(var header in headers)
+                {
+                    Order newOrder = GetByID(header.OrderHeaderID);
+                    returnOrders.Add(newOrder);
+                }
+                return returnOrders;
+            }
+            else
+            {
+                return null;
+            }            
+        }
+        public bool UpdateHeader(Order newModel)
+        {
+            //Interesting?????
+            return false;
+        }
+
+        private OrderHeaderEntity ConvertHeaderModelToEntity(OrderHeader model)
+        {
+            //Int32 orderHeaderID, Int32 customerID, Int32 customerAddressID, Int32 orderStatusID, DateTime orderDate, DateTime deliveryDate
+            return new OrderHeaderEntity(model.OrderHeaderID
+                ,model.CustomerID
+                ,model.CustomerAddressID
+                ,model.OrderStatusID
+                ,model.OrderDate
+                ,model.DeliveryDate
+            );
+        }
+
+        private OrderHeader ConvertHeaderEntityToModel(OrderHeaderEntity entity)
+        {
+            return new OrderHeader(new CustomModelState()
+                , entity.CustomerAddressID
+                , entity.CustomerID
+                ,entity.DeliveryDate
+                ,entity.OrderDate
+                ,entity.OrderHeaderID
+                ,entity.OrderStatusID
+            );
+        }
+
+        private OrderItemEntity ConvertItemModelToEntity(OrderItem model)
+        {
+            return new OrderItemEntity(model.OrderItemID
+                ,model.OrderHeaderID
+                ,model.ItemID
+                ,model.OrderItemUnitPrice
+                ,model.OrderItemUnitPriceAfterDiscount
+                ,model.OrderItemQty
+                ,model.OrderItemDescription
+            );
+        }
+
+        private OrderItem ConvertItemEntityToModel(OrderItemEntity entity)
+        {
+            return new OrderItem(new CustomModelState()
+                ,entity.ItemID
+                ,entity.OrderHeaderID
+                ,entity.OrderItemDescription
+                ,entity.OrderItemID
+                ,entity.OrderItemQty
+                ,entity.OrderItemUnitPrice
+                ,entity.OrderItemUnitPriceAfterDiscount
+            );
+        }
+
+        private bool ValidateHeaderForCreate(OrderHeader model)
+        {
+            try
+            {
+                var custAddress = _uow.CustomerAddressRepo.GetByID(model.CustomerAddressID);
+                var customer = _uow.CustomerRepo.GetByID(model.CustomerID);
+                //Order Status eventually too.....
+                
+                if(custAddress != null && customer != null && model.OrderDate != null && model.DeliveryDate != null)
+                {                    
+                    return true;
+                }
+                return false;
+            }
+            catch(System.Exception ex)
+            {
+                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
+                return false;
+            }
+        }
+
+        private bool ValidateItemForCreate(OrderItem model)
+        {
+            return false;
+        }
+    }
+}

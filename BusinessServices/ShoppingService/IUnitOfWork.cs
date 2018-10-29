@@ -15,6 +15,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         IAddressLocationRepo AddressLocationRepo {get;}
         ICustomerAddressRepo CustomerAddressRepo {get;}
         ICustomerRepo CustomerRepo {get;}
+        IOrderHeaderRepo OrderHeaderRepo {get;}
+        IOrderItemRepo OrderItemRepo {get;}        
 
         void SaveChanges();
     }
