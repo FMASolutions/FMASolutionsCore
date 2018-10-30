@@ -21,5 +21,9 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public string SubGroupName { get; set; }
         public string SubGroupDescription { get; set; }
         public string StatusMessage { get; set; }
+        public override string ToString()
+        {
+            return SubGroupCode;
+        }
     }
 }

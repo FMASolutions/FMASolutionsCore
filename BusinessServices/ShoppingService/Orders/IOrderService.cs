@@ -11,5 +11,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         bool RemoveItemFromOrder(OrderItem item);        
         List<Order> GetAll();
         bool UpdateHeader(Order newModel);
+        List<StockHierarchyItem> GetStockHierarchy();
     }
 }

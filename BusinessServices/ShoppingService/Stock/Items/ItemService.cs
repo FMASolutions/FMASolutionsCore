@@ -127,6 +127,39 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return updateSuccess;
 
         }
+
+        public List<StockHierarchyItem> GetStockHierarchy()
+        {
+            List<StockHierarchyItem> returnList = null;
+            var searchResults = _uow.ItemRepo.GetCompleteStockHierarchy();
+
+            if(searchResults != null)
+            {
+                returnList = new List<StockHierarchyItem>();
+                foreach(var item in searchResults)
+                {
+                    StockHierarchyItem currentItem = new StockHierarchyItem();
+                    currentItem.ItemAvailableQty = item.ItemAvailableQty;
+                    currentItem.ItemCode = item.ItemCode;
+                    currentItem.ItemDescription = item.ItemDescription;
+                    currentItem.ItemID = item.ItemID;
+                    currentItem.ItemImageFilename = item.ItemImageFilename;
+                    currentItem.ItemName = item.ItemName;
+                    currentItem.ItemUnitPrice = item.ItemUnitPrice;
+                    currentItem.ItemUnitPriceWithMaxDiscount = item.ItemUnitPriceWithMaxDiscount;
+                    currentItem.ProductGroupCode = item.ProductGroupCode;
+                    currentItem.ProductGroupDescription = item.ProductGroupDescription;
+                    currentItem.ProductGroupID = item.ProductGroupID;
+                    currentItem.ProductGroupName = item.ProductGroupName;
+                    currentItem.SubGroupCode = item.SubGroupCode;
+                    currentItem.SubGroupDescription = item.SubGroupDescription;
+                    currentItem.SubGroupID = item.SubGroupID;
+                    currentItem.SubGroupName = item.SubGroupName;
+                    returnList.Add(currentItem);
+                }
+            }
+            return returnList;
+        }
         #endregion
 
         #region Private functions

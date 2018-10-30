@@ -4,6 +4,10 @@ var AvailableItemList = [];
 
 $(document).ready(function() {
     $('#DDAddItemButton').on("click",addRowFromDD);
+    $('.ProductHeading').on('click', ToggleProduct);
+    $('.SubHeading').on('click',ToggleSub);
+    $('#AddItemButtonSearch').on('click',AddSearchItem);
+    $('.AddAccordItemButton').on('click',AddAccordItem);
     setupGlobals();
 });
 
@@ -68,17 +72,7 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
 function deleteExistingRow(rowID) {
     $("#" + rowID).remove();
 }
-/*
-!!!!!!!!!!!!!!!!!!NEW FROM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-$(document).ready(function(){
-    $('.ProductHeading').on('click', HideProduct);
-    $('.SubHeading').on('click',HideSub);
-    $('#AddItemButtonSearch').on('click',AddSearchItem);
-    $('.AddItemButton').on('click',AddListItem);
-});
-
-function HideProduct(){    
+function ToggleProduct(){    
     var visibility = $(this).siblings().children().css('display');
     if(visibility === "block")    
         $(this).siblings().children().hide();    
@@ -86,7 +80,7 @@ function HideProduct(){
         $(this).siblings().children().show();
 }
 
-function HideSub(){
+function ToggleSub(){
     $(this).siblings('ul').toggle();
 }
 
@@ -103,11 +97,9 @@ function AddSearchItem(){
         window.alert('Price value must be populated');    
 }
 
-function AddListItem(){
+function AddAccordItem(){
     var ItemID = $(this).parent().siblings('span.ItemID')[0].textContent;
     var MinimumPrice = $(this).parent().siblings('span.MinimumPrice')[0].textContent;
     var Qty = $(this).parent().siblings('span').children('.QtyInput')[0].value;
     var InputPrice = $(this).parent().siblings('span').children('.PriceInput')[0].value;        
 }
-
-*/

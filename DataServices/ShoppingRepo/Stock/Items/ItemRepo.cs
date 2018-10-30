@@ -163,6 +163,34 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return null;
             }
         }
+
+        public IEnumerable<StockHierarchyEntity> GetCompleteStockHierarchy()
+        {
+            try
+            {
+                string query = @"
+                SELECT 
+                    P.ProductGroupName, S.SubGroupName, I.ItemName,I.ItemID,I.ItemCode,I.SubGroupID
+                    ,S.ProductGroupID,I.ItemDescription,I.ItemUnitPRice,I.ItemUnitPriceWithMaxDiscount
+                    ,I.ItemAvailableQty,I.ItemImageFilename,S.SubGroupCode,S.SubGroupDescription
+                    ,P.ProductGroupCode,P.ProductGroupDescription
+                FROM 
+                    Items I
+                INNER JOIN 
+                    SubGroups S ON I.SubGroupID = S.SubGroupID
+                INNER JOIN 
+                    ProductGroups P ON S.ProductGroupID = P.ProductGroupID
+                ORDER BY 
+                    P.ProductGroupName, S.SubGroupName, I.ItemName
+                ";
+                return _dbConnection.Query<StockHierarchyEntity>(query, transaction: Transaction);   
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in ItemRepo.GetCompleteStockHierarchy: " + ex.Message,this);
+                return null;
+            }
+        }
         #endregion
 
     }

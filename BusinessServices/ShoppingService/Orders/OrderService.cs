@@ -142,6 +142,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return false;
         }
 
+        public List<StockHierarchyItem> GetStockHierarchy()
+        {
+            return _itemService.GetStockHierarchy();
+        }
+
         private OrderHeaderEntity ConvertHeaderModelToEntity(OrderHeader model)
         {
             //Int32 orderHeaderID, Int32 customerID, Int32 customerAddressID, Int32 orderStatusID, DateTime orderDate, DateTime deliveryDate
