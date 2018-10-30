@@ -68,3 +68,46 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
 function deleteExistingRow(rowID) {
     $("#" + rowID).remove();
 }
+/*
+!!!!!!!!!!!!!!!!!!NEW FROM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+$(document).ready(function(){
+    $('.ProductHeading').on('click', HideProduct);
+    $('.SubHeading').on('click',HideSub);
+    $('#AddItemButtonSearch').on('click',AddSearchItem);
+    $('.AddItemButton').on('click',AddListItem);
+});
+
+function HideProduct(){    
+    var visibility = $(this).siblings().children().css('display');
+    if(visibility === "block")    
+        $(this).siblings().children().hide();    
+    else    
+        $(this).siblings().children().show();
+}
+
+function HideSub(){
+    $(this).siblings('ul').toggle();
+}
+
+function AddSearchItem(){    
+    var Code = $('#CodeInputSearch')[0].value
+    var Qty = $('#QtyInputSearch')[0].value
+    var Price = $('#PriceInputSearch')[0].value
+
+    if(!Code)
+        window.alert('Code value must be populated');
+    else if(!Qty)
+        window.alert('Qty value must be populated');  
+    else if(!Price)
+        window.alert('Price value must be populated');    
+}
+
+function AddListItem(){
+    var ItemID = $(this).parent().siblings('span.ItemID')[0].textContent;
+    var MinimumPrice = $(this).parent().siblings('span.MinimumPrice')[0].textContent;
+    var Qty = $(this).parent().siblings('span').children('.QtyInput')[0].value;
+    var InputPrice = $(this).parent().siblings('span').children('.PriceInput')[0].value;        
+}
+
+*/
