@@ -121,3 +121,128 @@
     </div>
 </div>
  <script src="~/SiteAssets/js/order.js"></script>
+ 
+<!--
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!NEW SECTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            <html>
+
+<head>
+    <title>NSR Task Helper</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="H:/1 - Project Work/SimpleNSR/Media/CSS/core.css">
+</head>
+
+<body>
+    <div class="container rounded">
+        <h1>NSR Task Helper</h1>
+        <div id="CurrentItems">
+            Current Order Items:
+        </div>
+        
+        <div id="AddCustomItem">
+            Search and Add: <br>
+            <span>Code:<input type="text" placeholder="Code" id="CodeInputSearch"></span>
+            <span>Qty:<input type="number" placeholder="Qty" id="QtyInputSearch"></span>
+            <span>Price:<input type="number" placeholder="Price" id="PriceInputSearch"></span>
+            <span><input type="button" value="Add Item" id="AddItemButtonSearch"></span>
+            <br><br>
+        </div>   
+
+        <div id="ItemAccordion">
+            Item Selector:
+            <div>
+                <h3 class="ProductHeading">Aviastar-TU (TUP) - </h3>
+                <div>
+                    <h3 class="SubHeading">Fleet B757 - </h3>
+                    <ul class="ItemList">
+                        <li>
+                            <span class="ItemDescritpion">RB211-535</span>
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>
+                            <span style="display: none" class="ItemID">101</span>
+                            <span style="display: none" class="MinimumPrice">1.99</span>
+                        </li>
+                        <li>
+                            <span class="ItemDescritpion">RB211-535EH</span>
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>
+                            <span style="display: none" class="ItemID">102</span>
+                            <span style="display: none" class="MinimumPrice">2.99</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="ProductHeading">Random-Airline (RGN) - </h3>
+                <div>
+                    <h3 class="SubHeading">Fleet A350 - </h3>
+                    <ul class="ItemList">                        
+                        <li>
+                            <span class="ItemDescritpion">T700</span>   
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>                         
+                            <span style="display: none" class="ItemID">103</span>
+                            <span style="display: none" class="MinimumPrice">3.99</span>
+                        </li>
+                        <li>
+                            <span class="ItemDescritpion">T7000</span>
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>
+                            <span style="display: none" class="ItemID">104</span> 
+                            <span style="display: none" class="MinimumPrice">4.99</span>                           
+                        </li>
+                        <li>
+                            <span class="ItemDescritpion">T800</span>
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>
+                            <span style="display: none" class="ItemID">105</span>
+                            <span style="display: none" class="MinimumPrice">5.99</span>
+                        </li>
+                        <li>
+                            <span class="ItemDescritpion">T100</span>
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>
+                            <span style="display: none" class="ItemID">106</span>
+                            <span style="display: none" class="MinimumPrice">6.99</span>
+                            
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="SubHeading">Fleet B757 - </h3>
+                    <ul class="ItemList">
+                        <li>
+                            <span class="ItemDescritpion">RB211-535</span>
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>
+                            <span style="display: none" class="ItemID">107</span>
+                            <span style="display: none" class="MinimumPrice">7.99</span>
+                        </li>
+                        <li>
+                            <span class="ItemDescritpion">RB211-535EH</span>
+                            <span><input type="number" placeholder="Qty" class="QtyInput"></span>
+                            <span><input type="number" placeholder="Price" class="PriceInput"></span>
+                            <span><input type="button" value="Add Item" class="AddItemButton"></span>
+                            <span style="display: none" class="ItemID">108</span>
+                            <span style="display: none" class="MinimumPrice">8.99</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="H:\1 - Project Work\SimpleNSR\Media\JS\core.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+            --!>
