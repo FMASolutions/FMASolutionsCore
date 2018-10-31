@@ -29,7 +29,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         public Int32 ID { get { return _orderItemID; } set { _orderItemID = value; } }
         public Int32 OrderItemID { get { return _orderItemID; } set { _orderItemID = value; } }
         public Int32 OrderHeaderID { get { return _orderHeaderID; } set { _orderHeaderID = value; } }
-        public Int32 ItemID { get { return _itemID; } set { ItemID = value; } }
+        public Int32 ItemID { get { return _itemID; } set { _itemID = value; } }
         public decimal OrderItemUnitPrice { get { return _orderItemUnitPrice; } set { _orderItemUnitPrice = value; } }
         public decimal OrderItemUnitPriceAfterDiscount { get { return _orderItemUnitPriceAfterDiscount; } set { _orderItemUnitPriceAfterDiscount = value; } }
         public int OrderItemQty { get { return _orderItemQty; } set { _orderItemQty = value; } }

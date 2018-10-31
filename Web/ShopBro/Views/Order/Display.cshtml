@@ -36,6 +36,7 @@
 </div>
 
 <div class="container rounded">
+    
     <div class="row">
         <div class="col-sm-8">
             <div class="text-left">
@@ -48,10 +49,17 @@
             </div>        
         </div>
     </div>
+
     @if (Model != null && Model.StatusMessage != null)
     {
         <Label class="error-text">@Model.StatusMessage </Label>
     }
+
+    <div class="row">
+        <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
+        <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+    </div>
+
     <div class="row">
         <div class="col-sm-12">
             <div class="text-left">                    
@@ -59,6 +67,7 @@
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-sm-12">
             <div class="text-left">
@@ -85,7 +94,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="AddSearchItemWrapper">
             Search and Add: <br>
             <span>Code:<input type="text" placeholder="Code" id="CodeInputSearch"></span>
