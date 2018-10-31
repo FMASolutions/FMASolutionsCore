@@ -8,9 +8,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         Order GetByID(int id);        
         int CreateHeader(OrderHeader model);
         int AddItemToOrder(OrderItem item);
-        bool RemoveItemFromOrder(OrderItem item);        
-        List<Order> GetAll();
+        bool RemoveItemFromOrder(OrderItem item);
+        List<Order> GetAllOrders();
         bool UpdateHeader(Order newModel);
         List<StockHierarchyItem> GetStockHierarchy();
+        List<Customer> GetAvailableCustomers();
+        Dictionary<int, string> GetOrderStatusDictionary();
     }
 }

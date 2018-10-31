@@ -117,7 +117,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
         }
 
-        public List<Order> GetAll()
+        public List<Order> GetAllOrders()
         {
             var headers = _uow.OrderHeaderRepo.GetAll();
 
@@ -145,6 +145,20 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public List<StockHierarchyItem> GetStockHierarchy()
         {
             return _itemService.GetStockHierarchy();
+        }
+
+        public List<Customer> GetAvailableCustomers()
+        {
+            return _customerService.GetAll();
+        }
+        public Dictionary<int, string> GetOrderStatusDictionary()
+        {
+            Dictionary<int, string> returnDic = new Dictionary<int, string>();
+            
+            foreach(var item in _uow.OrderStatusRepo.GetAll())
+                returnDic.Add(item.OrderStatusID, item.OrderStatusValue);
+
+            return returnDic;
         }
 
         private OrderHeaderEntity ConvertHeaderModelToEntity(OrderHeader model)

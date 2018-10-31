@@ -20,37 +20,69 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         public OrderViewModel Search(int OrderHeaderID)
         {
-            OrderViewModel vm = new OrderViewModel();
-            List<OrderItemViewModel> currentItems = new List<OrderItemViewModel>();
-            List<ItemViewModel> availableItems = new List<ItemViewModel>();
-            Dictionary<int,string> availableCustomers = new Dictionary<int, string>();
-
+            OrderViewModel returnVM = null;
             var orderModel = _service.GetByID(OrderHeaderID);
-            foreach(var item in orderModel.OrderItems)
+            if(orderModel != null)
             {
-                OrderItemViewModel i = new OrderItemViewModel();
-                i.ItemDescription = item.OrderItemDescription;
-                i.ItemID = item.ItemID;
-                i.OrderItemRowID = item.OrderItemID;
-                i.Qty = item.OrderItemQty;
-                i.UnitPrice = item.OrderItemUnitPrice;
-                currentItems.Add(i);
+                returnVM = ConvertToViewModel(orderModel);
+                return returnVM;
             }
+            else
+            {
+                returnVM = new OrderViewModel();
+                _modelState.ErrorDictionary.Add("NoResult","No Search Result Found");
+                return returnVM;
+            }
+        }
 
-            availableCustomers.Add(1,"FMA Solutions LTD!");
-            availableCustomers.Add(2,"Some Other Company");
+        private ICustomModelState _modelState;
+        private IOrderService _service;
+        public ICustomModelState ModelState { get { return _modelState; } }
 
-            StockHierarchyViewModel hierarchy = new StockHierarchyViewModel();
-            var tableData = _service.GetStockHierarchy();
+        private OrderViewModel ConvertToViewModel(Order model)
+        {
+            OrderViewModel vmReturn = new OrderViewModel();
+            vmReturn.OrderID = model.Header.OrderHeaderID;
             
-            foreach(var item in tableData)
+            //Set up the Existing OrderItem List
+            List<OrderItemViewModel> orderItems = new List<OrderItemViewModel>();
+            foreach(var orderItem in model.OrderItems)
+            {
+                OrderItemViewModel orderItemVM = new OrderItemViewModel();
+                orderItemVM.ItemDescription = orderItem.OrderItemDescription;
+                orderItemVM.ItemID = orderItem.ItemID;
+                orderItemVM.OrderItemRowID = orderItem.OrderItemID;
+                orderItemVM.Qty = orderItem.OrderItemQty;
+                orderItemVM.UnitPrice = orderItem.OrderItemUnitPrice;
+                orderItems.Add(orderItemVM);
+            }
+            vmReturn.ExistingItems = orderItems;
+
+            //Set current Order Status String Value
+            foreach(var item in _service.GetOrderStatusDictionary())
+                if(model.Header.OrderStatusID == item.Key)
+                    vmReturn.OrderStatus = item.Value;
+            
+            //Set up Available Customers List
+            Dictionary<int,string> availableCustomers = new Dictionary<int, string>();
+            foreach(var customer in _service.GetAvailableCustomers())
+                availableCustomers.Add(customer.CustomerID, customer.CustomerName);
+            vmReturn.AvailableCustomers = availableCustomers;
+            vmReturn.CustomerID = model.Header.CustomerID;
+
+            
+            //Set up Stock Hierarchy Object as well as Available Item List
+            StockHierarchyViewModel stockHierarchy = new StockHierarchyViewModel();
+            List<ItemViewModel> availableItems = new List<ItemViewModel>();
+            List<StockHierarchyItem> itemDataRows = _service.GetStockHierarchy();
+            foreach(var item in itemDataRows)
             {
                 PGroupDetailed currentPGroupDetailed = null;
                 SGroupDetailed currentSGroupDetailed = null;
                 ItemViewModel currentItemViewModel = new ItemViewModel();
 
-                if(hierarchy.ProductGroups.Exists(e => e.ToString() == item.ProductGroupCode))                
-                    currentPGroupDetailed = hierarchy.ProductGroups.Find(e => e.ToString() == item.ProductGroupCode);
+                if(stockHierarchy.ProductGroups.Exists(e => e.ToString() == item.ProductGroupCode))                
+                    currentPGroupDetailed = stockHierarchy.ProductGroups.Find(e => e.ToString() == item.ProductGroupCode);
                 else
                 {
                     currentPGroupDetailed = new PGroupDetailed();
@@ -58,13 +90,11 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                     currentPGroupDetailed.ProductGroupDescription = item.ProductGroupDescription;
                     currentPGroupDetailed.ProductGroupID = item.ProductGroupID;
                     currentPGroupDetailed.ProductGroupName = item.ProductGroupName;
-                    hierarchy.ProductGroups.Add(currentPGroupDetailed);
+                    stockHierarchy.ProductGroups.Add(currentPGroupDetailed);
                 }
-                
+
                 if(currentPGroupDetailed.AvailableSubs.Exists(e => e.ToString() == item.SubGroupCode))
-                {
                     currentSGroupDetailed = currentPGroupDetailed.AvailableSubs.Find(e => e.ToString() == item.SubGroupCode);
-                }
                 else
                 {
                     //Add new SubGroup to currentPGroup if it's not in the list already.
@@ -88,22 +118,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 currentSGroupDetailed.AvailableItems.Items.Add(currentItemViewModel);
                 availableItems.Add(currentItemViewModel);
             }
-            
-            vm.CustomerID = 1;
-            vm.ExistingItems = currentItems;
-            vm.AvailableItems = availableItems;
-            vm.AvailableCustomers = availableCustomers;
-            vm.OrderID = OrderHeaderID;
-            vm.OrderStatus = "Estimate";
-            
-            vm.StockHierarchy = hierarchy;
-            return vm;
+            vmReturn.AvailableItems = availableItems;
+            vmReturn.StockHierarchy = stockHierarchy;
+            return vmReturn;
         }
-
-        private ICustomModelState _modelState;
-        private IOrderService _service;
-        public ICustomModelState ModelState { get { return _modelState; } }
-        
-
     }
 }

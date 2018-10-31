@@ -53,7 +53,6 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
     {
         if(itemSearch.ItemMinPrice <= price)
         {
-            console.log(itemSearch);
             ExistingItemList.push({
                 "ID": itemID,
                 "IDText": "ItemRow" + itemID,
@@ -115,8 +114,8 @@ function AddSearchItem(){
 function AddAccordItem(){
     var ItemID = $(this).parent().siblings('span.ItemID')[0].textContent;
     var MinimumPrice = $(this).parent().siblings('span.MinimumPrice')[0].textContent;
-    var Qty = $(this).parent().siblings('span').children('.QtyInput')[0].value;
-    var InputPrice = $(this).parent().siblings('span').children('.PriceInput')[0].value;  
+    var Qty = $(this).parent().siblings('.row').children().children().children('.QtyInput')[0].value;
+    var InputPrice = $(this).parent().siblings('.row').children().children().children('.PriceInput')[0].value;  
     var ItemDescription = $(this).parent().siblings('span.ItemDescritpion')[0].textContent; 
     
     AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID);

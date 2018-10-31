@@ -1,0 +1,202 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.OrderViewModel
+@{
+    ViewData["Title"] = "Item - Update Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+<div id="DataRoot" style="display:none">
+    <div id="OrderItemsRaw">
+        @for (var i = 0; i < Model.ExistingItems.Count; i++)
+        {
+            <div class="OrderItemRaw">
+                <span class="OrderItemDescriptionRaw">@(Model.ExistingItems[i].ItemDescription)</span>
+                <span class="OrderItemUnitPriceRaw">@(Model.ExistingItems[i].UnitPrice)</span>
+                <span class="OrderItemQtyRaw">@(Model.ExistingItems[i].Qty)</span>
+                <span class="OrderItemItemIDRaw">@(Model.ExistingItems[i].ItemID)</span>
+                <span class="OrderItemItemRowIDRaw">@(Model.ExistingItems[i].OrderItemRowID)</span>                
+            </div>
+        }
+    </div>
+    <div id="ItemsRaw">
+        @for (var i = 0; i < Model.AvailableItems.Count; i++)
+        {
+            <div class="ItemRaw">
+                <span class="ItemIDRaw">@(Model.AvailableItems[i].ItemID)</span>
+                <span class="ItemCodeRaw">@(Model.AvailableItems[i].ItemCode)</span>
+                <span class="SubGroupIDRaw">@(Model.AvailableItems[i].SubGroupID)</span>
+                <span class="ItemNameRaw">@(Model.AvailableItems[i].ItemName)</span>
+                <span class="ItemDescriptionRaw">@(Model.AvailableItems[i].ItemDescription)</span>
+                <span class="ItemUnitPriceRaw">@(Model.AvailableItems[i].ItemUnitPrice)</span>
+                <span class="ItemUnitPriceWithMaxDiscountRaw">@(Model.AvailableItems[i].ItemUnitPriceWithMaxDiscount)</span>
+                <span class="ItemAvailableQtyRaw">@(Model.AvailableItems[i].ItemAvailableQty)</span>
+                <span class="ItemImageFilenameRaw">@(Model.AvailableItems[i].ItemImageFilename)</span>
+                <span class="ItemCode">@(Model.AvailableItems[i].ItemCode)</span>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container rounded">
+    
+    <div class="row mb-2 no-gutters" id="OrderTitleRow">
+        <div class="col-6 text-left" id="OrderIDHeading">            
+            <h2>Order Number: @(Model.OrderID)</h3>            
+        </div>
+        <div class="col-6 text-right" id="OrderStatusHeading">
+            <h2>Order Status: @(Model.OrderStatus) </h3>
+        </div>
+    </div>
+
+    @if (Model != null && Model.StatusMessage != null)
+    {
+        <Label class="error-text">@(Model.StatusMessage) </Label>
+    }
+    <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-secondary text-light" id="CustomerInfoContainer">
+        <h3>Customer Info:</h3>
+        <div class="row no-gutters" id="SelectdCustomerRow">
+            <div class="col-3 text-left customHeading" id="SelectedCustomerColumnHeading">    
+                Customer:
+            </div>
+            <div class="col-9" id="SelectedCustomerControlColumn">
+                @(Html.DropDownListFor(
+                    m => m.CustomerID,
+                    new SelectList(Model.AvailableCustomers, "Key", "Value",Model.CustomerID),     
+                    new { @class = "form-control bg-secondary text-light", @id = "SelectedCustomerControl" }
+                ))
+            </div>
+        </div>
+        <div class="row no-gutters customHeading pt-2" id="CustomerAddressHeadingRow">
+            Customer Delivery Address:             
+        </div>
+        <div class="row no-gutters" id="CustomerAddressLine1">
+            36 Bewick Drive
+        </div>
+        <div class="row no-gutters" id="CustomerAddressLine1">
+            Bakersfield
+        </div>
+        <div class="row no-gutters" id="CustomerAddressCity">
+            Nottingham
+        </div>
+        <div class="row no-gutters" id="CustomerAddressPostCode">
+            NG3 7GB
+        </div>
+        <div class="row no-gutters" id="CustomerAddressPostCode">
+            United Kingdom
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
+        <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+    </div>
+
+    <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-secondary" id="ExistingItemsContainer">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Current Items:</h3>
+                    <table id="ExistingItemsTable">
+                        <thead>
+                            <tr>
+                                <td>Item Description</td>
+                                <td>Qty</td>
+                                <td>Unit Price</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @for (var i = 0; i < Model.ExistingItems.Count; i++)
+                        {
+                            <tr id="ItemRow@(Model.ExistingItems[i].OrderItemRowID)">
+                                <td><span class="form-control">@(Model.ExistingItems[i].ItemDescription)</span></td>
+                                <td><span class="form-control">@(Model.ExistingItems[i].Qty)</span></td>
+                                <td><span class="form-control">@(Model.ExistingItems[i].UnitPrice)</span></td>
+                                <td><span class="form-control" onclick=deleteExistingRow("ItemRow@(Model.ExistingItems[i].OrderItemRowID)")>Remove</span></td> 
+                            </tr>  
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-secondary" id="AddSearchItemWrapper">
+            <h3>Search and Add:</h3>
+            <span>Code:<input type="text" class="form-control" placeholder="Code" id="CodeInputSearch"></span>
+            <span>Qty:<input type="number" class="form-control" placeholder="Qty" id="QtyInputSearch"></span>
+            <span>Price:<input type="number" class="form-control" placeholder="Price" id="PriceInputSearch"></span>
+            <span><input type="button" class="btn btn-outline-light btn-block mb-3 mt-2" value="Add Item" id="AddItemButtonSearch"></span>
+    </div>
+    <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-secondary" id="ItemSelectorContainer">
+        <h3>Item Selector:</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="text-left" id="AvailableItemDropdown">
+                    Item:
+                    @Html.DropDownListFor(
+                        m => m.SelectedItem,
+                        new SelectList(Model.AvailableItems, "ItemID", "ItemName",Model.SelectedItem),                        
+                        new { @class = "form-control" }
+                    )
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="text-left">
+                    Qty: <input type="text" class="form-control" placeholder="Qty" id="QtyInput">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="text-left">
+                    Unit Price:  <input type="text" class="form-control" placeholder="Qty" id="UnitPriceInput">
+                </div>
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <button class="btn btn-outline-light btn-block mb-3 mt-2" id="DDAddItemButton">Add Item</button>
+                </div>
+            </div>
+        </div>   
+    </div>
+
+    <div id="ItemAccordionWrapper">
+        <h3>Item Hierarchy:</h2>
+        @for (var i = 0; i < Model.StockHierarchy.ProductGroups.Count; i++)
+        {
+            <div class="ProductWrapper">
+                <h3 class="ProductHeading">@(Model.StockHierarchy.ProductGroups[i].ProductGroupName)</h3>    
+                @for(var j = 0; j < Model.StockHierarchy.ProductGroups[i].AvailableSubs.Count; j++)
+                {
+                    <div class="SubGroupWrapper">
+                        <h3 class="SubHeading">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].SubGroupName)</h3>
+                        <ul class="ItemList">
+                            @for(var k=0; k < Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items.Count; k++)
+                            {
+                                <li class="btn-outline-dark pb-3 mb-2">
+                                    <span class="ItemDescritpion ">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemDescription)</span>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <span><input type="number" placeholder="Qty" class="QtyInput form-control"></span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span><input type="number" placeholder="Price" class="PriceInput form-control"></span>
+                                        </div>
+                                    </div>
+                                    <span><input type="button" value="Add Item" class="AddAccordItemButton form-control"></span>
+                                    <span style="display: none" class="ItemID">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemID)</span>
+                                    <span style="display: none" class="MinimumPrice">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemUnitPriceWithMaxDiscount)</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
+        <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+    </div>
+</div>
+ <script src="~/SiteAssets/js/order.js"></script>

@@ -25,12 +25,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
+            
             OrderModel model = GetNewModel();
             
             OrderViewModel vm = model.Search(vmInput.ID);
             
             if(vmInput.ID > 0)
-                return View("Display",vm);
+                return View("DisplayForUpdate",vm);
             else
                 return View("Search");
         }       

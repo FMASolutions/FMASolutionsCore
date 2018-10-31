@@ -59,46 +59,9 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             }
         }
 
-        public OrderHeaderEntity GetLatestOrder()
-        {
-            try
-            {
-                string query = @"
-                SELECT TOP 1 OrderHeaderID,CustomerID,CustomerAddressID,OrderStatusID,OrderDate,DeliveryDate
-                FROM OrderHeaders
-                ORDER BY OrderHeaderID desc
-                ";
+        
 
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetLatestOrder Started: full query = " + query);
 
-                return _dbConnection.QueryFirst<OrderHeaderEntity>(query, transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetLatestOrder: " + ex.Message, this);
-                return null;
-            }
-        }
-
-        public IEnumerable<OrderItemEntity> GetAllItemsForOrder(int orderID)
-        {
-            try
-            {
-                string query = @"
-                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
-                FROM OrderItems
-                WHERE OrderHeaderID = @OrderHeaderID";
-
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAllItemsForOrder Started: " + query);
-
-                return _dbConnection.Query<OrderItemEntity>(query, new { OrderHeaderID = orderID }, transaction: Transaction);
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAll: " + ex.Message, this);
-                return null;
-            }
-        }
 
         public bool Create(OrderHeaderEntity entity)
         {
@@ -168,5 +131,47 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             throw new NotImplementedException();
         }
         #endregion
+
+        public IEnumerable<OrderItemEntity> GetAllItemsForOrder(int orderID)
+        {
+            try
+            {
+                string query = @"
+                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
+                FROM OrderItems
+                WHERE OrderHeaderID = @OrderHeaderID";
+
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAllItemsForOrder Started: " + query);
+
+                return _dbConnection.Query<OrderItemEntity>(query, new { OrderHeaderID = orderID }, transaction: Transaction);
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAll: " + ex.Message, this);
+                return null;
+            }
+        }
+
+        public OrderHeaderEntity GetLatestOrder()
+        {
+            try
+            {
+                string query = @"
+                SELECT TOP 1 OrderHeaderID,CustomerID,CustomerAddressID,OrderStatusID,OrderDate,DeliveryDate
+                FROM OrderHeaders
+                ORDER BY OrderHeaderID desc
+                ";
+
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetLatestOrder Started: full query = " + query);
+
+                return _dbConnection.QueryFirst<OrderHeaderEntity>(query, transaction: Transaction);
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetLatestOrder: " + ex.Message, this);
+                return null;
+            }
+        }
+
     }
 }

@@ -1,3 +1,17 @@
 .error-text{
     color: red;
 }
+
+.SubGroupWrapper{
+    background-color: darkgrey;
+    padding-left: 20px;
+}
+
+.ProductWrapper{
+    background-color: gray;
+}
+
+.ItemList{
+    padding-left: 60px;
+    padding-right: 5px;
+}

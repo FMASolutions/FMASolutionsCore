@@ -113,7 +113,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         #endregion
 
         #region Private Functions
-        private Customer ConvertEntityToModel(CustomerEntity entityToConvert)
+        internal Customer ConvertEntityToModel(CustomerEntity entityToConvert)
         {
             return new Customer(new CustomModelState()
                 , entityToConvert.CustomerID
@@ -125,7 +125,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
             );
         }
-        private CustomerEntity ConvertModelToEntity(Customer modelToConvert)
+        internal CustomerEntity ConvertModelToEntity(Customer modelToConvert)
         {
             return new CustomerEntity(modelToConvert.CustomerID, modelToConvert.CustomerTypeID, modelToConvert.CustomerCode, modelToConvert.CustomerName, modelToConvert.CustomerContactNumber, modelToConvert.CustomerEmailAddress);
         }
