@@ -32,41 +32,50 @@ function setupGlobals(){
             "ItemUnitPrice": $(this).children('span.ItemUnitPriceRaw')[0].innerText,
             "ItemMinPrice": $(this).children('span.ItemUnitPriceWithMaxDiscountRaw')[0].innerText,
             "ItemAvailQty": $(this).children('span.ItemAvailableQtyRaw')[0].innerText,
-            "ItemImageLocation": $(this).children('span.ItemImageFilenameRaw')[0].innerText
+            "ItemImageLocation": $(this).children('span.ItemImageFilenameRaw')[0].innerText,
+            "ItemCode": $(this).children('span.ItemCode')[0].innerText
         });
-
-        
     });
 }
 
 function addRowFromDD() {
-
     var qty = $("#QtyInput").val();
     var itemDescription = $("[id*='SelectedItem'] :selected")[0].text
     var price = $("#UnitPriceInput").val();
     var itemID = $("#SelectedItem")[0].value;
-    
-    AddItemToExistingList(qty, itemDescription, price, itemID);
-
-    
+    AddItemToExistingList(qty, itemDescription, price, itemID);    
 }
-function AddItemToExistingList(qty, itemDescription, price, itemID){
-    
-    ExistingItemList.push({
-        "ID": itemID,
-        "IDText": "ItemRow" + itemID,
-        "Description": itemDescription,
-        "Qty": qty,
-        "Price": price
-    });
-    var htmlNewRow = '<tr id=ItemRow' + itemID + '>';
-    htmlNewRow += '<td><span class="form-control">' + itemDescription + '</span></td>';
-    htmlNewRow += '<td><span class="form-control">' + qty + '</span></td>';
-    htmlNewRow += '<td><span class="form-control">' + price + '</span></td>';
-    htmlNewRow += '<td><span class="form-control" onClick=deleteExistingRow("ItemRow' + itemID + '")>Remove</span></td>';
-    htmlNewRow += '</tr>'
 
-    $("#ExistingItemsTable").find("tbody").append(htmlNewRow);
+function AddItemToExistingList(qty, itemDescription, price, itemID){
+
+    var itemSearch = AvailableItemList.find(function(inputItem){ return inputItem.ItemID == this;}, itemID);
+    if(itemSearch)
+    {
+        if(itemSearch.ItemMinPrice <= price)
+        {
+            console.log(itemSearch);
+            ExistingItemList.push({
+                "ID": itemID,
+                "IDText": "ItemRow" + itemID,
+                "Description": itemDescription,
+                "Qty": qty,
+                "Price": price
+            });
+            var htmlNewRow = '<tr id=ItemRow' + itemID + '>';
+            htmlNewRow += '<td><span class="form-control">' + itemDescription + '</span></td>';
+            htmlNewRow += '<td><span class="form-control">' + qty + '</span></td>';
+            htmlNewRow += '<td><span class="form-control">' + price + '</span></td>';
+            htmlNewRow += '<td><span class="form-control" onClick=deleteExistingRow("ItemRow' + itemID + '")>Remove</span></td>';
+            htmlNewRow += '</tr>'
+
+            $("#ExistingItemsTable").find("tbody").append(htmlNewRow);
+
+        }
+        else
+            window.alert('price can\'t be less than the minimum sale value of: ' + itemSearch.ItemMinPrice);
+    }
+    else
+        window.alert('invalid item');
 }
 
 function deleteExistingRow(rowID) {
@@ -94,12 +103,21 @@ function AddSearchItem(){
     else if(!Qty)
         window.alert('Qty value must be populated');  
     else if(!Price)
-        window.alert('Price value must be populated');    
+        window.alert('Price value must be populated');   
+    
+    var itemSearch = AvailableItemList.find(function(inputItem){ return inputItem.ItemCode == this;}, Code);
+
+    if(itemSearch)
+        AddItemToExistingList(Qty, itemSearch.ItemDescription, Price, itemSearch.ItemID);    
+    
 }
 
 function AddAccordItem(){
     var ItemID = $(this).parent().siblings('span.ItemID')[0].textContent;
     var MinimumPrice = $(this).parent().siblings('span.MinimumPrice')[0].textContent;
     var Qty = $(this).parent().siblings('span').children('.QtyInput')[0].value;
-    var InputPrice = $(this).parent().siblings('span').children('.PriceInput')[0].value;        
+    var InputPrice = $(this).parent().siblings('span').children('.PriceInput')[0].value;  
+    var ItemDescription = $(this).parent().siblings('span').children('.ItemDescritpion').value; 
+    
+    AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID);
 }
