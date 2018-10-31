@@ -3,12 +3,15 @@
 }
 
 .SubGroupWrapper{
-    background-color: darkgrey;
+    background-color: #6c757d;
     padding-left: 20px;
 }
 
 .ProductWrapper{
-    background-color: gray;
+    background-color: #343a40;
+    padding-left: 5px;
+    padding-right: 5px;
+    
 }
 
 .ItemList{

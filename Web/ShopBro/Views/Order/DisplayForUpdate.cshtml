@@ -164,16 +164,16 @@
         @for (var i = 0; i < Model.StockHierarchy.ProductGroups.Count; i++)
         {
             <div class="ProductWrapper">
-                <h3 class="ProductHeading">@(Model.StockHierarchy.ProductGroups[i].ProductGroupName)</h3>    
+                <h3 class="ProductHeading text-light mb-0">@(Model.StockHierarchy.ProductGroups[i].ProductGroupName)</h3>    
                 @for(var j = 0; j < Model.StockHierarchy.ProductGroups[i].AvailableSubs.Count; j++)
                 {
-                    <div class="SubGroupWrapper">
-                        <h3 class="SubHeading">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].SubGroupName)</h3>
-                        <ul class="ItemList">
+                    <div class="SubGroupWrapper mb-0 mt-0 pt-0 pb-0">
+                        <h3 class="SubHeading mb-0 mt-0 pt-0 pb-0">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].SubGroupName)</h3>
+                        <ul class="ItemList mb-0 pb-0">
                             @for(var k=0; k < Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items.Count; k++)
                             {
-                                <li class="btn-outline-dark pb-3 mb-2">
-                                    <span class="ItemDescritpion ">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemDescription)</span>
+                                <li class="btn-outline-dark pb-3 pl-1 pr-1 ">
+                                    <span class="ItemDescritpion text-light ">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemDescription)</span>
                                     <div class="row">
                                         <div class="col-6">
                                             <span><input type="number" placeholder="Qty" class="QtyInput form-control"></span>
@@ -182,7 +182,7 @@
                                             <span><input type="number" placeholder="Price" class="PriceInput form-control"></span>
                                         </div>
                                     </div>
-                                    <span><input type="button" value="Add Item" class="AddAccordItemButton form-control"></span>
+                                    <span><input type="button" value="Add Item" class="AddAccordItemButton form-control btn btn-outline-light btn-block mt-3"></span>
                                     <span style="display: none" class="ItemID">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemID)</span>
                                     <span style="display: none" class="MinimumPrice">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemUnitPriceWithMaxDiscount)</span>
                                 </li>
@@ -194,7 +194,7 @@
         }
     </div>
 
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
         <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
     </div>
