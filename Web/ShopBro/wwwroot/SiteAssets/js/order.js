@@ -61,11 +61,11 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
                 "Qty": qty,
                 "Price": price
             });
-            var htmlNewRow = '<tr id=ItemRow' + itemID + '>';
+            var htmlNewRow = '<tr id=ItemRowNew' + itemID + '>';
             htmlNewRow += '<td><span class="form-control">' + itemDescription + '</span></td>';
             htmlNewRow += '<td><span class="form-control">' + qty + '</span></td>';
             htmlNewRow += '<td><span class="form-control">' + price + '</span></td>';
-            htmlNewRow += '<td><span class="form-control" onClick=deleteExistingRow("ItemRow' + itemID + '")>Remove</span></td>';
+            htmlNewRow += '<td><span class="form-control" onClick=deleteExistingRow("ItemRowNew' + itemID + '")>Remove</span></td>';
             htmlNewRow += '</tr>'
 
             $("#ExistingItemsTable").find("tbody").append(htmlNewRow);
@@ -117,7 +117,7 @@ function AddAccordItem(){
     var MinimumPrice = $(this).parent().siblings('span.MinimumPrice')[0].textContent;
     var Qty = $(this).parent().siblings('span').children('.QtyInput')[0].value;
     var InputPrice = $(this).parent().siblings('span').children('.PriceInput')[0].value;  
-    var ItemDescription = $(this).parent().siblings('span').children('.ItemDescritpion').value; 
+    var ItemDescription = $(this).parent().siblings('span.ItemDescritpion')[0].textContent; 
     
     AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID);
 }
