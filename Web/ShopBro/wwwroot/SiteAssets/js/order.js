@@ -1,14 +1,15 @@
 var ExistingItemList = [];
 var ColumnHeadings = ["Item Description", "Qty", "Price"];
 var AvailableItemList = [];
+var NewItemID = 0;
 
 $(document).ready(function() {
+    setupGlobals();
     $('#DDAddItemButton').on("click",addRowFromDD);
     $('.ProductHeading').on('click', ToggleProduct);
     $('.SubHeading').on('click',ToggleSub);
     $('#AddItemButtonSearch').on('click',AddSearchItem);
-    $('.AddAccordItemButton').on('click',AddAccordItem);
-    setupGlobals();
+    $('.AddAccordItemButton').on('click',AddAccordItem);    
 });
 
 function setupGlobals(){
@@ -46,32 +47,61 @@ function addRowFromDD() {
     AddItemToExistingList(qty, itemDescription, price, itemID);    
 }
 
+function AddSearchItem(){    
+    var Code = $('#CodeInputSearch')[0].value
+    var Qty = $('#QtyInputSearch')[0].value
+    var Price = $('#PriceInputSearch')[0].value
+
+    if(!Code)
+        window.alert('Code value must be populated');
+    
+    var itemSearch = AvailableItemList.find(function(inputItem){ return inputItem.ItemCode == this;}, Code);    
+        
+    if(itemSearch)        
+        AddItemToExistingList(Qty, itemSearch.ItemDescription, Price, itemSearch.ItemID);
+    else
+        window.alert('Item with code: ' + Code + ' doesn\'t exist');
+}
+
+function AddAccordItem(){
+    var ItemID = $(this).parent().siblings('span.ItemID')[0].textContent;
+    var MinimumPrice = $(this).parent().siblings('span.MinimumPrice')[0].textContent;
+    var Qty = $(this).parent().siblings('.row').children().children().children('.QtyInput')[0].value;
+    var InputPrice = $(this).parent().siblings('.row').children().children().children('.PriceInput')[0].value;  
+    var ItemDescription = $(this).parent().siblings('span.ItemDescritpion')[0].textContent; 
+    
+    AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID);
+}
+
 function AddItemToExistingList(qty, itemDescription, price, itemID){
 
     var itemSearch = AvailableItemList.find(function(inputItem){ return inputItem.ItemID == this;}, itemID);
     if(itemSearch)
     {
-        if(itemSearch.ItemMinPrice <= price)
+        if(itemSearch.ItemMinPrice > price)
+            window.alert('price can\'t be less than the minimum sale value of: ' + itemSearch.ItemMinPrice);
+        elseif(itemSearch.ItemAvailQty < qty)
+            window.alert('Items current stock level is: ' + itemSearch.ItemMinPrice);
+        else()
         {
+            NewItemID = NewItemID+1;
             ExistingItemList.push({
-                "ID": itemID,
-                "IDText": "ItemRow" + itemID,
+                "ID": NewItemID,
+                "IDText": "ItemRowNew" + NewItemID,
                 "Description": itemDescription,
                 "Qty": qty,
-                "Price": price
+                "Price": price,
+                "ItemID" : itemID
             });
             var htmlNewRow = '<tr id=ItemRowNew' + itemID + '>';
             htmlNewRow += '<td><span class="form-control">' + itemDescription + '</span></td>';
             htmlNewRow += '<td><span class="form-control">' + qty + '</span></td>';
             htmlNewRow += '<td><span class="form-control">' + price + '</span></td>';
-            htmlNewRow += '<td><span class="form-control" onClick=deleteExistingRow("ItemRowNew' + itemID + '")>Remove</span></td>';
+            htmlNewRow += '<td><span class="form-control" onClick=deleteExistingRow("ItemRowNew' + NewItemID + '")>Remove</span></td>';
             htmlNewRow += '</tr>'
 
             $("#ExistingItemsTable").find("tbody").append(htmlNewRow);
-
-        }
-        else
-            window.alert('price can\'t be less than the minimum sale value of: ' + itemSearch.ItemMinPrice);
+        }   
     }
     else
         window.alert('invalid item');
@@ -90,33 +120,4 @@ function ToggleProduct(){
 
 function ToggleSub(){
     $(this).siblings('ul').toggle();
-}
-
-function AddSearchItem(){    
-    var Code = $('#CodeInputSearch')[0].value
-    var Qty = $('#QtyInputSearch')[0].value
-    var Price = $('#PriceInputSearch')[0].value
-
-    if(!Code)
-        window.alert('Code value must be populated');
-    else if(!Qty)
-        window.alert('Qty value must be populated');  
-    else if(!Price)
-        window.alert('Price value must be populated');   
-    
-    var itemSearch = AvailableItemList.find(function(inputItem){ return inputItem.ItemCode == this;}, Code);
-
-    if(itemSearch)
-        AddItemToExistingList(Qty, itemSearch.ItemDescription, Price, itemSearch.ItemID);    
-    
-}
-
-function AddAccordItem(){
-    var ItemID = $(this).parent().siblings('span.ItemID')[0].textContent;
-    var MinimumPrice = $(this).parent().siblings('span.MinimumPrice')[0].textContent;
-    var Qty = $(this).parent().siblings('.row').children().children().children('.QtyInput')[0].value;
-    var InputPrice = $(this).parent().siblings('.row').children().children().children('.PriceInput')[0].value;  
-    var ItemDescription = $(this).parent().siblings('span.ItemDescritpion')[0].textContent; 
-    
-    AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID);
 }
