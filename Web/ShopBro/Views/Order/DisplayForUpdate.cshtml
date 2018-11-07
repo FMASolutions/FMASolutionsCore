@@ -37,13 +37,23 @@
 </div>
 
 <div class="container rounded">
+    <form class="form-signin">
+
     
     <div class="row mb-2 no-gutters" id="OrderTitleRow">
         <div class="col-6 text-left" id="OrderIDHeading">            
-            <h2>Order Number: @(Model.OrderID)</h3>            
+            <h2 class="pr-2">Order Number:</h3>            
         </div>
         <div class="col-6 text-right" id="OrderStatusHeading">
-            <h2>Order Status: @(Model.OrderStatus) </h3>
+            <h2 class="pl-2">Order Status:</h3>
+        </div>
+    </div>
+        <div class="row mb-2 no-gutters" id="OrderTitleRow">
+        <div class="col-6 text-left" id="OrderIDHeading">            
+            @Html.TextBoxFor(model => model.OrderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
+        </div>
+        <div class="col-6 text-right" id="OrderStatusHeading">
+            @Html.TextBoxFor(model => model.OrderStatus, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})
         </div>
     </div>
 
@@ -51,7 +61,7 @@
     {
         <Label class="error-text">@(Model.StatusMessage) </Label>
     }
-    <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-secondary text-light" id="CustomerInfoContainer">
+    <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-dark text-light" id="CustomerInfoContainer">
         <h3>Customer Info:</h3>
         <div class="row no-gutters" id="SelectdCustomerRow">
             <div class="col-3 text-left customHeading" id="SelectedCustomerColumnHeading">    
@@ -86,7 +96,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
+        <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Update") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>                     
         <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
     </div>
 
@@ -107,10 +117,22 @@
                         @for (var i = 0; i < Model.ExistingItems.Count; i++)
                         {
                             <tr id="ItemRow@(Model.ExistingItems[i].OrderItemRowID)">
-                                <td><span class="form-control">@(Model.ExistingItems[i].ItemDescription)</span></td>
-                                <td><span class="form-control">@(Model.ExistingItems[i].Qty)</span></td>
-                                <td><span class="form-control">@(Model.ExistingItems[i].UnitPrice)</span></td>
-                                <td><span class="form-control" onclick=deleteExistingRow("ItemRow@(Model.ExistingItems[i].OrderItemRowID)")>Remove</span></td> 
+                                <td><span class="form-control"> 
+                                    @Html.DisplayFor(model => model.ExistingItems[i].ItemDescription, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                    @Html.HiddenFor(model => model.ExistingItems[i].ItemDescription)
+                                </span></td>
+                                <td><span class="form-control">
+                                    @Html.DisplayFor(model => model.ExistingItems[i].Qty, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                    @Html.HiddenFor(model => model.ExistingItems[i].Qty)
+                                </span></td>
+                                <td><span class="form-control">
+                                    @Html.DisplayFor(model => model.ExistingItems[i].UnitPrice, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                    @Html.HiddenFor(model => model.ExistingItems[i].UnitPrice)                                    
+                                </span></td>
+                                <td><span class="form-control">
+                                    @Html.HiddenFor(model => model.ExistingItems[i].ItemID)
+                                    @Html.HiddenFor(model => model.ExistingItems[i].OrderItemRowID)
+                                </span></td> 
                             </tr>  
                         }
                         </tbody>
@@ -119,7 +141,7 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-secondary" id="AddSearchItemWrapper">
+    <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-dark" id="AddSearchItemWrapper">
             <h3>Search and Add:</h3>
             <span>Code:<input type="text" class="form-control" placeholder="Code" id="CodeInputSearch"></span>
             <span>Qty:<input type="number" class="form-control" placeholder="Qty" id="QtyInputSearch"></span>
@@ -153,14 +175,14 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">
-                    <button class="btn btn-outline-light btn-block mb-3 mt-2" id="DDAddItemButton">Add Item</button>
+                    <input type="button" value="Add Item" id="DDAddItemButton" class="btn btn-outline-light btn-block mb-3 mt-2">
                 </div>
             </div>
         </div>   
     </div>
 
     <div id="ItemAccordionWrapper">
-        <h3>Item Hierarchy:</h2>
+        <h3 class="bg-dark text-light mb-0 pb-2">Item Hierarchy:</h2>
         @for (var i = 0; i < Model.StockHierarchy.ProductGroups.Count; i++)
         {
             <div class="ProductWrapper">
@@ -195,8 +217,9 @@
     </div>
 
     <div class="row mt-3">
-        <div class="col-sm-6"><button class="btn btn-outline-dark btn-block mb-3">Save changes</button></div>                   
+        <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Update") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>                   
         <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
     </div>
+    </form>
 </div>
  <script src="~/SiteAssets/js/order.js"></script>

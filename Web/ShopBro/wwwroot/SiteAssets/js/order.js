@@ -80,11 +80,12 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
     {
         if(itemSearch.ItemMinPrice > price)
             window.alert('price can\'t be less than the minimum sale value of: ' + itemSearch.ItemMinPrice);
-        elseif(itemSearch.ItemAvailQty < qty)
-            window.alert('Items current stock level is: ' + itemSearch.ItemMinPrice);
-        else()
+        else if(Number(itemSearch.ItemAvailQty) < Number(qty))
+            window.alert('Items current stock level is: ' + itemSearch.ItemAvailQty);
+        else
         {
             NewItemID = NewItemID+1;
+
             ExistingItemList.push({
                 "ID": NewItemID,
                 "IDText": "ItemRowNew" + NewItemID,
@@ -93,18 +94,36 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
                 "Price": price,
                 "ItemID" : itemID
             });
-            var htmlNewRow = '<tr id=ItemRowNew' + itemID + '>';
-            htmlNewRow += '<td><span class="form-control">' + itemDescription + '</span></td>';
-            htmlNewRow += '<td><span class="form-control">' + qty + '</span></td>';
-            htmlNewRow += '<td><span class="form-control">' + price + '</span></td>';
-            htmlNewRow += '<td><span class="form-control" onClick=deleteExistingRow("ItemRowNew' + NewItemID + '")>Remove</span></td>';
-            htmlNewRow += '</tr>'
 
+            var htmlNewRow = GenerateHTMLForTableRow(itemID, itemDescription, qty, price);
             $("#ExistingItemsTable").find("tbody").append(htmlNewRow);
         }   
     }
     else
         window.alert('invalid item');
+}
+function GenerateHTMLForTableRow(itemID, itemDescription, qty, price)
+{
+    var indexValue = ExistingItemList.length-1;
+
+    var newHTML = '<tr id=ItemRowNew' + itemID + '>';
+        newHTML += '<td><span class="form-control">'; 
+            newHTML += itemDescription;
+            newHTML += '<input id="ExistingItems_' + indexValue + '__ItemDescription" name="ExistingItems[' + indexValue + '].ItemDescription" type="hidden" value="' + itemDescription + '">';
+        newHTML += '</span></td>';
+        newHTML += '<td><span class="form-control">';
+            newHTML += qty;
+            newHTML += '<input data-val="true" data-val-number="The field Qty must be a number." data-val-required="The Qty field is required." id="ExistingItems_' + indexValue + '__Qty" name="ExistingItems[' + indexValue + '].Qty" type="hidden" value="' + qty + '">';
+        newHTML += '</span></td>';
+        newHTML += '<td><span class="form-control">';
+            newHTML += price; 
+            newHTML += '<input data-val="true" data-val-number="The field UnitPrice must be a number." data-val-required="The UnitPrice field is required." id="ExistingItems_' + indexValue + '__UnitPrice" name="ExistingItems[' + indexValue + '].UnitPrice" type="hidden" value="' + price + '">';
+        newHTML += '</span></td>';
+        newHTML += '<td><span class="form-control">'; 
+            newHTML += '<input data-val="true" data-val-number="The field ItemID must be a number." data-val-required="The ItemID field is required." id="ExistingItems_' + indexValue + '__ItemID" name="ExistingItems[' + indexValue + '].ItemID" type="hidden" value="' + itemID + '">';
+        newHTML += '</span></td>';
+    newHTML += '</tr>'
+    return newHTML;
 }
 
 function deleteExistingRow(rowID) {

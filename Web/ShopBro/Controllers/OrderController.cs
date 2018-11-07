@@ -34,7 +34,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return View("DisplayForUpdate",vm);
             else
                 return View("Search");
-        }       
+        }    
+
+        public IActionResult Update(OrderViewModel model)
+        {
+            OrderViewModel received = model;
+            
+            return View("Search");
+        }   
 
         private OrderModel GetNewModel()
         {
