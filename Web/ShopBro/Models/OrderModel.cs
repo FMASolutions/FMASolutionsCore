@@ -51,7 +51,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             foreach(var item in dbExistingOrder.OrderItems)
             {
                 //Check if the item still exists in the new model, it may need deleting.
-                if(newModel.ExistingItems.Exists(e => e.OrderItemRowID == item.ID && e.OrderItemRowID != 0))
+                if(!newModel.ExistingItems.Exists(e => e.OrderItemRowID == item.ID && e.OrderItemRowID != 0))
                     if(!_service.RemoveItemFromOrder(item))
                         errorDetected = true;
             }
@@ -79,7 +79,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 orderItemVM.ItemID = orderItem.ItemID;
                 orderItemVM.OrderItemRowID = orderItem.OrderItemID;
                 orderItemVM.Qty = orderItem.OrderItemQty;
-                orderItemVM.UnitPrice = orderItem.OrderItemUnitPrice;
+                orderItemVM.UnitPrice = orderItem.OrderItemUnitPriceAfterDiscount;
                 orderItemVM.OrderItemStatus = statusDictionary[orderItem.OrderItemStatusID];
                 orderItemVM.OrderHeaderID = orderItem.OrderHeaderID;
                 orderItems.Add(orderItemVM);

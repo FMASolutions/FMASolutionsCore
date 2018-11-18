@@ -85,6 +85,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 bool success = false;
                 if(ValidateItemForCreate(item))
                 {
+                    item.OrderItemStatusID = 1; //Estimate as new item
                     OrderItemEntity entity = ConvertItemModelToEntity(item);
                     success = _uow.OrderItemRepo.Create(item);
                     if(success)
@@ -235,7 +236,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         private bool ValidateItemForCreate(OrderItem model)
         {
-            return false;
+            //RUSHED NEEDS LOTS MORE WORK ON VALIDATION
+            if(model.ItemID > 0 && model.OrderHeaderID > 0 && model.OrderItemQty > 0)
+                return true;
+            else
+                return false;
+            
         }
     }
 }
