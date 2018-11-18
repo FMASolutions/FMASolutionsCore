@@ -7,5 +7,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
     {        
          IEnumerable<OrderItemEntity> GetAllItemsForOrder(int orderID);
          OrderHeaderEntity GetLatestOrder();
+         int DeliverOutstandingItems(int orderID);
     }
 }

@@ -21,8 +21,11 @@ function setupGlobals(){
             "Description":  $(this).children('span.OrderItemDescriptionRaw')[0].innerText,
             "Qty":  $(this).children('span.OrderItemQtyRaw')[0].innerText,
             "Price":  $(this).children('span.OrderItemUnitPriceRaw')[0].innerText,
-            "ItemID": $(this).children('span.OrderItemItemIDRaw')[0].innerText
-        });
+            "ItemID": $(this).children('span.OrderItemItemIDRaw')[0].innerText,
+            "ItemStatus" : $(this).children('span.OrderItemStatusRaw')[0].innerText,
+            "CurrentIndex": ExistingItemList.length,
+            "OrderItemRowID" : $(this).children('span.OrderItemItemRowIDRaw')[0].innerText
+        });        
     });
 
     $('#ItemsRaw').children().each(function(){
@@ -44,7 +47,7 @@ function addRowFromDD() {
     var qty = $("#QtyInput").val();
     var itemDescription = $("[id*='SelectedItem'] :selected")[0].text
     var price = $("#UnitPriceInput").val();
-    var itemID = $("#SelectedItem")[0].value;
+    var itemID = $("#SelectedItem")[0].value;    
     AddItemToExistingList(qty, itemDescription, price, itemID);    
 }
 
@@ -85,33 +88,42 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
             window.alert('Items current stock level is: ' + itemSearch.ItemAvailQty);
         else
         {
-            NewItemID = NewItemID+1;
-
+            ID = ++NewItemID;
+            var indexValue = ExistingItemList.length;
             ExistingItemList.push({
-                "ID": NewItemID,
-                "IDText": "ItemRowNew" + NewItemID,
+                "ID": ID,
+                "IDText": "ItemRowNew" + ID,
                 "Description": itemDescription,
                 "Qty": qty,
                 "Price": price,
-                "ItemID" : itemID
-            });
+                "ItemID" : itemID,
+                "ItemStatus" : "Estimate",
+                "CurrentIndex" : indexValue,
+                "OrderItemRowID" : 0
+            }); 
 
-            var htmlNewRow = GenerateHTMLForTableRow(itemID, itemDescription, qty, price);
-            $("#ExistingItemsTable").find("tbody").append(htmlNewRow);
-            $('.ExistingItemsRemovalButton').on('click',RemoveItemFromExistingItemsList );
+            GenerateNewTableBody();
         }   
     }
     else
         window.alert('invalid item');
 }
-function RemoveItemFromExistingItemsList(){
-    $(this).parent().remove();
-}
-function GenerateHTMLForTableRow(itemID, itemDescription, qty, price)
-{
-    var indexValue = ExistingItemList.length-1;
+function GenerateNewTableBody(){
+    var newTableBody = '<tbody>'
+    var i = 0;
+    ExistingItemList.forEach(function(arrayItem){        
+            newTableBody += GenerateItemHTML(arrayItem.ItemID, arrayItem.Description, arrayItem.ItemStatus, arrayItem.Qty, arrayItem.Price, i, arrayItem.OrderItemRowID,arrayItem.IDText);        
+            i++;
+    });
+    newTableBody += '</tbody>'
 
-    var newHTML = '<tr id=ItemRowNew' + itemID + '>';
+    $("#ExistingItemsTable").find("tbody").remove();
+    $("#ExistingItemsTable").append(newTableBody);
+    $('.ExistingItemsRemovalButton').on('click',RemoveItemFromExistingItemsList );
+    
+}
+function GenerateItemHTML(itemID, itemDescription, itemStatus, qty, price, indexValue, orderItemRowID, tableRowID){
+    var newHTML = '<tr id=' + tableRowID + '>';
         newHTML += '<td><span class="form-control">'; 
             newHTML += itemDescription;
             newHTML += '<input id="ExistingItems_' + indexValue + '__ItemDescription" name="ExistingItems[' + indexValue + '].ItemDescription" type="hidden" value="' + itemDescription + '">';
@@ -124,12 +136,34 @@ function GenerateHTMLForTableRow(itemID, itemDescription, qty, price)
             newHTML += price; 
             newHTML += '<input data-val="true" data-val-number="The field UnitPrice must be a number." data-val-required="The UnitPrice field is required." id="ExistingItems_' + indexValue + '__UnitPrice" name="ExistingItems[' + indexValue + '].UnitPrice" type="hidden" value="' + price + '">';
         newHTML += '</span></td>';
-        newHTML += '<td class="ExistingItemsRemovalButton"><span class="form-control">';             
-            newHTML += '<span>Remove</span>'
-        newHTML += '</span></td>';
-        newHTML += '<input data-val="true" data-val-number="The field ItemID must be a number." data-val-required="The ItemID field is required." id="ExistingItems_' + indexValue + '__ItemID" name="ExistingItems[' + indexValue + '].ItemID" type="hidden" value="' + itemID + '">';
+
+        if(itemStatus.indexOf("Estimate") >= 0){
+            newHTML += '<td class="ExistingItemsRemovalButton"><span class="form-control">';             
+                newHTML += '<span>Remove</span>'
+            newHTML += '</span></td>';
+        }
+   
+        newHTML += '<input data-val="true" data-val-required="The ItemID field is required." id="ExistingItems_' + indexValue + '__ItemID" name="ExistingItems[' + indexValue + '].ItemID" type="hidden" value="' + itemID + '">';
+        if(orderItemRowID > 0)
+        {
+            newHTML += '<input data-val="true" data-val-required="The OrderItemRowID field is required." id="ExistingItems_' + indexValue + '__OrderItemRowID" name="ExistingItems[' + indexValue + '].OrderItemRowID" type="hidden" value="' + orderItemRowID + '">'
+        }
     newHTML += '</tr>'
     return newHTML;
+}
+
+function RemoveItemFromExistingItemsList(){    
+    var RowIdText = $(this).parent()[0].id;
+    console.log(RowIdText);  
+    var itemSearch = ExistingItemList.find(function(inputItem){ return inputItem.IDText == this;}, RowIdText);
+    if(itemSearch)
+    {
+        ExistingItemList.splice(itemSearch.CurrentIndex, 1);        
+        for(i = 0; i < ExistingItemList.length; i++)
+            ExistingItemList[i].CurrentIndex = i;
+        
+        GenerateNewTableBody();
+    }
 }
 
 function ToggleProduct(){    

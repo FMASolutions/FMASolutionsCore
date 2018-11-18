@@ -1,7 +1,7 @@
 @using FMASolutionsCore.Web.ShopBro
 @model FMASolutionsCore.Web.ShopBro.ViewModels.OrderViewModel
 @{
-    ViewData["Title"] = "Item - Update Page";
+    ViewData["Title"] = "Items - Update Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
 }
 <div id="DataRoot" style="display:none">
@@ -13,7 +13,8 @@
                 <span class="OrderItemUnitPriceRaw">@(Model.ExistingItems[i].UnitPrice)</span>
                 <span class="OrderItemQtyRaw">@(Model.ExistingItems[i].Qty)</span>
                 <span class="OrderItemItemIDRaw">@(Model.ExistingItems[i].ItemID)</span>
-                <span class="OrderItemItemRowIDRaw">@(Model.ExistingItems[i].OrderItemRowID)</span>                
+                <span class="OrderItemItemRowIDRaw">@(Model.ExistingItems[i].OrderItemRowID)</span>     
+                <span class="OrderItemStatusRaw">@(Model.ExistingItems[i].OrderItemStatus)</span>           
             </div>
         }
     </div>
@@ -95,8 +96,8 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Update") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>                     
-        <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+        <div class="col-sm-6"><button type="submit" formaction=@Url.Action("ProcessEditItems") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>                     
+        <div class="col-sm-6"><a href="/Order/Search/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
     </div>
 
     <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-secondary" id="ExistingItemsContainer">
@@ -126,7 +127,7 @@
                                 </span></td>
                                 <td><span class="form-control">
                                     @Html.DisplayFor(model => model.ExistingItems[i].UnitPrice, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
-                                    @Html.HiddenFor(model => model.ExistingItems[i].UnitPrice)                                    
+                                    @Html.HiddenFor(model => model.ExistingItems[i].UnitPrice)
                                 </span></td>
                                 @if (Model.ExistingItems[i].OrderItemStatus == "Estimate")
                                 { 
@@ -219,9 +220,9 @@
         }
     </div>
 
-    <div class="row mt-3">
-        <div class="col-sm-6"><button type="submit" formaction=@Url.Action("Update") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>                   
-        <div class="col-sm-6"><a href="" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+    <div class="row mt-3">        
+        <div class="col-sm-6"><button type="submit" formaction=@Url.Action("ProcessEditItems") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>            
+        <div class="col-sm-6"><a href="/Order/Search/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></div>        
     </div>
     </form>
 </div>

@@ -10,6 +10,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             AvailableItems = new List<ItemViewModel>();
             ExistingItems = new List<OrderItemViewModel>();
             StockHierarchy = new StockHierarchyViewModel();
+            DistinctItemStatusList = new List<string>();
         }
 
         public int OrderID {get; set;}
@@ -20,6 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public List<ItemViewModel> AvailableItems {get; set;}
         public StockHierarchyViewModel StockHierarchy {get;set;}
         public Dictionary<int,string> AvailableCustomers {get; set;}
+        public List<string> DistinctItemStatusList {get; set;}
         public int CustomerID {get; set;}
         public int SelectedItem {get;set;}
     }

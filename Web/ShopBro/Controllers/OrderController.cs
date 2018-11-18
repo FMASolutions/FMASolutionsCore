@@ -22,7 +22,6 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             vm.ID = id;
             return ProcessSearch(vm);
         }
-
         public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             
@@ -31,25 +30,49 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             OrderViewModel vm = model.Search(vmInput.ID);
             
             if(vmInput.ID > 0)
-                return View("DisplayForUpdate",vm);
+                return View("Display",vm);
             else
-                return View("Search");
-        }    
+                return View("Search", vmInput);
+        }            
 
-        public IActionResult Update(OrderViewModel vm)
+        public IActionResult EditItems(int id=0)
+        {
+            OrderModel model = GetNewModel();
+            return View("EditItems", model.Search(id));
+        }
+        public IActionResult ProcessEditItems(OrderViewModel vm)
         {
             OrderModel model = GetNewModel();
 
-            OrderViewModel updatedVM = model.Update(vm);
+            OrderViewModel updatedVM = model.UpdateItems(vm);
             if(updatedVM != null)
-                return View("DisplayForUpdate",updatedVM);
+                return View("Display",updatedVM);
             else
             {
                 vm.StatusMessage = "Unable to update Order";                
-                return View("DisplayForUpdate",vm);
+                return View("EditItems",vm);
             }
         }
 
+        public IActionResult DeliverItems(int id=0)
+        {
+            if(id>0)
+            {
+                OrderModel model = GetNewModel();
+                int deliveryNoteID = model.DeliverItems(id);
+                return View("DeliveryNote",model.GetDeliveryNote(deliveryNoteID));
+            }
+            else
+                return Search();
+        }
+        public IActionResult GenInvoice(int id=0)
+        {
+            return null;
+        }
+        public IActionResult ViewInvoice(int id=0)
+        {
+            return null;
+        }
         private OrderModel GetNewModel()
         {
             return new OrderModel(new ModelStateConverter(this).Convert(), _service);

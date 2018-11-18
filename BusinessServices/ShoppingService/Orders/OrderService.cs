@@ -33,7 +33,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             Order returnOrder = null;
             OrderHeaderEntity headerEntity = _uow.OrderHeaderRepo.GetByID(id);
 
-            if(headerEntity.OrderHeaderID > 0)
+            if(headerEntity != null && headerEntity.OrderHeaderID > 0)
             {
                 returnOrder = new Order();
                 returnOrder.Header = ConvertHeaderEntityToModel(headerEntity);
@@ -110,7 +110,13 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public bool RemoveItemFromOrder(OrderItem item)
         {
             if (item.OrderItemID > 0)
-                return _uow.OrderItemRepo.Delete(ConvertItemModelToEntity(item));            
+                if(_uow.OrderItemRepo.Delete(ConvertItemModelToEntity(item)))
+                {
+                    _uow.SaveChanges();
+                    return true;
+                }            
+                else
+                    return false;
             else
             {
                 item.ModelState.AddError("Unable To Remove","Unable to remove item from oreder, please specify OrderItemID");
@@ -141,6 +147,14 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             //Interesting?????
             return false;
+        }
+
+        public int DeliverExistingItems(int orderHeaderID)
+        {
+            int returnID = _uow.OrderHeaderRepo.DeliverOutstandingItems(orderHeaderID);
+            if(returnID > 0)
+                _uow.SaveChanges();
+            return returnID;            
         }
 
         public List<StockHierarchyItem> GetStockHierarchy()

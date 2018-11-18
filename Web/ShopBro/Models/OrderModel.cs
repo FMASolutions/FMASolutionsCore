@@ -18,6 +18,10 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             _service.Dispose();
         }
 
+        private ICustomModelState _modelState;
+        private IOrderService _service;
+        public ICustomModelState ModelState { get { return _modelState; } }
+
         public OrderViewModel Search(int OrderHeaderID)
         {
             OrderViewModel returnVM = null;
@@ -34,7 +38,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 return returnVM;
             }
         }
-        public OrderViewModel Update(OrderViewModel newModel)
+        public OrderViewModel UpdateItems(OrderViewModel newModel)
         {
             Order dbExistingOrder = _service.GetByID(newModel.OrderID);
             bool errorDetected = false;
@@ -60,14 +64,29 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
                 return Search(newModel.OrderID);
         }
-        private ICustomModelState _modelState;
-        private IOrderService _service;
-        public ICustomModelState ModelState { get { return _modelState; } }
+        public int DeliverItems(int OrderHeaderID)
+        {            
+            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
+            if(OrderHeaderID > 0){
+                return _service.DeliverExistingItems(OrderHeaderID);                
+            }
+            else
+                return 0;
+        }
+        public DeliveryNoteViewModel GetDeliveryNote(int DeliveryNoteID)
+        {
+            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
+            if(DeliveryNoteID > 0)
+                vmReturn.Title = "Great! : " + DeliveryNoteID.ToString();
+            else
+                vmReturn.Title = "Failed";
+            return vmReturn;
+        }
 
         private OrderViewModel ConvertToViewModel(Order model)
         {
             OrderViewModel vmReturn = new OrderViewModel();
-            vmReturn.OrderID = model.Header.OrderHeaderID;
+            vmReturn.OrderID = model.Header.OrderHeaderID;            
             
             //Set up the Existing OrderItem List
             List<OrderItemViewModel> orderItems = new List<OrderItemViewModel>();
@@ -83,6 +102,8 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 orderItemVM.OrderItemStatus = statusDictionary[orderItem.OrderItemStatusID];
                 orderItemVM.OrderHeaderID = orderItem.OrderHeaderID;
                 orderItems.Add(orderItemVM);
+                if(!vmReturn.DistinctItemStatusList.Contains(orderItemVM.OrderItemStatus))
+                    vmReturn.DistinctItemStatusList.Add(orderItemVM.OrderItemStatus);
             }
             vmReturn.ExistingItems = orderItems;
             vmReturn.OrderStatus = statusDictionary[model.Header.OrderStatusID];
@@ -146,7 +167,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             vmReturn.StockHierarchy = stockHierarchy;
             return vmReturn;
         }
-
         private OrderItem ConvertToOrderItemModel(OrderItemViewModel vm)
         {
             int i = 1;

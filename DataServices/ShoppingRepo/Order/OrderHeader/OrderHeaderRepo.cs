@@ -16,10 +16,37 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         {
             _dbConnection.Dispose();
         }
-
         private IDbConnection _dbConnection;
 
         #region IDataRepository
+        public bool Create(OrderHeaderEntity entity)
+        {
+            try
+            {
+                string query = @"
+                INSERT INTO OrderHeaders(CustomerID,CustomerAddressID,OrderStatusID,OrderDate,DeliveryDate)
+                VALUES (@CustomerID, @CustomerAddressID, @OrderStatusID, @OrderDate,@DeliveryDate)";
+
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.Create Started for Customer ID: " + entity.CustomerID + " full query = " + query);
+
+                int rowsAffected = _dbConnection.Execute(query, new
+                {
+                    CustomerID = entity.CustomerID,
+                    CustomerAddressID = entity.CustomerAddressID,
+                    OrderStatusID = entity.OrderStatusID,
+                    OrderDate = entity.OrderDate,
+                    DeliveryDate = entity.DeliveryDate
+                }, transaction: Transaction);
+                if (rowsAffected > 0)
+                    return true;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.Create: " + ex.Message, this);
+                return false;
+            }
+        }
         public OrderHeaderEntity GetByID(int id)
         {
             try
@@ -58,39 +85,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return null;
             }
         }
-
-        
-
-
-
-        public bool Create(OrderHeaderEntity entity)
-        {
-            try
-            {
-                string query = @"
-                INSERT INTO OrderHeaders(CustomerID,CustomerAddressID,OrderStatusID,OrderDate,DeliveryDate)
-                VALUES (@CustomerID, @CustomerAddressID, @OrderStatusID, @OrderDate,@DeliveryDate)";
-
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.Create Started for Customer ID: " + entity.CustomerID + " full query = " + query);
-
-                int rowsAffected = _dbConnection.Execute(query, new
-                {
-                    CustomerID = entity.CustomerID,
-                    CustomerAddressID = entity.CustomerAddressID,
-                    OrderStatusID = entity.OrderStatusID,
-                    OrderDate = entity.OrderDate,
-                    DeliveryDate = entity.DeliveryDate
-                }, transaction: Transaction);
-                if (rowsAffected > 0)
-                    return true;
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.Create: " + ex.Message, this);
-                return false;
-            }
-        }
         public bool Update(OrderHeaderEntity entity)
         {
             try
@@ -125,13 +119,13 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return false;
             }
         }
-
         public bool Delete(OrderHeaderEntity entity)
         {
             throw new NotImplementedException();
         }
         #endregion
 
+        #region IOrderHeaderRepo
         public IEnumerable<OrderItemEntity> GetAllItemsForOrder(int orderID)
         {
             try
@@ -172,6 +166,28 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return null;
             }
         }
-
+        public int DeliverOutstandingItems(int orderID)
+        {
+            try
+            {
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.DeliverOutstandingItems Started for ID: " + orderID.ToString());
+                if(orderID > 0)
+                {                
+                    var queryParameters = new DynamicParameters();
+                    queryParameters.Add("@OrderHeaderID", orderID);
+                    int returnValue = _dbConnection.QueryFirst<int>("DeliverExistingItems",queryParameters,transaction: Transaction, commandType: CommandType.StoredProcedure);
+                    return returnValue;
+                }
+                else
+                    return 0;
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.DeliverOutstandingItems: " + ex.Message, this);
+                return 0;
+            }
+            
+        }
+        #endregion
     }
 }
