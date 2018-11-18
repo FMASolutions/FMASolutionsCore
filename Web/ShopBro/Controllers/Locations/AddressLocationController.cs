@@ -107,9 +107,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             using (AddressLocationModel model = GetNewModel())
             {
                 AddressLocationViewModel vmResult = model.Create(vmInput);
-                if (model.ModelState.IsValid)
+                if (vmResult.AddressLocationID > 0)
                 {
-                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create Complete successfully for Code: " + vmInput.AddressLocationCode);
+                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Create Complete successfully for ID: " + vmResult.AddressLocationID.ToString());
                     return View("Display", vmResult);
                 }
 
@@ -129,7 +129,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 AddressLocationViewModel vmResult = model.UpdateDB(vmInput);
                 if (model.ModelState.IsValid)
                 {
-                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update POST Request For: " + vmInput.AddressLocationCode + " successful!");
+                    Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update POST Request For ID: " + vmInput.AddressLocationID.ToString() + " successful!");
                     return View("Display", vmResult);
                 }
                 Program.loggerExtension.WriteToUserRequestLog("AddressLocationController.Update Failed, Reason: " + vmInput.StatusMessage);

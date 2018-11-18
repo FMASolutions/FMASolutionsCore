@@ -137,7 +137,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
+                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemStatusID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
                 FROM OrderItems
                 WHERE OrderHeaderID = @OrderHeaderID";
 

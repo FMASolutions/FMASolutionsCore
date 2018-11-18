@@ -31,8 +31,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             AddressLocation searchResult = null;
             if (id > 0)
                 searchResult = _service.GetByID(id);
-            if (searchResult == null && !string.IsNullOrEmpty(code))
-                searchResult = _service.GetByCode(code);
+
             if (searchResult != null)
                 return ConvertToViewModel(searchResult);
             else
@@ -110,8 +109,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         private AddressLocationViewModel ConvertToViewModel(AddressLocation model)
         {
             AddressLocationViewModel vm = new AddressLocationViewModel();
-            vm.AddressLocationID = model.AddressLocationID;
-            vm.AddressLocationCode = model.AddressLocationCode;
+            vm.AddressLocationID = model.AddressLocationID;            
             vm.AddressLine1 = model.AddressLine1;
             vm.AddressLine2 = model.AddressLine2;
             vm.CityAreaID = model.CityAreaID;
@@ -123,8 +121,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         private AddressLocation ConvertToModel(AddressLocationViewModel vm)
         {
             AddressLocation addressLocation = new AddressLocation(_modelState
-                , vm.AddressLocationID
-                , vm.AddressLocationCode
+                , vm.AddressLocationID                
                 , vm.CityAreaID                
                 , vm.AddressLine1
                 , vm.AddressLine2

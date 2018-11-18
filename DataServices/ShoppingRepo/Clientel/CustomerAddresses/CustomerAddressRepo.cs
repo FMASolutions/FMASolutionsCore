@@ -25,7 +25,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT [CustomerAddressID], [CustomerAddressCode], [CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription
+                SELECT [CustomerAddressID], [CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription
                 FROM CustomerAddresses
                 WHERE CustomerAddressID = @CustomerAddressID
                 ";
@@ -45,7 +45,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT [CustomerAddressID], [CustomerAddressCode], [CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription
+                SELECT [CustomerAddressID], [CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription
                 FROM CustomerAddresses";
 
                 Helper.logger.WriteToProcessLog("CustomerAddressRepo.GetAll Started: " + query);
@@ -64,14 +64,13 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                INSERT INTO CustomerAddresses([CustomerAddressCode], [CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription)
-                VALUES (@CustomerAddressCode, @CustomerID, @AddressLocationID, @IsDefaultAddress, @CustomerAddressDescription)";
+                INSERT INTO CustomerAddresses([CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription)
+                VALUES (, @CustomerID, @AddressLocationID, @IsDefaultAddress, @CustomerAddressDescription)";
 
-                Helper.logger.WriteToProcessLog("CustomerAddressRepo.Create Started for code: " + entity.CustomerAddressCode + " full query = " + query);
+                Helper.logger.WriteToProcessLog("CustomerAddressRepo.Create Started for Description: " + entity.CustomerAddressDescription + " full query = " + query);
 
                 int rowsAffected = _dbConnection.Execute(query, new
-                {
-                    CustomerAddressCode = entity.CustomerAddressCode,
+                {                    
                     CustomerID = entity.CustomerID,
                     AddressLocationID = entity.AddressLocationID,
                     IsDefaultAddress = entity.IsDefaultAddress,
@@ -93,8 +92,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             {
                 string query = @"
                 UPDATE CustomerAddresses 
-                SET CustomerAddressCode = @CustomerAddressCode
-                , CustomerID = @CustomerID
+                SET CustomerID = @CustomerID
                 , AddressLocationID = @AddressLocationID
                 , IsDefaultAddress = @IsDefaultAddress
                 , CustomerAddressDescription = @CustomerAddressDescription
@@ -103,8 +101,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 Helper.logger.WriteToProcessLog("CustomerAddressRepo.Update Started for ID: " + entity.CustomerAddressID.ToString() + " full query = " + query);
 
                 int i = _dbConnection.Execute(query, new
-                {
-                    CustomerAddressCode = entity.CustomerAddressCode,
+                {                    
                     CustomerID = entity.CustomerID,
                     AddressLocationID = entity.AddressLocationID,
                     IsDefaultAddress = entity.IsDefaultAddress,
@@ -127,27 +124,25 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             throw new NotImplementedException();
         }
         #endregion
-
-        #region ISubGroupRepo
-        public CustomerAddressEntity GetByCode(string code)
+        
+        public int GetMostRecent()
         {
             try
             {
                 string query = @"
-                SELECT [CustomerAddressID], [CustomerAddressCode], [CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription
+                SELECT TOP 1 [CustomerAddressID]
                 FROM CustomerAddresses
-                WHERE CustomerAddressCode = @CustomerAddressCode";
+                ORDER BY CustomerAddressID Desc";
 
-                Helper.logger.WriteToProcessLog("CustomerAddressRepo.GetByCode Started for Code: " + code + " full query = " + query);
+                Helper.logger.WriteToProcessLog("CustomerAddressRepo.GetMostRecent Started, full query = " + query);               
 
-                return _dbConnection.QueryFirst<CustomerAddressEntity>(query, new { CustomerAddressCode = code }, transaction: Transaction);
+                return _dbConnection.QueryFirst<int>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
-                Helper.logger.WriteToErrorLog("Error in CustomerAddressRepo.GetByCode: " + ex.Message, this);
-                return null;
+                Helper.logger.WriteToErrorLog("Error in CustomerAddressRepo.GetMostRecent: " + ex.Message, this);
+                return 0;
             }
-        }
-        #endregion
+        }        
     }
 }

@@ -5,8 +5,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface ICustomerAddressService : IDisposable
     {
-        CustomerAddress GetByID(int id);
-        CustomerAddress GetByCode(string code);
+        CustomerAddress GetByID(int id);        
         bool CreateNew(CustomerAddress model);
         List<CustomerAddress> GetAll();
         List<Customer> GetAvailableCustomers();

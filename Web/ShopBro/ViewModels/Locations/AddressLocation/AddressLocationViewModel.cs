@@ -12,8 +12,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
 
         public Dictionary<int, string> AvailableCityAreas;
         public Int32 AddressLocationID {get; set;}
-        public Int32 CityAreaID { get; set; }        
-        public string AddressLocationCode { get; set; }
+        public Int32 CityAreaID { get; set; }
         public string AddressLine1 { get; set; }    
         public string AddressLine2 { get; set; }
         public string PostCode {get; set;}

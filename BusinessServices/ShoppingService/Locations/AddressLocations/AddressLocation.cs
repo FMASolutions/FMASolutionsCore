@@ -5,11 +5,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class AddressLocation : AddressLocationEntity, IModel
     {
-        public AddressLocation(ICustomModelState modelState, int addressLocationID = 0, string addressLocationCode = "", int cityAreaID = 0, string addressLine1 = "", string addressLine2 = "", string postCode = "")
+        public AddressLocation(ICustomModelState modelState, int addressLocationID = 0, int cityAreaID = 0, string addressLine1 = "", string addressLine2 = "", string postCode = "")
         {
             this.ModelState = modelState;
-            this._addressLocationID = addressLocationID;
-            this._addressLocationCode = addressLocationCode;
+            this._addressLocationID = addressLocationID;            
             this._cityAreaID = cityAreaID;            
             this._addressLine1 = addressLine1;
             this._addressLine2 = addressLine2;

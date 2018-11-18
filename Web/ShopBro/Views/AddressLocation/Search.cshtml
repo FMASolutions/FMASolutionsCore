@@ -25,11 +25,6 @@
                     Address Location ID: @Html.TextBoxFor(model => model.ID, new { placeholder = "Address Location ID", Class="form-control mb-2"})                    
                 </div>
             </div>
-            <div class="col-sm-6">
-                <div class="text-left">                      
-                    Address Location Code: @Html.TextBoxFor(model => model.Code, new { placeholder = "Address Location Code", Class="form-control mb-2"})                    
-                </div>
-            </div>
         </div>
          <div class="row">
             <div class="col-sm-3"><button type="submit" formaction=@Url.Action("ProcessSearch") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Search</button></div>

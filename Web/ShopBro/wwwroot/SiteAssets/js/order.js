@@ -10,6 +10,7 @@ $(document).ready(function() {
     $('.SubHeading').on('click',ToggleSub);
     $('#AddItemButtonSearch').on('click',AddSearchItem);
     $('.AddAccordItemButton').on('click',AddAccordItem);    
+    $('.ExistingItemsRemovalButton').on('click',RemoveItemFromExistingItemsList );
 });
 
 function setupGlobals(){
@@ -97,10 +98,14 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
 
             var htmlNewRow = GenerateHTMLForTableRow(itemID, itemDescription, qty, price);
             $("#ExistingItemsTable").find("tbody").append(htmlNewRow);
+            $('.ExistingItemsRemovalButton').on('click',RemoveItemFromExistingItemsList );
         }   
     }
     else
         window.alert('invalid item');
+}
+function RemoveItemFromExistingItemsList(){
+    $(this).parent().remove();
 }
 function GenerateHTMLForTableRow(itemID, itemDescription, qty, price)
 {
@@ -119,24 +124,21 @@ function GenerateHTMLForTableRow(itemID, itemDescription, qty, price)
             newHTML += price; 
             newHTML += '<input data-val="true" data-val-number="The field UnitPrice must be a number." data-val-required="The UnitPrice field is required." id="ExistingItems_' + indexValue + '__UnitPrice" name="ExistingItems[' + indexValue + '].UnitPrice" type="hidden" value="' + price + '">';
         newHTML += '</span></td>';
-        newHTML += '<td><span class="form-control">'; 
-            newHTML += '<input data-val="true" data-val-number="The field ItemID must be a number." data-val-required="The ItemID field is required." id="ExistingItems_' + indexValue + '__ItemID" name="ExistingItems[' + indexValue + '].ItemID" type="hidden" value="' + itemID + '">';
+        newHTML += '<td class="ExistingItemsRemovalButton"><span class="form-control">';             
+            newHTML += '<span>Remove</span>'
         newHTML += '</span></td>';
+        newHTML += '<input data-val="true" data-val-number="The field ItemID must be a number." data-val-required="The ItemID field is required." id="ExistingItems_' + indexValue + '__ItemID" name="ExistingItems[' + indexValue + '].ItemID" type="hidden" value="' + itemID + '">';
     newHTML += '</tr>'
     return newHTML;
 }
 
-function deleteExistingRow(rowID) {
-    $("#" + rowID).remove();
-}
 function ToggleProduct(){    
     var visibility = $(this).siblings().children().css('display');
-    if(visibility === "block")    
-        $(this).siblings().children().hide();    
+    if(visibility === "block")
+        $(this).siblings().children().hide();
     else    
         $(this).siblings().children().show();
 }
-
 function ToggleSub(){
     $(this).siblings('ul').toggle();
 }

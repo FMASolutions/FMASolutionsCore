@@ -7,11 +7,14 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
 
         }
         public decimal UnitPrice{get;set;}
-        public decimal Qty{get;set;}
+        public int Qty{get;set;}
         public int ItemID{get;set;}
+        public int OrderHeaderID{get;set;}
         public string ItemDescription {get;set;}
         public string StatusMessage {get; set;}
+        public string OrderItemStatus{get;set;}
         public int OrderItemRowID {get;set;}
+        
 
     }
 }

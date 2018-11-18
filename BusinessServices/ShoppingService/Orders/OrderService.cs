@@ -86,7 +86,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 if(ValidateItemForCreate(item))
                 {
                     OrderItemEntity entity = ConvertItemModelToEntity(item);
-                    success = _uow.OrderItemRepo.Create(entity);
+                    success = _uow.OrderItemRepo.Create(item);
                     if(success)
                     {   
                         _uow.SaveChanges();                     
@@ -190,6 +190,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return new OrderItemEntity(model.OrderItemID
                 ,model.OrderHeaderID
                 ,model.ItemID
+                ,model.OrderItemStatusID
                 ,model.OrderItemUnitPrice
                 ,model.OrderItemUnitPriceAfterDiscount
                 ,model.OrderItemQty
@@ -201,6 +202,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             return new OrderItem(new CustomModelState()
                 ,entity.ItemID
+                ,entity.OrderItemStatusID
                 ,entity.OrderHeaderID
                 ,entity.OrderItemDescription
                 ,entity.OrderItemID

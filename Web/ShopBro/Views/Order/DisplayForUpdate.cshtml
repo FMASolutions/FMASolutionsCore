@@ -38,8 +38,6 @@
 
 <div class="container rounded">
     <form class="form-signin">
-
-    
     <div class="row mb-2 no-gutters" id="OrderTitleRow">
         <div class="col-6 text-left" id="OrderIDHeading">            
             <h2 class="pr-2">Order Number:</h3>            
@@ -50,10 +48,11 @@
     </div>
         <div class="row mb-2 no-gutters" id="OrderTitleRow">
         <div class="col-6 text-left" id="OrderIDHeading">            
-            @Html.TextBoxFor(model => model.OrderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
+            @Html.DisplayFor(model => model.OrderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
+            @Html.HiddenFor(model => model.OrderID)          
         </div>
         <div class="col-6 text-right" id="OrderStatusHeading">
-            @Html.TextBoxFor(model => model.OrderStatus, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})
+            @Html.DisplayFor(model => model.OrderStatus, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
         </div>
     </div>
 
@@ -64,14 +63,14 @@
     <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-dark text-light" id="CustomerInfoContainer">
         <h3>Customer Info:</h3>
         <div class="row no-gutters" id="SelectdCustomerRow">
-            <div class="col-3 text-left customHeading" id="SelectedCustomerColumnHeading">    
+            <div class="col-3 text-left customHeading" id="SelectedCustomerColumnHeading">
                 Customer:
             </div>
             <div class="col-9" id="SelectedCustomerControlColumn">
                 @(Html.DropDownListFor(
                     m => m.CustomerID,
                     new SelectList(Model.AvailableCustomers, "Key", "Value",Model.CustomerID),     
-                    new { @class = "form-control bg-secondary text-light", @id = "SelectedCustomerControl" }
+                    new { @class = "form-control bg-secondary text-light", @id = "SelectedCustomerControl", @*UNCOMMENT IF NEED TO DISABLE CONTROL ON UPDATE MAYBE IF COMPLETE ORDER???? @disabled = "tyr" *@ }
                 ))
             </div>
         </div>
@@ -129,10 +128,14 @@
                                     @Html.DisplayFor(model => model.ExistingItems[i].UnitPrice, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
                                     @Html.HiddenFor(model => model.ExistingItems[i].UnitPrice)                                    
                                 </span></td>
-                                <td><span class="form-control">
-                                    @Html.HiddenFor(model => model.ExistingItems[i].ItemID)
-                                    @Html.HiddenFor(model => model.ExistingItems[i].OrderItemRowID)
-                                </span></td> 
+                                @if (Model.ExistingItems[i].OrderItemStatus == "Estimate")
+                                { 
+                                    <td class="ExistingItemsRemovalButton"><span class="form-control">                                                                           
+                                        Remove
+                                    </span></td> 
+                                }
+                                @Html.HiddenFor(model => model.ExistingItems[i].ItemID)
+                                @Html.HiddenFor(model => model.ExistingItems[i].OrderItemRowID)
                             </tr>  
                         }
                         </tbody>
@@ -189,7 +192,7 @@
                 <h3 class="ProductHeading text-light mb-0">@(Model.StockHierarchy.ProductGroups[i].ProductGroupName)</h3>    
                 @for(var j = 0; j < Model.StockHierarchy.ProductGroups[i].AvailableSubs.Count; j++)
                 {
-                    <div class="SubGroupWrapper mb-0 mt-0 pt-0 pb-0">
+                    <div class="SubGroupWrapper mb-0 mt-0 pt-0 pb-2">
                         <h3 class="SubHeading mb-0 mt-0 pt-0 pb-0">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].SubGroupName)</h3>
                         <ul class="ItemList mb-0 pb-0">
                             @for(var k=0; k < Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items.Count; k++)

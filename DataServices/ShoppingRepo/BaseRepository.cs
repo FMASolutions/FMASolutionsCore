@@ -9,6 +9,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             Transaction = transaction;
         }
         protected IDbConnection Connection {get { return Transaction.Connection; }}
-        protected IDbTransaction Transaction {get; private set;}
+        protected IDbTransaction Transaction {get; private set;}        
     }
 }

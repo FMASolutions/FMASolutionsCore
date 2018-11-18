@@ -25,7 +25,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
+                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemStatusID,,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
                 FROM OrderItems
                 WHERE OrderItemID = @OrderItemID
                 ";
@@ -67,7 +67,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
+                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemStatusID, OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
                 FROM OrderItems";
 
                 Helper.logger.WriteToProcessLog("OrderItemRepo.GetAll Started: " + query);
@@ -86,8 +86,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                INSERT INTO OrderItems(OrderHeaderID,ItemID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription)
-                VALUES (@OrderHeaderID,@ItemID,@OrderItemUnitPrice,@OrderItemUnitPriceAfterDiscount,@OrderItemQty,@OrderItemDescription)";
+                INSERT INTO OrderItems(OrderHeaderID,ItemID,OrderItemStatusID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription)
+                VALUES (@OrderHeaderID,@ItemID,@OrderItemStatusID, @OrderItemUnitPrice,@OrderItemUnitPriceAfterDiscount,@OrderItemQty,@OrderItemDescription)";
 
                 Helper.logger.WriteToProcessLog("OrderItemRepo.Create Started for OrderHeader ID: " + entity.OrderHeaderID + " full query = " + query);
 
@@ -95,6 +95,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 {
                     OrderHeaderID = entity.OrderHeaderID,
                     ItemID = entity.ItemID,
+                    OrderItemStatusID = entity.OrderItemStatusID,
                     OrderItemUnitPrice = entity.OrderItemUnitPrice,
                     OrderItemUnitPriceAfterDiscount = entity.OrderItemUnitPriceAfterDiscount,
                     OrderItemQty = entity.OrderItemQty,
@@ -118,6 +119,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 UPDATE OrderItems 
                 SET OrderHeaderID = @OrderHeaderID
                 , ItemID = @ItemID
+                , OrderItemStatusID = @OrderItemStatusID
                 , OrderItemUnitPrice = @OrderItemUnitPrice
                 , OrderItemUnitPriceAfterDiscount = @OrderItemUnitPriceAfterDiscount
                 , OrderItemQty = @OrderItemQty
@@ -132,7 +134,8 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     ItemID = entity.ItemID,
                     OrderItemUnitPrice = entity.OrderItemUnitPrice,
                     OrderItemUnitPriceAfterDiscount = entity.OrderItemUnitPriceAfterDiscount,
-                    OrderItemQty = entity.OrderItemQty,                    
+                    OrderItemQty = entity.OrderItemQty,    
+                    OrderItemStatusID = entity.OrderItemStatusID,                
                     OrderItemDescription = entity.OrderItemDescription,
                     OrderItemID = entity.OrderItemID
                 }, transaction: Transaction);

@@ -46,21 +46,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return null;
             }
         }
-        public AddressLocation GetByCode(string code)
-        {
-            try
-            {
-                AddressLocationEntity entity = _uow.AddressLocationRepo.GetByCode(code);
-                if (entity != null)
-                    return ConvertEntityToModel(entity);
-                else
-                    return null;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
         public bool CreateNew(AddressLocation model)
         {
             try
@@ -71,9 +56,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                     AddressLocationEntity entity = ConvertModelToEntity(model);
                     success = _uow.AddressLocationRepo.Create(entity);
                     if (success)
-                    {
-                        AddressLocation createdModel = GetByCode(model.AddressLocationCode);
-                        model.AddressLocationID = createdModel.AddressLocationID;
+                    {                        
+                        model.AddressLocationID = _uow.AddressLocationRepo.GetMostRecent();
                         _uow.SaveChanges();
                     }
                     else
@@ -95,7 +79,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             {
                 returnList = new List<AddressLocation>();
                 foreach (var item in initialList)
-                    returnList.Add(new AddressLocation(new CustomModelState(), item.AddressLocationID, item.AddressLocationCode, item.CityAreaID, item.AddressLine1, item.AddressLine2, item.PostCode));
+                    returnList.Add(new AddressLocation(new CustomModelState(), item.AddressLocationID, item.CityAreaID, item.AddressLine1, item.AddressLine2, item.PostCode));
             }
             return returnList;
         }
@@ -121,8 +105,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private AddressLocation ConvertEntityToModel(AddressLocationEntity entityToConvert)
         {
             return new AddressLocation(new CustomModelState()
-                , entityToConvert.AddressLocationID
-                , entityToConvert.AddressLocationCode
+                , entityToConvert.AddressLocationID                
                 , entityToConvert.CityAreaID                
                 , entityToConvert.AddressLine1
                 , entityToConvert.AddressLine2
@@ -132,20 +115,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private AddressLocationEntity ConvertModelToEntity(AddressLocation modelToConvert)
         {
             return new AddressLocationEntity(modelToConvert.AddressLocationID
-                , modelToConvert.CityAreaID                
-                , modelToConvert.AddressLocationCode
+                , modelToConvert.CityAreaID                                
                 , modelToConvert.AddressLine1
                 , modelToConvert.AddressLine2
                 , modelToConvert.PostCode
             );
-        }
-        private bool CodeExists(string code)
-        {
-            AddressLocationEntity entity = _uow.AddressLocationRepo.GetByCode(code);
-            if (entity != null && entity.AddressLocationID > 0)
-                return true;
-            else
-                return false;
         }
         private bool CityAreaIDExists(int id)
         {
@@ -159,26 +133,16 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             if (model.ModelState.IsValid)
             {
-                if (string.IsNullOrEmpty(model.AddressLocationCode) || string.IsNullOrEmpty(model.PostCode) || string.IsNullOrEmpty(model.AddressLine1) || string.IsNullOrEmpty(model.AddressLine2) || model.CityAreaID <= 0)
+                if (string.IsNullOrEmpty(model.PostCode) || string.IsNullOrEmpty(model.AddressLine1) || string.IsNullOrEmpty(model.AddressLine2) || model.CityAreaID <= 0)
                 {
                     model.ModelState.AddError("NullValues", "All values must be populated...");
-                    return false;
-                }
-                else if (model.AddressLocationCode.Length > 7)
-                {
-                    model.ModelState.AddError("CodeLength", "Code should not be greather than 7 characters");
                     return false;
                 }
                 else if (model.PostCode.Length > 10)
                 {
                     model.ModelState.AddError("PostCodeLength","Postcode should not be more than 10 characters");
                     return false;
-                }                
-                else if (CodeExists(model.AddressLocationCode))
-                {
-                    model.ModelState.AddError("CodeExists", "The code provided already exists and must be unique.");
-                    return false;
-                }
+                } 
                 else if (CityAreaIDExists(model.CityAreaID) == false)
                 {
                     model.ModelState.AddError("City Area ID", "City Area ID Provided does not exists");
@@ -192,17 +156,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         private bool ValidateForUpdate(AddressLocation newModel)
         {
-            AddressLocationEntity idSearchResult = _uow.AddressLocationRepo.GetByID(newModel.AddressLocationID);
-            AddressLocationEntity codeSearchResult = _uow.AddressLocationRepo.GetByCode(newModel.AddressLocationCode);
-            CityAreaEntity cityAreaSearchResult = _uow.CityAreaRepo.GetByID(newModel.CityAreaID);            
-            //Ensure new code (is it's new) doesn't already exist under a different ID.
-            if (codeSearchResult != null && codeSearchResult.AddressLocationID != newModel.AddressLocationID)
-            {
-                newModel.ModelState.AddError("CodeExists", "Address Location Code already exists under a different ID (ID = " + codeSearchResult.AddressLocationID.ToString() + "Code: " + codeSearchResult.AddressLocationCode + " Line1: " + codeSearchResult.AddressLine1 + ") and must be unique");
-                return false;
-            }
+            AddressLocationEntity idSearchResult = _uow.AddressLocationRepo.GetByID(newModel.AddressLocationID);            
+            CityAreaEntity cityAreaSearchResult = _uow.CityAreaRepo.GetByID(newModel.CityAreaID);
             //Generic Value Checks
-            else if (ValidateAllValues(newModel) == false || newModel.ModelState.IsValid == false || cityAreaSearchResult == null || cityAreaSearchResult.CityAreaID <= 0)
+            if (ValidateAllValues(newModel) == false || newModel.ModelState.IsValid == false || cityAreaSearchResult == null || cityAreaSearchResult.CityAreaID <= 0)
             {
                 newModel.ModelState.AddError("InvalidValues", "One or more values were invalid");
                 return false;
@@ -213,7 +170,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return false;
             }
             //Check something has actually changed
-            else if (idSearchResult.AddressLocationCode != newModel.AddressLocationCode || idSearchResult.CityAreaID != newModel.CityAreaID || idSearchResult.AddressLine1 != newModel.AddressLine1 || idSearchResult.AddressLine2 != newModel.AddressLine2 || idSearchResult.PostCode != newModel.PostCode)
+            else if (idSearchResult.CityAreaID != newModel.CityAreaID || idSearchResult.AddressLine1 != newModel.AddressLine1 || idSearchResult.AddressLine2 != newModel.AddressLine2 || idSearchResult.PostCode != newModel.PostCode)
                 return true;
             else
             {
@@ -241,12 +198,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 model.ModelState.AddError("InvalidID", "ID value was invalid");
                 return false;
             }
-            else if (ValidateCode(model.AddressLocationCode) == false)
-            {
-                model.ModelState.AddError("InvalidCode", "Code value was invalid, it can't be more than 7 characters or empty");
-                return false;
-            }
-            else if (string.IsNullOrEmpty(model.AddressLocationCode) || string.IsNullOrEmpty(model.AddressLine1) || string.IsNullOrEmpty(model.AddressLine2) || string.IsNullOrEmpty(model.PostCode))
+            else if (string.IsNullOrEmpty(model.AddressLine1) || string.IsNullOrEmpty(model.AddressLine2) || string.IsNullOrEmpty(model.PostCode))
             {
                 model.ModelState.AddError("Null", "Values cant be blank.");
                 return false;

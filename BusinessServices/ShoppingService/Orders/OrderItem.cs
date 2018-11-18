@@ -6,7 +6,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class OrderItem : OrderItemEntity, IModel
     {
-        public OrderItem(ICustomModelState modelState, int itemID, int orderHeaderID, string orderItemDescritpion, int orderItemID, int orderItemQty, decimal orderItemUnitPrice, decimal orderItemUnitPriceAfterDiscount)
+        public OrderItem(ICustomModelState modelState, int itemID, int orderItemStatusID, int orderHeaderID, string orderItemDescritpion, int orderItemID, int orderItemQty, decimal orderItemUnitPrice, decimal orderItemUnitPriceAfterDiscount)
         {
             this._modelState = modelState;
 
@@ -16,6 +16,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             this._orderItemID = orderItemID;
             this._orderItemQty = orderItemQty;
             this._orderItemUnitPrice = orderItemUnitPrice;
+            this._orderItemStatusID = orderItemStatusID;
             this._orderItemUnitPriceAfterDiscount = orderItemUnitPriceAfterDiscount;
         }
         public ICustomModelState ModelState { get { return _modelState; } private set { _modelState = value; } }

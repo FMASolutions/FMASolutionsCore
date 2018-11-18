@@ -25,7 +25,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
+                SELECT [AddressLocationID],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
                 FROM AddressLocations
                 WHERE AddressLocationID = @AddressLocationID
                 ";
@@ -45,7 +45,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
+                SELECT [AddressLocationID],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
                 FROM AddressLocations";
 
                 Helper.logger.WriteToProcessLog("AddressLocationRepo.GetAll Started: " + query);
@@ -64,14 +64,13 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                INSERT INTO AddressLocations([AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode])
-                VALUES (@AddressLocationCode, @AddressLine1, @AddressLine2, @CityAreaID, @PostCode)";
+                INSERT INTO AddressLocations([AddressLine1],[AddressLine2],[CityAreaID],[PostCode])
+                VALUES (@AddressLine1, @AddressLine2, @CityAreaID, @PostCode)";
 
-                Helper.logger.WriteToProcessLog("AddressLocationRepo.Create Started for code: " + entity.AddressLocationCode + " full query = " + query);
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.Create Started for Address: " + entity.AddressLine1 + " " + entity.AddressLine2 + " full query = " + query);
 
                 int rowsAffected = _dbConnection.Execute(query, new
-                {
-                    AddressLocationCode = entity.AddressLocationCode,
+                {                    
                     AddressLine1 = entity.AddressLine1,
                     AddressLine2 = entity.AddressLine2,
                     CityAreaID = entity.CityAreaID,
@@ -94,8 +93,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             {
                 string query = @"
                 UPDATE AddressLocations 
-                SET AddressLocationCode = @AddressLocationCode
-                , AddressLine1 = @AddressLine1
+                SET AddressLine1 = @AddressLine1
                 , AddressLine2 = @AddressLine2
                 , CityAreaID = @CityAreaID
                 , PostCode = @PostCode
@@ -104,8 +102,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 Helper.logger.WriteToProcessLog("AddressLocationRepo.Update Started for ID: " + entity.AddressLocationID.ToString() + " full query = " + query);
 
                 int i = _dbConnection.Execute(query, new
-                {
-                    AddressLocationCode = entity.AddressLocationCode,
+                {                    
                     AddressLine1 = entity.AddressLine1,
                     AddressLine2 = entity.AddressLine2,
                     CityAreaID = entity.CityAreaID,
@@ -127,26 +124,26 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         {
             throw new NotImplementedException();
         }
-        #endregion
+        #endregion        
 
-        #region IAddressLocationRepo
-        public AddressLocationEntity GetByCode(string code)
+        #region BaseRepository
+        public int GetMostRecent()
         {
             try
             {
                 string query = @"
-                SELECT [AddressLocationID],[AddressLocationCode],[AddressLine1],[AddressLine2],[CityAreaID],[PostCode]
+                SELECT TOP 1 [AddressLocationID]
                 FROM AddressLocations
-                WHERE AddressLocationCode = @AddressLocationCode";
+                ORDER BY AddressLocationID Desc";
 
-                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetByCode Started for Code: " + code + " full query = " + query);
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetMostRecent Started, full query = " + query);               
 
-                return _dbConnection.QueryFirst<AddressLocationEntity>(query, new { AddressLocationCode = code }, transaction: Transaction);
+                return _dbConnection.QueryFirst<int>(query, transaction: Transaction);
             }
             catch (Exception ex)
             {
-                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetByCode: " + ex.Message, this);
-                return null;
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetMostRecent: " + ex.Message, this);
+                return 0;
             }
         }
         #endregion

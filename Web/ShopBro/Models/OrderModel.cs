@@ -34,7 +34,32 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 return returnVM;
             }
         }
+        public OrderViewModel Update(OrderViewModel newModel)
+        {
+            Order dbExistingOrder = _service.GetByID(newModel.OrderID);
+            bool errorDetected = false;
 
+            foreach(var item in newModel.ExistingItems)
+            {
+                item.OrderHeaderID = newModel.OrderID;
+                if(item.OrderItemRowID == 0) //New item, this needs adding.
+                {
+                    if(_service.AddItemToOrder(ConvertToOrderItemModel(item)) <= 0)                    
+                        errorDetected = true;
+                }
+            }
+            foreach(var item in dbExistingOrder.OrderItems)
+            {
+                //Check if the item still exists in the new model, it may need deleting.
+                if(newModel.ExistingItems.Exists(e => e.OrderItemRowID == item.ID && e.OrderItemRowID != 0))
+                    if(!_service.RemoveItemFromOrder(item))
+                        errorDetected = true;
+            }
+            if(errorDetected)
+                return null;
+            else
+                return Search(newModel.OrderID);
+        }
         private ICustomModelState _modelState;
         private IOrderService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
@@ -46,6 +71,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             
             //Set up the Existing OrderItem List
             List<OrderItemViewModel> orderItems = new List<OrderItemViewModel>();
+            var statusDictionary = _service.GetOrderStatusDictionary();            
             foreach(var orderItem in model.OrderItems)
             {
                 OrderItemViewModel orderItemVM = new OrderItemViewModel();
@@ -54,15 +80,13 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 orderItemVM.OrderItemRowID = orderItem.OrderItemID;
                 orderItemVM.Qty = orderItem.OrderItemQty;
                 orderItemVM.UnitPrice = orderItem.OrderItemUnitPrice;
+                orderItemVM.OrderItemStatus = statusDictionary[orderItem.OrderItemStatusID];
+                orderItemVM.OrderHeaderID = orderItem.OrderHeaderID;
                 orderItems.Add(orderItemVM);
             }
             vmReturn.ExistingItems = orderItems;
-
-            //Set current Order Status String Value
-            foreach(var item in _service.GetOrderStatusDictionary())
-                if(model.Header.OrderStatusID == item.Key)
-                    vmReturn.OrderStatus = item.Value;
-            
+            vmReturn.OrderStatus = statusDictionary[model.Header.OrderStatusID];
+  
             //Set up Available Customers List
             Dictionary<int,string> availableCustomers = new Dictionary<int, string>();
             foreach(var customer in _service.GetAvailableCustomers())
@@ -122,5 +146,40 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             vmReturn.StockHierarchy = stockHierarchy;
             return vmReturn;
         }
+
+        private OrderItem ConvertToOrderItemModel(OrderItemViewModel vm)
+        {
+            int i = 1;
+            int itemStatus = 0;
+            var itemStatusDic = _service.GetOrderStatusDictionary();
+            foreach(var statusString in itemStatusDic.Values)
+            {
+                if(vm.OrderItemStatus == statusString)
+                    itemStatus = i;
+                else
+                    i++;
+            }
+            var stock = _service.GetStockHierarchy();
+            decimal originalPrice = 0.0m;
+            foreach(var item in stock)
+            {
+                if(item.ItemID == vm.ItemID)
+                    originalPrice = item.ItemUnitPrice;
+            }   
+            
+            OrderItem returnItem = new OrderItem(
+                _modelState
+                ,vm.ItemID
+                ,itemStatus
+                ,vm.OrderHeaderID
+                ,vm.ItemDescription
+                ,vm.OrderItemRowID
+                ,vm.Qty
+                ,originalPrice
+                ,vm.UnitPrice
+            );
+
+            return returnItem;
+        }        
     }
 }

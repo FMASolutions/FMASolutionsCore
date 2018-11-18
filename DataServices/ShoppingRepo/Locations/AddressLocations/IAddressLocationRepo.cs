@@ -3,7 +3,7 @@ using System;
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
     public interface IAddressLocationRepo : IDataRepository<AddressLocationEntity>
-    {
-        AddressLocationEntity GetByCode(string code);
+    {        
+        int GetMostRecent();
     }
 }
