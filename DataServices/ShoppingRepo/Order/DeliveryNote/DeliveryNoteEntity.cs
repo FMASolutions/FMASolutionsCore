@@ -35,5 +35,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         public Int32 DeliveryNoteID { get { return _deliveryNoteID; } set { _deliveryNoteID = value; } }     
         public Int32 OrderHeaderID { get { return _orderHeaderID;} set { _orderHeaderID = value; } }
         public DateTime DeliveryDate { get { return _deliveryDate; } set { _deliveryDate = value; } }
+        public List<DeliveryNoteItem> Items {get { return _deliveryNoteItems } set { _deliveryNoteItems = value; } }
     }
 }
