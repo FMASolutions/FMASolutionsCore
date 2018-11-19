@@ -149,12 +149,15 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return false;
         }
 
-        public int DeliverExistingItems(int orderHeaderID)
+        DeliveryNote DeliverOrderItems(int orderHeaderID)
         {
-            int returnID = _uow.OrderHeaderRepo.DeliverOutstandingItems(orderHeaderID);
-            if(returnID > 0)
+            DeliveryNote returnNote = _uow.DeliveryNoteRepo.DeliverOrder(orderHeaderID);
+            if(returnNote != null)
+            {
                 _uow.SaveChanges();
-            return returnID;            
+                return returnNote
+            }
+            return null;       
         }
 
         public List<StockHierarchyItem> GetStockHierarchy()
