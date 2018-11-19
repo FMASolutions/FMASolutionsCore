@@ -27,6 +27,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _orderHeaderRepo = new OrderHeaderRepo(_transaction);
             _orderItemRepo = new OrderItemRepo(_transaction);
             _orderStatusRepo = new OrderStatusRepo(_transaction);
+            _deliveryNoteRepo = new DeliveryNoteRepo(_transaction);
         }
         ~UnitOfWork()
         {
@@ -49,6 +50,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public IOrderHeaderRepo OrderHeaderRepo {get {return _orderHeaderRepo ?? (_orderHeaderRepo = new OrderHeaderRepo(_transaction));}}
         public IOrderItemRepo OrderItemRepo {get {return _orderItemRepo ?? (_orderItemRepo = new OrderItemRepo(_transaction));}}
         public IOrderStatusRepo OrderStatusRepo {get {return _orderStatusRepo ?? (_orderStatusRepo = new OrderStatusRepo(_transaction));}}
+        public IDeliveryNoteRepo DeliveryNoteRepo {get {return _deliveryNoteRepo ?? (_deliveryNoteRepo = new DeliveryNoteRepo(_transaction));}}
         bool _disposing = false;
 
         public void SaveChanges()
@@ -118,6 +120,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _orderHeaderRepo = null;
             _orderItemRepo  = null;
             _orderStatusRepo = null;
+            _deliveryNoteRepo = null;
         }
         private IProductGroupRepo _productGroupRepo;
         private ISubGroupRepo _subGroupRepo;
@@ -132,5 +135,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private IOrderHeaderRepo _orderHeaderRepo;
         private IOrderItemRepo _orderItemRepo;
         private IOrderStatusRepo _orderStatusRepo;
+        private IDeliveryNoteRepo _deliveryNoteRepo;
     }
 }
