@@ -92,7 +92,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     if(currentDeliveryNoteID != item.DeliveryNoteID)
                     {       
                         currentDeliveryNoteID = item.DeliveryNoteID;
-                        if(!first)                        
+                        if(first)                        
                             first = false;
                         else
                             returnEntity.Add(currentEntity);
