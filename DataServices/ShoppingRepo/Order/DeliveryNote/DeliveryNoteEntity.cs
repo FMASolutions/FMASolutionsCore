@@ -9,7 +9,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         public class DeliveryNoteItem
         {
             public Int32 DeliveryNoteItemID {get; set;}
-            public Int32 DeliveryID {get; set;}
+            public Int32 DeliveryNoteID {get; set;}
             public Int32 OrderItemID {get; set;}
         }
         
