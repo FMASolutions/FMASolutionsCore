@@ -166,28 +166,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return null;
             }
         }
-        public int DeliverOutstandingItems(int orderID)
-        {
-            try
-            {
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.DeliverOutstandingItems Started for ID: " + orderID.ToString());
-                if(orderID > 0)
-                {                
-                    var queryParameters = new DynamicParameters();
-                    queryParameters.Add("@OrderHeaderID", orderID);
-                    int returnValue = _dbConnection.QueryFirst<int>("DeliverExistingItems",queryParameters,transaction: Transaction, commandType: CommandType.StoredProcedure);
-                    return returnValue;
-                }
-                else
-                    return 0;
-            }
-            catch(Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.DeliverOutstandingItems: " + ex.Message, this);
-                return 0;
-            }
-            
-        }
         #endregion
     }
 }
