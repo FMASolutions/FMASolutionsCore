@@ -135,6 +135,29 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         {
             throw new NotImplementedException();
         }
-        #endregion        
+        #endregion     
+        
+        public DeliveryNoteEntity DeliverOrder(int orderHeaderID)
+        {
+            try
+            {
+                Helper.logger.WriteToProcessLog("DeliveryNoteRepo.DeliverOrder Started for ID: " + orderHeaderID.ToString());
+                if(orderHeaderID > 0)
+                {                
+                    var queryParameters = new DynamicParameters();
+                    queryParameters.Add("@OrderHeaderID", orderHeaderID);
+                    int deliveryNoteID = _dbConnection.QueryFirst<int>("DeliverExistingItems",queryParameters,transaction: Transaction, commandType: CommandType.StoredProcedure);
+                    return GetByID(deliveryNoteID);
+                }
+                else
+                    return null;
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.DeliverOutstandingItems: " + ex.Message, this);
+                return null;
+            }
+        }
+        
     }
 }
