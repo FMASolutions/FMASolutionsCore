@@ -59,8 +59,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             if(id>0)
             {
                 OrderModel model = GetNewModel();
-                int deliveryNoteID = model.DeliverItems(id);
-                return View("DeliveryNote",model.GetDeliveryNote(deliveryNoteID));
+                DeliveryNoteViewModel vmReturn = model.DeliverItems(id);
+                if(vmReturn != null)
+                    return View("DeliveryNote",vmReturn);
+                else
+                    return Search();
             }
             else
                 return Search();
