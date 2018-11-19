@@ -64,24 +64,20 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
                 return Search(newModel.OrderID);
         }
-        public int DeliverItems(int OrderHeaderID)
+        public DeliveryNoteViewModel DeliverItems(int orderHeaderID)
         {            
             DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
             if(OrderHeaderID > 0){
-                return _service.DeliverExistingItems(OrderHeaderID);                
+                deliveryNote = _service.DeliverOrderItems(orderHeaderID);
+                if(deliveryNote != null)
+                    vmReturn = ConvertDeliveryModelToViewModel(deliveryNote);
+                else
+                    return null;
+                return vmReturn;
             }
             else
-                return 0;
-        }
-        public DeliveryNoteViewModel GetDeliveryNote(int DeliveryNoteID)
-        {
-            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
-            if(DeliveryNoteID > 0)
-                vmReturn.Title = "Great! : " + DeliveryNoteID.ToString();
-            else
-                vmReturn.Title = "Failed";
-            return vmReturn;
-        }
+                return null;
+        }        
 
         private OrderViewModel ConvertToViewModel(Order model)
         {
@@ -200,6 +196,13 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             );
 
             return returnItem;
-        }        
+        }
+        
+        //NEED TO CODE UP THIS ROUTINE.
+        private DeliveryNoteViewModel ConvertDeliveryModelToViewModel(DeliveryNote model)
+        {
+            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
+            return vmReturn;
+        }
     }
 }
