@@ -124,22 +124,28 @@ function GenerateNewTableBody(){
 }
 function GenerateItemHTML(itemID, itemDescription, itemStatus, qty, price, indexValue, orderItemRowID, tableRowID){
     var newHTML = '<tr id=' + tableRowID + '>';
-        newHTML += '<td><span class="form-control">'; 
+        newHTML += '<td><span>'; 
             newHTML += itemDescription;
             newHTML += '<input id="ExistingItems_' + indexValue + '__ItemDescription" name="ExistingItems[' + indexValue + '].ItemDescription" type="hidden" value="' + itemDescription + '">';
         newHTML += '</span></td>';
-        newHTML += '<td><span class="form-control">';
+        newHTML += '<td class="text-center"><span>';
             newHTML += qty;
             newHTML += '<input data-val="true" data-val-number="The field Qty must be a number." data-val-required="The Qty field is required." id="ExistingItems_' + indexValue + '__Qty" name="ExistingItems[' + indexValue + '].Qty" type="hidden" value="' + qty + '">';
         newHTML += '</span></td>';
-        newHTML += '<td><span class="form-control">';
+        newHTML += '<td class="text-center"><span>';
             newHTML += price; 
-            newHTML += '<input data-val="true" data-val-number="The field UnitPrice must be a number." data-val-required="The UnitPrice field is required." id="ExistingItems_' + indexValue + '__UnitPrice" name="ExistingItems[' + indexValue + '].UnitPrice" type="hidden" value="' + price + '">';
+            newHTML += '<input data-val="true" data-val-number="The field UnitPrice must be a number." data-val-required="The UnitPrice field is required." id="ExistingItems_' + indexValue + '__UnitPrice" name="ExistingItems[' + indexValue + '].UnitPrice" type="hidden" value="' + Number(Math.round(price+'e2')+'e-2').toFixed(2) + '">';
         newHTML += '</span></td>';
 
         if(itemStatus.indexOf("Estimate") >= 0){
-            newHTML += '<td class="ExistingItemsRemovalButton"><span class="form-control">';             
-                newHTML += '<span>Remove</span>'
+            newHTML += '<td class="ExistingItemsRemovalButton text-center"><span class="form-control">';             
+                newHTML += '<span>Remove</span>';
+            newHTML += '</span></td>';
+        }
+        else
+        {
+            newHTML += '<td class="text-center"><span>';
+                newHTML += 'N/A';
             newHTML += '</span></td>';
         }
    
