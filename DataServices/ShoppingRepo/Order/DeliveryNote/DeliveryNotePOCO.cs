@@ -7,6 +7,10 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
     public class DeliveryNotePOCO : IBaseEntity
     {
+        public DeliveryNotePOCO()
+        {
+            
+        }
         public DeliveryNotePOCO(Int32 deliveryNoteID, Int32 orderHeaderID, Int32 deliveryNoteItemID ,Int32 orderItemID, DateTime deliveryDate)
         {
             _deliveryNoteID = deliveryNoteID;

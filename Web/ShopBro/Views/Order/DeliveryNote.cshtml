@@ -18,16 +18,32 @@
         {
             <Label class="error-text">@Model.StatusMessage </Label>
         }
-
         <div class="row">
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    TITLE: @Html.TextBoxFor(model => model.Title, new { Class="form-control mb-2"})                    
+                    Delivery Note: @Html.TextBoxFor(model => model.DeliveryNoteID, new { Class="form-control mb-2"})                    
                 </div>
             </div>
-        </div>
+        </div>        
+        @foreach(var item in Model.Items)
+        {
+            <div class="row">
+                <div class="col-sm-3">
+                    ID: @item.DeliveryNoteItemID
+                </div>
+                <div class="col-sm-3">
+                    Date: @item.ItemDeliveryDate
+                </div>
+                <div class="col-sm-3">
+                    Desc: @item.ItemDescription
+                </div>
+                <div class="col-sm-3">
+                    Qty: @item.ItemQty
+                </div>
+            </div>
+        }
          <div class="row">
-            <div class="col-sm-3"><a href="/Order/Search" class="btn btn-outline-dark btn-block mb-3">Back</a></div>
+            <div class="col-sm-3"><a href="/Order/Search/@Model.orderHeaderID" class="btn btn-outline-dark btn-block mb-3">Back</a></div>
         </div>        
     </form>
 </div>

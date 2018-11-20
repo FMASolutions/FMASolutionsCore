@@ -76,6 +76,26 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             return null;
         }
+
+        public IActionResult ViewDeliveryNote(int id=0)
+        {            
+            OrderModel model = GetNewModel();
+            List<DeliveryNoteViewModel> deliveryNotes = model.GetDeliveryNoteByOrder(id);
+            if(deliveryNotes != null)
+            {
+                if(deliveryNotes.Count == 1)                
+                    return View("DeliveryNote", deliveryNotes[0]);
+                else
+                {
+                    //IMPLEMENT MULTI SELECTOR FOR DELIVERY NOTE SELECTION.
+                    return null;
+                }
+            }
+            else
+                return Search(id);
+            
+            
+        }
         private OrderModel GetNewModel()
         {
             return new OrderModel(new ModelStateConverter(this).Convert(), _service);

@@ -1,11 +1,13 @@
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.DataServices.ShoppingRepo;
+using System;
+using System.Collections.Generic;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public class DeliveryNote : DeliveryNoteEntity, IModel
     {
-        public SubGroup(ICustomModelState modelState, int deliveryNoteID = 0, int orderHeaderID = 0, datetime deliveryDate = DateTime.Now, List<DeliveryNoteItem> items = new List<DeliveryNoteItem>())
+        public DeliveryNote(ICustomModelState modelState, List<DeliveryNoteItem> items, int deliveryNoteID = 0, int orderHeaderID = 0, DateTime deliveryDate = new DateTime())
         {
             this.ModelState = modelState;
             this._deliveryNoteID = deliveryNoteID;

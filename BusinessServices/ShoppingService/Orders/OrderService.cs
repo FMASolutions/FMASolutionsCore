@@ -149,22 +149,37 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return false;
         }
 
-        DeliveryNote DeliverOrderItems(int orderHeaderID)
-        {
-            DeliveryNote returnNote = _uow.DeliveryNoteRepo.DeliverOrder(orderHeaderID);
-            if(returnNote != null)
+        public DeliveryNote DeliverOrderItems(int orderHeaderID)
+        {            
+            DeliveryNoteEntity entity = _uow.DeliveryNoteRepo.DeliverOrder(orderHeaderID);
+            DeliveryNote returnModel = ConvertDeliveryNoteToModel(entity);
+
+            if(returnModel != null)
             {
                 _uow.SaveChanges();
-                return returnNote
+                return returnModel;
             }
-            return null;       
+            return null;
         }
 
         public List<StockHierarchyItem> GetStockHierarchy()
         {
             return _itemService.GetStockHierarchy();
         }
+        public List<DeliveryNote> GetDeliveryNotesForOrder(int orderID)
+        {
+            List<DeliveryNote> returnList = new List<DeliveryNote>();
 
+            IEnumerable<DeliveryNoteEntity> searchResult = _uow.DeliveryNoteRepo.GetByOrderHeaderID(orderID);
+
+            foreach(var item in searchResult)
+            {
+                DeliveryNote currentItem = ConvertDeliveryNoteToModel(item);
+                returnList.Add(currentItem);
+            }
+
+            return returnList;
+        }
         public List<Customer> GetAvailableCustomers()
         {
             return _customerService.GetAll();
@@ -230,6 +245,17 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             );
         }
 
+        private DeliveryNote ConvertDeliveryNoteToModel(DeliveryNoteEntity entity)
+        {
+            return new DeliveryNote( 
+                new CustomModelState(),
+                entity.Items,
+                entity.DeliveryNoteID,
+                entity.OrderHeaderID,
+                entity.DeliveryDate
+            );
+        }
+
         private bool ValidateHeaderForCreate(OrderHeader model)
         {
             try
@@ -257,8 +283,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             if(model.ItemID > 0 && model.OrderHeaderID > 0 && model.OrderItemQty > 0)
                 return true;
             else
-                return false;
-            
+                return false;            
         }
     }
 }

@@ -45,12 +45,12 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                         firstFlag = false;
                         returnEntity.DeliveryNoteID = item.DeliveryNoteID;
                         returnEntity.OrderHeaderID = item.OrderHeaderID;
-                        returnEntity.DeliveryDate = item.DeliveryDate
+                        returnEntity.DeliveryDate = item.DeliveryDate;
                     }
-                    DeliveryNoteItem current = new DeliveryNoteItem()
-                    current.DeliveryNoteItemID = item.DeliveryNoteItemID
-                    current.DeliveryNoteID = item.DeliveryNoteID
-                    current.OrderItemID = item.OrderItemID
+                    DeliveryNoteEntity.DeliveryNoteItem current = new DeliveryNoteEntity.DeliveryNoteItem();
+                    current.DeliveryNoteItemID = item.DeliveryNoteItemID;
+                    current.DeliveryNoteID = item.DeliveryNoteID;
+                    current.OrderItemID = item.OrderItemID;
                     
                     returnEntity.Items.Add(current);
                 }
@@ -78,7 +78,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 ";
                 Helper.logger.WriteToProcessLog("DeliveryNoteRepo.GetAll Started, full query = " + query);
 
-                var pocoList = _dbConnection.Query<DeliveryNotePOCO>(query, new { DeliveryNoteID = id }, transaction: Transaction);
+                var pocoList = _dbConnection.Query<DeliveryNotePOCO>(query, transaction: Transaction);
                 
                 
                 List<DeliveryNoteEntity> returnEntity = new List<DeliveryNoteEntity>();
@@ -98,19 +98,76 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                             returnEntity.Add(currentEntity);
                         
                         currentEntity = new DeliveryNoteEntity();
-                        currentEntity.DeliveryNoteID = item.DeliveryNoteID
+                        currentEntity.DeliveryNoteID = item.DeliveryNoteID;
                         currentEntity.OrderHeaderID = item.OrderHeaderID;
                         currentEntity.DeliveryDate = item.DeliveryDate;
                     }
-                    DeliveryNoteItem currentItem = new DeliveryNoteItem()
-                    currentItem.DeliveryNoteItemID = item.DeliveryNoteItemID
-                    currentItem.DeliveryNoteID = item.DeliveryNoteID
-                    currentItem.OrderItemID = item.OrderItemID                    
-                    currentEntity.Items.Add(current);
+                    DeliveryNoteEntity.DeliveryNoteItem currentItem = new DeliveryNoteEntity.DeliveryNoteItem();
+                    currentItem.DeliveryNoteItemID = item.DeliveryNoteItemID;
+                    currentItem.DeliveryNoteID = item.DeliveryNoteID;
+                    currentItem.OrderItemID = item.OrderItemID;             
+                    currentEntity.Items.Add(currentItem);
                 }
                 returnEntity.Add(currentEntity); 
                 
-                if(returnEntity.count > 0)
+                if(returnEntity.Count > 0)
+                  return returnEntity;
+                else
+                  return null;
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.GetAll: " + ex.Message, this);
+                return null;
+            }
+        }
+
+        public IEnumerable<DeliveryNoteEntity> GetByOrderHeaderID(int orderHeaderID)
+        {
+            try
+            {
+                string query = @"
+                SELECT DN.DeliveryNoteID, DN.OrderHeaderID, DN.DeliveryDate, DNI.OrderItemID, DNI.DeliveryNoteItemID
+                FROM DeliveryNotes DN
+                INNER JOIN DeliveryNoteItems DNI ON DN.DeliveryNoteID = DNI.DeliveryNoteID
+                WHERE DN.OrderHeaderID = @OrderHeaderID
+                ORDER BY DN.DeliveryNoteID DESC
+                ";
+                Helper.logger.WriteToProcessLog("DeliveryNoteRepo.GetAll Started, full query = " + query);
+
+                var pocoList = _dbConnection.Query<DeliveryNotePOCO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);
+                
+                
+                List<DeliveryNoteEntity> returnEntity = new List<DeliveryNoteEntity>();
+                DeliveryNoteEntity currentEntity = null;
+                                
+                bool first = true;
+                int currentDeliveryNoteID = 0;
+                
+                foreach(var item in pocoList)
+                {
+                    if(currentDeliveryNoteID != item.DeliveryNoteID)
+                    {       
+                        currentDeliveryNoteID = item.DeliveryNoteID;
+                        if(first)                        
+                            first = false;
+                        else
+                            returnEntity.Add(currentEntity);
+                        
+                        currentEntity = new DeliveryNoteEntity();
+                        currentEntity.DeliveryNoteID = item.DeliveryNoteID;
+                        currentEntity.OrderHeaderID = item.OrderHeaderID;
+                        currentEntity.DeliveryDate = item.DeliveryDate;
+                    }
+                    DeliveryNoteEntity.DeliveryNoteItem currentItem = new DeliveryNoteEntity.DeliveryNoteItem();
+                    currentItem.DeliveryNoteItemID = item.DeliveryNoteItemID;
+                    currentItem.DeliveryNoteID = item.DeliveryNoteID;
+                    currentItem.OrderItemID = item.OrderItemID;             
+                    currentEntity.Items.Add(currentItem);
+                }
+                returnEntity.Add(currentEntity); 
+                
+                if(returnEntity.Count > 0)
                   return returnEntity;
                 else
                   return null;
