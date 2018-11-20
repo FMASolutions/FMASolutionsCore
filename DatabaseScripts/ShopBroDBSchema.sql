@@ -190,6 +190,7 @@ CREATE PROCEDURE dbo.DeliverExistingItems
 @OrderHeaderID INT
 AS
 
+
 IF EXISTS(SELECT 1 FROM OrderItems WHERE OrderHeaderID = @OrderHeaderID and OrderItemStatusID = 1)
 BEGIN
 	INSERT INTO DeliveryNotes(OrderHeaderID,DeliveryDate)
@@ -203,7 +204,14 @@ BEGIN
 	FROM OrderItems
 	WHERE OrderHeaderID = @OrderHeaderID
 	AND OrderItemStatusID = 1
-
+	
+	UPDATE i
+	SET i.ItemAvailableQty = i.ItemAvailableQty - oi.OrderItemQty
+	FROM OrderItems oi
+	INNER JOIN Items i on oi.ItemID = i.ItemID
+	WHERE oi.OrderHeaderID = @OrderHeaderID
+	AND oi.OrderItemStatusID = 1	   
+	       
 	UPDATE OrderItems
 	SET OrderItemStatusID = 2
 	WHERE OrderHeaderID = @OrderHeaderID
