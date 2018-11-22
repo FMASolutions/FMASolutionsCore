@@ -65,7 +65,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             {
                 string query = @"
                 INSERT INTO CustomerAddresses([CustomerID], AddressLocationID, IsDefaultAddress, CustomerAddressDescription)
-                VALUES (, @CustomerID, @AddressLocationID, @IsDefaultAddress, @CustomerAddressDescription)";
+                VALUES (@CustomerID, @AddressLocationID, @IsDefaultAddress, @CustomerAddressDescription)";
 
                 Helper.logger.WriteToProcessLog("CustomerAddressRepo.Create Started for Description: " + entity.CustomerAddressDescription + " full query = " + query);
 
@@ -117,6 +117,31 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 Helper.logger.WriteToErrorLog("Error in CustomerAddressRepo.Update: " + ex.Message, this);
                 return false;
             }
+        }
+        public int GetCustomerAddressIDByCustomerAndAddress(int customerID, int addressID)
+        {
+            try
+            {
+                string query = @"
+                SELECT TOP 1 [CustomerAddressID]
+                FROM CustomerAddresses
+                WHERE CustomerID = @CustomerID
+                AND AddressLocationID = @AddressLocationID
+                ORDER BY AddressLocationID Desc";
+
+                Helper.logger.WriteToProcessLog("AddressLocationRepo.GetCustomerAddressIDByCustomerAndAddress Started, full query = " + query);
+
+                return _dbConnection.QueryFirst<int>(query,new {
+                    CustomerID = customerID,
+                    AddressLocationID = addressID
+                }, transaction: Transaction);
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetCustomerAddressIDByCustomerAndAddress: " + ex.Message, this);
+                return 0;
+            }
+
         }
 
         public bool Delete(CustomerAddressEntity entity)

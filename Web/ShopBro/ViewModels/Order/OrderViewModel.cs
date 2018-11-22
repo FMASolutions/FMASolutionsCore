@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace FMASolutionsCore.Web.ShopBro.ViewModels
@@ -11,6 +12,11 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             ExistingItems = new List<OrderItemViewModel>();
             StockHierarchy = new StockHierarchyViewModel();
             DistinctItemStatusList = new List<string>();
+            DeliveryDate = DateTime.Now;
+            OrderDate = DateTime.Now;
+            AvailableAddresses = new List<AddressLocationViewModel>();
+            UseExistingAddress = true;
+            NewDeliveryAddress = new AddressLocationViewModel();
         }
 
         public int OrderID {get; set;}
@@ -21,8 +27,15 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public List<ItemViewModel> AvailableItems {get; set;}
         public StockHierarchyViewModel StockHierarchy {get;set;}
         public Dictionary<int,string> AvailableCustomers {get; set;}
+        public List<AddressLocationViewModel> AvailableAddresses {get; set;}        
         public List<string> DistinctItemStatusList {get; set;}
+        public DateTime DeliveryDate {get; set;}
+        public DateTime OrderDate {get;set;}
         public int CustomerID {get; set;}
+        public int CustomerAddressID {get; set;}
+        public int SelectedAddressID {get; set;}
         public int SelectedItem {get;set;}
+        public bool UseExistingAddress {get; set;}
+        public AddressLocationViewModel NewDeliveryAddress {get; set;}
     }
 }

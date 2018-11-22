@@ -1,0 +1,41 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.OrdersViewModel
+@{
+    ViewData["Title"] = "Items - Update Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+<h3 class="pl-2">Current Orders:</h3>
+<div class="container-fluid rounded mb-3 pt-2 pb-2 pl-0 pr-0 ml-0 mr-0 text-light bg-dark" id="ExistingItemsContainer">
+    
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="text-left">                                    
+                <table class="table table-striped table-dark" id="ExistingItemsTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Order Status</th>
+                            <th>Customer</th>
+                            <th>Order Date</th>
+                            <th>Delivery Date</th>
+                            <th>View Order</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var order in @Model.Orders)
+                        {
+                            <tr>
+                                <td>@order.OrderID</td>
+                                <td>@order.OrderStatus</td>
+                                <td>@order.AvailableCustomers[@order.CustomerID]</td>
+                                <td>@order.DeliveryDate</td>
+                                <td>@order.OrderDate</td>
+                                <td><a href="/Order/Search/@order.OrderID" class="btn btn-outline-light btn-block mb-3">View Order</a></td>
+                            </tr>
+                        }                
+                    </tbody>
+                </table>
+            </div>                
+        </div>
+    </div>
+</div>

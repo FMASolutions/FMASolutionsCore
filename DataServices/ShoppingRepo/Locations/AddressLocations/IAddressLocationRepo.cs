@@ -5,5 +5,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
     public interface IAddressLocationRepo : IDataRepository<AddressLocationEntity>
     {        
         int GetMostRecent();
+        
     }
 }

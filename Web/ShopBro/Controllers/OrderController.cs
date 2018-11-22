@@ -16,12 +16,20 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
 
         private IOrderService _service;
+        public IActionResult Index()
+        {
+            return View("Search",new GenericSearchViewModel());
+        }
+        
+        [HttpGet]
         public IActionResult Search(int id=0)
         {
             GenericSearchViewModel vm = new GenericSearchViewModel();
             vm.ID = id;
             return ProcessSearch(vm);
         }
+        
+        [HttpPost]
         public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {
             
@@ -35,11 +43,28 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return View("Search", vmInput);
         }            
 
+        [HttpGet]
+        public IActionResult DisplayAll()
+        {
+            OrderModel model = GetNewModel();
+            OrdersViewModel ordersVM = model.GetAllOrders();
+            if(ordersVM != null && ordersVM.Orders.Count > 0)
+            {
+                return View("DisplayAll",ordersVM);
+            }
+            else
+            {
+                return View("Search",new GenericSearchViewModel());
+            }
+        }
+        [HttpGet]
         public IActionResult EditItems(int id=0)
         {
             OrderModel model = GetNewModel();
             return View("EditItems", model.Search(id));
         }
+        
+        [HttpPost]
         public IActionResult ProcessEditItems(OrderViewModel vm)
         {
             OrderModel model = GetNewModel();
@@ -54,6 +79,25 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Create()
+        {
+            OrderModel model = GetNewModel();            
+            OrderViewModel vm = model.GetDefaultViewModel();
+            return View("Create",vm);
+        }
+
+        [HttpPost]
+        public IActionResult Create(OrderViewModel vm)
+        {
+            OrderModel model = GetNewModel();
+            int orderHeaderID = model.CreateOrder(vm);
+            if(orderHeaderID > 0)
+                return Search(orderHeaderID);
+            else
+                return View("Create",vm);
+            
+        }
         public IActionResult DeliverItems(int id=0)
         {
             if(id>0)

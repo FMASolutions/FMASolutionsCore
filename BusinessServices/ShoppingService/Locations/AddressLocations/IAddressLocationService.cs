@@ -9,6 +9,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         bool CreateNew(AddressLocation model);        
         List<AddressLocation> GetAll();
         List<CityArea> GetAvailableCityAreas();        
-        bool UpdateDB(AddressLocation newModel);        
+        bool UpdateDB(AddressLocation newModel);               
     }
 }

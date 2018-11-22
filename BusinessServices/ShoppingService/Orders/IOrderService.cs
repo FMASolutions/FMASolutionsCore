@@ -6,7 +6,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
     public interface IOrderService : IDisposable
     {
         Order GetByID(int id);        
-        int CreateHeader(OrderHeader model);
+        int CreateOrder(OrderHeader model,AddressLocation newAddress = null);
         int AddItemToOrder(OrderItem item);
         bool RemoveItemFromOrder(OrderItem item);
         
@@ -16,6 +16,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         List<DeliveryNote> GetDeliveryNotesForOrder(int orderID);
         List<StockHierarchyItem> GetStockHierarchy();
         List<Customer> GetAvailableCustomers();
+        List<AddressLocation> GetAvailableAddresses();
+        List<CityArea>  GetAvailableCityAreas();
         Dictionary<int, string> GetOrderStatusDictionary();
     }
 }

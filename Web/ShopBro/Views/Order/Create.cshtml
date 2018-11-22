@@ -1,0 +1,133 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.OrderViewModel
+@{
+    ViewData["Title"] = "Item - Search";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+
+<form class="form-signin">
+    <div class="container rounded bg-dark text-light">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>New Order:</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusMessage != null)
+        {
+            <Label class="error-text">@Model.StatusMessage </Label>
+        }
+        <div class="row no-gutters mb-2" id="SelectdCustomerRow">
+            <div class="col-3 text-left customHeading" id="SelectedCustomerColumnHeading">
+                Customer:
+            </div>
+            <div class="col-9" id="SelectedCustomerControlColumn">
+                @(Html.DropDownListFor(
+                    m => m.CustomerID,
+                    new SelectList(Model.AvailableCustomers, "Key", "Value",Model.CustomerID),     
+                    new { @class = "form-control bg-secondary text-light", @id = "SelectedCustomerControl"}
+                ))
+            </div>
+        </div>
+
+        <div class="row no-gutters mb-2" id="ExistingAddressRow">
+            <div class="col-3 text-left customHeading" id="ExistingAddressHead">
+                <span>Add Type: </span>
+            </div>
+            <div class="col-9" id="ExistingAddressCol">
+                <input checked="checked" data-val="true" id="UseExistingAddressDisplay" name="UseExistingAddressDisplay" type="checkbox" value="true" data-toggle="toggle" data-on="Existing" data-off="New" data-onstyle="info" data-offstyle="primary">
+                @Html.HiddenFor(model => model.UseExistingAddress)
+            </div>            
+        </div>
+
+        <div id="DDListWrapper">
+            <div class="row no-gutters mb-2" id="DeliveryAddressRow">
+                <div class="col-3 text-left customHeading" id="DeliveryAddressHead">
+                    <span>Address: </span>
+                </div>
+        
+                <div class="col-9" id="DeliveryAddressExistingDDListCol">                
+                    @(Html.DropDownListFor(
+                        m => m.SelectedAddressID,
+                        new SelectList(Model.AvailableAddresses, "AddressLocationID", "AddressFull",Model.SelectedAddressID),     
+                        new { @class = "form-control bg-secondary text-light", @id = "DeliveryAddressExistingDDList"}
+                    ))
+                </div>           
+            </div>                
+        </div>
+
+        <div id="NewAddressWrapper"  style="display:none">
+            <div class="row no-gutters mb-2" id="DeliveryAddressNewLine1Row">
+                <div class="col-3 text-left customHeading" id="DeliveryAddressNewLine1Head">
+                    <span>Line 1:</span>
+                </div>
+                <div class="col-9" id="DeliveryAddressNewLine1Col">
+                    @Html.TextBoxFor(model => model.NewDeliveryAddress.AddressLine1, new { @class = "form-control" })
+                </div>
+            </div>
+            
+            <div class="row no-gutters mb-2" id="DeliveryAddressNewLine2Row">
+                <div class="col-3 text-left customHeading" id="DeliveryAddressNewLine2Head">
+                    <span>Line 2:</span>
+                </div>
+                <div class="col-9" id="DeliveryAddressNewLine2Col">
+                    @Html.TextBoxFor(model => model.NewDeliveryAddress.AddressLine2, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row no-gutters mb-2" id="DeliveryAddressNewCityAreaRow">
+                <div class="col-3 text-left customHeading" id="DeliveryAddressNewCityAreaHead">
+                    <span>City Area</span>
+                </div>
+                <div class="col-9" id="DeliveryAddressNewCityAreaCol">
+                    @Html.DropDownListFor(
+                        m => m.NewDeliveryAddress.CityAreaID,
+                        new SelectList(Model.NewDeliveryAddress.AvailableCityAreas, "Key", "Value"),
+                        "- Select City Area -",
+                        new { @class = "form-control" } 
+                    )
+                </div>
+            </div>
+            <div class="row no-gutters mb-2" id="DeliveryAddressNewPostCodeRow">
+                <div class="col-3 text-left customHeading" id="DeliveryAddressNewPostCodeHead">
+                    <span>Post Code</span>
+                </div>
+                <div class="col-9" id="DeliveryAddressNewPostCodeCol">
+                    @Html.TextBoxFor(model => model.NewDeliveryAddress.PostCode, new { @class = "form-control" })
+                </div>
+            </div> 
+        </div>                           
+        
+        
+
+        <div class="row no-gutters mb-2" id="DeliveryDateRow">
+            <div class="col-3 text-left customHeading" id="DeliveryDateHead">
+                Del Date:
+            </div>
+            <div class="col-9" id="DeliveryDateCol">
+                @Html.TextBoxFor(model => model.DeliveryDate, "{0:yyyy/MM/dd}", new { @class="form-control" })     
+            </div>
+        </div>       
+        <div class="row no-gutters mb-2" id="OrderDateRow">
+            <div class="col-3 text-left customHeading" id="OrderDateHead">
+                Order Date:
+            </div>
+            <div class="col-9" id="OrderDateCol">
+                @Html.TextBoxFor(model => model.OrderDate, "{0:yyyy/MM/dd}", new { @class="form-control mb-2" })     
+            </div>
+        </div>  
+    </div>   
+    <div class="container rounded bg-ligth text-dark pl-0 pr-0">
+        <div class="row mb-2 mt-2">
+            <div class="col-sm-6">
+                <button type="submit" formaction=@Url.Action("Create") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Create</button>
+            </div>
+            <div class="col-sm-6">
+                <a href="/Order/Search/" class="btn btn-outline-dark btn-block mb-3">Back</a>
+            </div>
+        </div>                            
+    </div>   
+</form>    
+<script src="~/SiteAssets/js/orderCreation.js"></script>

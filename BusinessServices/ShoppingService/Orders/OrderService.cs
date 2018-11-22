@@ -12,6 +12,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _uow = new UnitOfWork(connectionString, dbType);
             _itemService = new ItemService(connectionString, dbType);
             _customerService = new CustomerService(connectionString, dbType);
+            _addressService = new AddressLocationService(connectionString, dbType);
+            _cityAreaService = new CityAreaService(connectionString, dbType);
+            _customerAddressService = new CustomerAddressService(connectionString, dbType);
         }
         public void Dispose()
         {
@@ -19,6 +22,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             {
                 _disposing = true;
                 _itemService.Dispose();
+                _customerService.Dispose();
+                _addressService.Dispose();
+                _cityAreaService.Dispose();
+                _customerAddressService.Dispose();
                 _uow.Dispose();
             }
         }
@@ -27,6 +34,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private IUnitOfWork _uow;
         IItemService _itemService;
         ICustomerService _customerService;
+        IAddressLocationService _addressService;
+        ICityAreaService _cityAreaService;
+        ICustomerAddressService _customerAddressService;
 
         public Order GetByID(int id)
         {
@@ -49,35 +59,70 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             return returnOrder;
         }
-        public int CreateHeader(OrderHeader model)
-        {
-            try
+        public int CreateOrder(OrderHeader model, AddressLocation newAddress = null)
+        {   
+            OrderHeaderEntity entityToCreate = ConvertHeaderModelToEntity(model);
+
+            if(newAddress != null)
             {
-                bool success = false;
-                if (ValidateHeaderForCreate(model))
-                {
-                    OrderHeaderEntity entity = ConvertHeaderModelToEntity(model);
-                    success = _uow.OrderHeaderRepo.Create(entity);
-                    if (success)
-                    {   
-                        _uow.SaveChanges();                     
-                        OrderHeaderEntity createdModel = _uow.OrderHeaderRepo.GetLatestOrder();
-                        model.OrderHeaderID = createdModel.OrderHeaderID;                        
-                    }
-                    else
-                    {
-                        model.ModelState.AddError("CreateFailed", "Unable to create new Order Header");
-                        return -1;
-                    }
-                }
-                return model.OrderHeaderID;
+                bool addressCreated = _addressService.CreateNew(newAddress);
+                int newAddressID = _uow.AddressLocationRepo.GetMostRecent();
+
+                CustomerAddress customerAddress = new CustomerAddress(
+                    new CustomModelState(), 
+                    0,
+                    model.CustomerID,
+                    newAddressID,
+                    true,
+                    "AUTO"
+                );
+                int newCustomerAddressID = 0;
+                if(_customerAddressService.CreateNew(customerAddress))
+                    newCustomerAddressID = _uow.CustomerAddressRepo.GetMostRecent();
+                if(newCustomerAddressID != 0)
+                    entityToCreate.CustomerAddressID = newCustomerAddressID;                    
             }
-            catch (Exception ex)
+            
+            else //Use Existing Address (might also be a CustomerAddress so check that first...)
             {
-                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
-                return -1;
-            }            
-        }
+                int customerAddressIDSearch = _uow.CustomerAddressRepo.GetCustomerAddressIDByCustomerAndAddress(
+                    model.CustomerID
+                    , model.CustomerAddressID //CustomerAddressID is passed as that is what the WebUI passes the AddressID as...
+                );
+                if(customerAddressIDSearch > 0)
+                {
+                    entityToCreate.CustomerAddressID = customerAddressIDSearch;
+                }
+                else
+                {
+                    CustomerAddress customerAddress = new CustomerAddress(
+                    new CustomModelState(), 
+                    0,
+                    model.CustomerID,
+                    model.CustomerAddressID,
+                    true,
+                    "AUTO"
+                    );
+
+                    int newCustAddID = 0;
+                    if(_customerAddressService.CreateNew(customerAddress))
+                    {
+                        newCustAddID = _uow.CustomerAddressRepo.GetCustomerAddressIDByCustomerAndAddress(model.CustomerID,model.CustomerAddressID);
+                    }
+                    entityToCreate.CustomerAddressID = newCustAddID;
+                }
+            }
+
+            bool createSuccess = _uow.OrderHeaderRepo.Create(entityToCreate);
+            if(createSuccess)
+            {
+                _uow.SaveChanges();
+                return _uow.OrderHeaderRepo.GetLatestOrder().OrderHeaderID;
+            }
+            else
+                return 0;
+        }        
+        
         public int AddItemToOrder(OrderItem item)
         {
             try
@@ -184,6 +229,14 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             return _customerService.GetAll();
         }
+        public List<AddressLocation> GetAvailableAddresses()
+        {
+            return _addressService.GetAll();
+        }
+        public List<CityArea>  GetAvailableCityAreas()
+        {
+            return _cityAreaService.GetAll();
+        }
         public Dictionary<int, string> GetOrderStatusDictionary()
         {
             Dictionary<int, string> returnDic = new Dictionary<int, string>();
@@ -195,15 +248,14 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
 
         private OrderHeaderEntity ConvertHeaderModelToEntity(OrderHeader model)
-        {
-            //Int32 orderHeaderID, Int32 customerID, Int32 customerAddressID, Int32 orderStatusID, DateTime orderDate, DateTime deliveryDate
+        {            
             return new OrderHeaderEntity(model.OrderHeaderID
                 ,model.CustomerID
                 ,model.CustomerAddressID
                 ,model.OrderStatusID
                 ,model.OrderDate
                 ,model.DeliveryDate
-            );
+            );            
         }
 
         private OrderHeader ConvertHeaderEntityToModel(OrderHeaderEntity entity)

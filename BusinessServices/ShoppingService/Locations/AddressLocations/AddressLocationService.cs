@@ -98,7 +98,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 _uow.SaveChanges();
             }
             return updateSuccess;
-        }
+        }        
         #endregion
 
         #region Private Functions

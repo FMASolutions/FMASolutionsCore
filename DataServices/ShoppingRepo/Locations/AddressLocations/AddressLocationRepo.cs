@@ -125,8 +125,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             throw new NotImplementedException();
         }
         #endregion        
-
-        #region BaseRepository
+        
         public int GetMostRecent()
         {
             try
@@ -145,7 +144,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 Helper.logger.WriteToErrorLog("Error in AddressLocationRepo.GetMostRecent: " + ex.Message, this);
                 return 0;
             }
-        }
-        #endregion
+        }        
     }
 }
