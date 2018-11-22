@@ -31,16 +31,17 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         
         [HttpPost]
         public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
-        {
-            
-            OrderModel model = GetNewModel();
-            
+        {            
+            OrderModel model = GetNewModel();            
             OrderViewModel vm = model.Search(vmInput.ID);
             
-            if(vmInput.ID > 0)
+            if(vm.OrderID > 0)
                 return View("Display",vm);
             else
+            {
+                vmInput.StatusMessage = "Not found";
                 return View("Search", vmInput);
+            }
         }            
 
         [HttpGet]
@@ -57,7 +58,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return View("Search",new GenericSearchViewModel());
             }
         }
-        [HttpGet]
+
+       [HttpGet]
         public IActionResult EditItems(int id=0)
         {
             OrderModel model = GetNewModel();
@@ -120,7 +122,6 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             return null;
         }
-
         public IActionResult ViewDeliveryNote(int id=0)
         {            
             OrderModel model = GetNewModel();
@@ -137,8 +138,6 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             }
             else
                 return Search(id);
-            
-            
         }
         private OrderModel GetNewModel()
         {
