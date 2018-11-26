@@ -33,7 +33,8 @@ DROP TABLE SubGroups
 DROP TABLE ProductGroups
 DROP TABLE AuditLogs
 DROP TABLE AuditLogTypes
-DROP PROCEDURE dbo.DeliverExistingItems 
+DROP PROCEDURE dbo.DeliverExistingItems
+DROP PROCEDURE dbo.GenerateInvoiceForOrder 
 
 
 CREATE TABLE ProductGroups(
@@ -189,8 +190,6 @@ GO
 CREATE PROCEDURE dbo.DeliverExistingItems 
 @OrderHeaderID INT
 AS
-
-
 IF EXISTS(SELECT 1 FROM OrderItems WHERE OrderHeaderID = @OrderHeaderID and OrderItemStatusID = 1)
 BEGIN
 	INSERT INTO DeliveryNotes(OrderHeaderID,DeliveryDate)
@@ -227,3 +226,38 @@ ELSE
 BEGIN
 	SELECT 0
 END
+GO
+
+CREATE PROCEDURE [dbo].[GenerateInvoiceForOrder] 
+@OrderHeaderID INT
+AS
+IF EXISTS(SELECT 1 FROM OrderItems WHERE OrderHeaderID = @OrderHeaderID and OrderItemStatusID = 2)
+BEGIN
+	INSERT INTO InvoiceHeaders(OrderHeaderID,InvoiceDate,InvoiceStatusID)
+	VALUES(@OrderHeaderID,GetDate(),1)
+
+	DECLARE @CurrentInvoiceID INT
+	SET @CurrentInvoiceID = (SELECT TOP 1 InvoiceHeaderID FROM InvoiceHeaders WHERE OrderHeaderID = @OrderHeaderID ORDER BY InvoiceHeaderID DESC)
+
+	INSERT INTO InvoiceItems(InvoiceHeaderID, OrderItemID, InvoiceItemStatusID, InvoiceItemQty)
+	SELECT @CurrentInvoiceID, OrderItemID, 1, OrderItemQty
+	FROM OrderItems
+	WHERE OrderHeaderID = @OrderHeaderID
+	AND OrderItemStatusID = 2
+	       
+	UPDATE OrderItems
+	SET OrderItemStatusID = 3
+	WHERE OrderHeaderID = @OrderHeaderID
+	AND OrderItemStatusID = 2
+
+	UPDATE OrderHeaders
+	SET OrderStatusID = 3
+	WHERE OrderHeaderID = @OrderHeaderID
+
+	SELECT @CurrentInvoiceID
+END
+ELSE
+BEGIN
+	SELECT 0
+END
+GO

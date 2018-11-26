@@ -1,0 +1,45 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.InvoiceViewModel
+@{
+    ViewData["Title"] = "Item - Search";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div class="container rounded">
+    <form class="form-signin">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">
+                    <h3>Invoice: @Model.InvoiceHeaderID</h3>
+                    <h3>Invoice Date: @Model.InvoiceDate</h3>            
+                </div>        
+            </div>
+        </div>
+        @if (Model != null && Model.StatusMessage != null)
+        {
+            <Label class="error-text">@Model.StatusMessage </Label>
+        }
+        <table class="table table-striped table-dark" id="DeliveryNoteItems">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th>Qty</th>
+                    <th>Item Price</th>
+                    <th>Item Total</th>
+                </tr>
+            </thead>
+            <tbody>        
+        @foreach(var item in Model.Items)
+        {
+            <tr>
+                <td>@item.ItemDescription</td>
+                <td>@item.InvoiceItemQty</td>                
+                <td>@item.ItemPrice</td>
+                <td>@item.ItemTotal</td>
+            </tr>           
+        }
+         <div class="row">
+            <div class="col-sm-3"><a href="/Order/Search/@Model.OrderHeaderID" class="btn btn-outline-dark btn-block mb-3">Back</a></div>
+        </div>        
+    </form>
+</div>

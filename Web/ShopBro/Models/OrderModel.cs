@@ -136,6 +136,29 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             }
             return returnOrderID;
         }
+        public InvoiceViewModel GenerateInvoiceForOrder(int orderHeaderID)
+        {
+            InvoiceViewModel returnInvoice = null;
+            Invoice inv = _service.GenerateInvoiceForOrder(orderHeaderID);
+            if(inv != null)
+                returnInvoice = ConvertToInvoiceViewModel(inv.Header, inv.Items);
+            return returnInvoice;            
+        }
+        public List<InvoiceViewModel> GetInvoicesByOrder(int orderHeaderID)
+        {
+            List<InvoiceViewModel> returnInvoices = new List<InvoiceViewModel>();
+            var invoices = _service.GetInvoicesForOrder(orderHeaderID);
+            
+            if(invoices != null && invoices.Count > 0)
+                foreach(var invoice in invoices)
+                    returnInvoices.Add(ConvertToInvoiceViewModel(invoice.Header, invoice.Items));
+            
+            if(returnInvoices.Count > 0)
+                return returnInvoices;
+            else
+                return null;
+        }
+        
         internal OrderViewModel GetDefaultViewModel()
         {            
             OrderViewModel vmReturn = new OrderViewModel();
@@ -145,6 +168,8 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             AppendStockHierarchyAndAvailableItems(vmReturn);
             return vmReturn;
         }
+        
+        
         private OrderViewModel ConvertToViewModel(Order model)
         {
             OrderViewModel vmReturn = GetDefaultViewModel();
@@ -221,7 +246,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
             List<DeliveryNoteItemViewModel> vmItems = new List<DeliveryNoteItemViewModel>();
             Order orderModel = _service.GetByID(model.OrderHeaderID);
-
             vmReturn.DeliveryDateTime = model.DeliveryDate;
             vmReturn.DeliveryNoteID = model.DeliveryNoteID;
             vmReturn.orderHeaderID = model.OrderHeaderID;
@@ -262,13 +286,39 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             );
             return returnHeader;
         }
+        private InvoiceViewModel ConvertToInvoiceViewModel(InvoiceHeader header, IEnumerable<InvoiceItem> items)
+        {
+            InvoiceViewModel returnViewModel = new InvoiceViewModel();
+            Dictionary<int,string> invoiceStatusDic = _service.GetInvoiceStatusDic();
+            Order orderForInvoice = _service.GetByID(header.OrderHeaderID);
+
+            returnViewModel.InvoiceDate = header.InvoiceDate;
+            returnViewModel.InvoiceHeaderID = header.InvoiceHeaderID;
+            returnViewModel.InvoiceStatus = invoiceStatusDic[header.InvoiceStatusID];
+            returnViewModel.OrderHeaderID = header.OrderHeaderID;
+            
+            foreach(var item in items)
+            {
+                InvoiceItemViewModel currentItem = new InvoiceItemViewModel();
+                OrderItem currentOrderItem = orderForInvoice.OrderItems.Find(e => e.OrderItemID == item.OrderItemID);
+                currentItem.InvoiceHeaderID = item.InvoiceHeaderID;
+                currentItem.InvoiceItemID = item.InvoiceItemID;
+                currentItem.InvoiceItemQty = item.InvoiceItemQty;
+                currentItem.InvoiceItemStatus = invoiceStatusDic[item.InvoiceItemStatusID];
+                currentItem.OrderItemID = item.OrderItemID;
+                currentItem.ItemDescription = currentOrderItem.OrderItemDescription;
+                currentItem.ItemPrice = currentOrderItem.OrderItemUnitPrice;
+
+                returnViewModel.Items.Add(currentItem);                
+            }
+            return returnViewModel;
+        }
         private Dictionary<int,string> GetAvailableCustomers()
         {
             Dictionary<int,string> availableCustomers = new Dictionary<int, string>();
             foreach(var customer in _service.GetAvailableCustomers())
                 availableCustomers.Add(customer.CustomerID, customer.CustomerName);
-            return availableCustomers;            
-            
+            return availableCustomers;
         }
         private Dictionary<int,string> GetAvailableCityAreas()
         {

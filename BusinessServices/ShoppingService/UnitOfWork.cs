@@ -51,6 +51,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public IOrderItemRepo OrderItemRepo {get {return _orderItemRepo ?? (_orderItemRepo = new OrderItemRepo(_transaction));}}
         public IOrderStatusRepo OrderStatusRepo {get {return _orderStatusRepo ?? (_orderStatusRepo = new OrderStatusRepo(_transaction));}}
         public IDeliveryNoteRepo DeliveryNoteRepo {get {return _deliveryNoteRepo ?? (_deliveryNoteRepo = new DeliveryNoteRepo(_transaction));}}
+        public IInvoiceHeaderRepo InvoiceHeaderRepo {get{return _invoiceHeaderRepo ?? (_invoiceHeaderRepo = new InvoiceHeaderRepo(_transaction));}}
+        public IInvoiceItemRepo InvoiceItemRepo{get{return _invoiceItemRepo ?? (_invoiceItemRepo = new InvoiceItemRepo(_transaction));}}
+        public IInvoiceStatusRepo InvoiceStatusRepo{get{return _invoiceStatusRepo ?? (_invoiceStatusRepo = new InvoiceStatusRepo(_transaction));}}
         bool _disposing = false;
 
         public void SaveChanges()
@@ -121,6 +124,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _orderItemRepo  = null;
             _orderStatusRepo = null;
             _deliveryNoteRepo = null;
+            _invoiceHeaderRepo = null;
+            _invoiceItemRepo = null;
+            _invoiceStatusRepo = null;
         }
         private IProductGroupRepo _productGroupRepo;
         private ISubGroupRepo _subGroupRepo;
@@ -136,5 +142,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private IOrderItemRepo _orderItemRepo;
         private IOrderStatusRepo _orderStatusRepo;
         private IDeliveryNoteRepo _deliveryNoteRepo;
+        private IInvoiceHeaderRepo _invoiceHeaderRepo;
+        private IInvoiceItemRepo _invoiceItemRepo;
+        private IInvoiceStatusRepo _invoiceStatusRepo;
     }
 }

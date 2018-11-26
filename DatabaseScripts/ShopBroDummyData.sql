@@ -121,10 +121,10 @@ VALUES
 GO
 /*-------------------------------------
 ORDERS:
-InvoiceItems
-InvoiceHeaders
-DeliveryNotes
-DeliveryNoteItems
+InvoiceItems (Via Stored Proc)
+InvoiceHeaders (Via Stored Proc)
+DeliveryNotes (Via Stored Proc)
+DeliveryNoteItems (Via Stored Proc)
 OrderItems
 OrderHeaders
 OrderStatus
@@ -149,47 +149,46 @@ GO
 INSERT INTO OrderHeaders
     (CustomerID ,CustomerAddressID  ,OrderStatusID  ,OrderDate                  ,DeliveryDate)
 VALUES
-    (2          ,1                  ,3              ,DATEADD(DAY,-3,GetDate())  ,DATEADD(DAY,-2,GetDate())), --Complete Order
+    (2          ,1                  ,1              ,DATEADD(DAY,-3,GetDate())  ,DATEADD(DAY,-2,GetDate())), --Complete Order
     (2          ,1                  ,1              ,DATEADD(DAY,-3,GetDate())  ,DATEADD(DAY,-2,GetDate())), --Estimate Order
     (1          ,2                  ,1              ,DATEADD(DAY,-3,GetDate())  ,DATEADD(DAY,-2,GetDate())), --Delivered ()
-    (3          ,2                  ,2              ,DATEADD(DAY,-3,GetDate())  ,DATEADD(DAY,-2,GetDate())), --Delivered
+    (3          ,2                  ,1              ,DATEADD(DAY,-3,GetDate())  ,DATEADD(DAY,-2,GetDate())), --Delivered
     (3          ,2                  ,1              ,DATEADD(DAY,-3,GetDate())  ,DATEADD(DAY,-2,GetDate()))  --MIX LOTS OF ITEMS!!!!
 GO
 
 INSERT INTO OrderItems
     (OrderHeaderID  ,ItemID ,OrderItemStatusID  ,OrderItemUnitPrice ,OrderItemUnitPriceAfterDiscount    ,OrderItemQty   ,OrderItemDescription)
 VALUES
-    (1              ,1      ,3                  ,1.99               ,1.99                               ,1              ,'Blue Wall Panels 5 Pack'),
-    (1              ,2      ,3                  ,2.99               ,2.99                               ,3              ,'Red Wall Panels 5 Pack'),
+    (1              ,1      ,1                  ,1.99               ,1.99                               ,1              ,'Blue Wall Panels 5 Pack'),
+    (1              ,2      ,1                  ,2.99               ,2.99                               ,3              ,'Red Wall Panels 5 Pack'),
     (2              ,3      ,1                  ,3.99               ,3.99                               ,5              ,'Blue Ceiling Panels 7 Pack'),
     (2              ,4      ,1                  ,4.99               ,3.99                               ,4              ,'Red Ceiling Panels 7 Pack'),
     (3              ,5      ,1                  ,5.99               ,4.99                               ,7              ,'Green Wall Tiles 5 Pack'),
-    (3              ,6      ,3                  ,6.99               ,5.99                               ,1              ,'Red Wall Tiles 5 Pack'),
-    (4              ,7      ,2                  ,7.99               ,6.99                               ,2              ,'Orange Ceiling Tiles 7 Pack'),
-    (4              ,8      ,2                  ,8.99               ,7.99                               ,4              ,'Pink Ceiling Tiles 7 Pack'),
+    (3              ,6      ,1                  ,6.99               ,5.99                               ,1              ,'Red Wall Tiles 5 Pack'),
+    (4              ,7      ,1                  ,7.99               ,6.99                               ,2              ,'Orange Ceiling Tiles 7 Pack'),
+    (4              ,8      ,1                  ,8.99               ,7.99                               ,4              ,'Pink Ceiling Tiles 7 Pack'),
     (5              ,1      ,1                  ,5.99               ,6.99                               ,1              ,'Random Diff 1'),
-    (5              ,2      ,2                  ,6.99               ,7.99                               ,2              ,'Random Diff 2'),
-    (5              ,3      ,3                  ,7.99               ,8.99                               ,3              ,'Random Diff 3'),
+    (5              ,2      ,1                  ,6.99               ,7.99                               ,2              ,'Random Diff 2'),
+    (5              ,3      ,1                  ,7.99               ,8.99                               ,3              ,'Random Diff 3'),
     (5              ,4      ,1                  ,8.99               ,9.99                               ,4              ,'Random Diff 4'),
-    (5              ,5      ,2                  ,9.99               ,10.99                              ,5              ,'Random Diff 5'),
-    (5              ,6      ,3                  ,10.99              ,11.99                              ,6              ,'Random Diff 6'),
+    (5              ,5      ,1                  ,9.99               ,10.99                              ,5              ,'Random Diff 5'),
+    (5              ,6      ,1                  ,10.99              ,11.99                              ,6              ,'Random Diff 6'),
     (5              ,7      ,1                  ,11.99              ,12.99                              ,7              ,'Random Diff 7'),
-    (5              ,8      ,2                  ,12.99              ,13.99                              ,8              ,'Random Diff 8')
+    (5              ,8      ,1                  ,12.99              ,13.99                              ,8              ,'Random Diff 8')
 GO
-
-Exec DeliverExistingItems 3 --Deliver Order Items for OrderHeader 3
+Exec DeliverExistingItems 1 
 GO
-INSERT INTO InvoiceHeaders
-    (OrderHeaderID  ,InvoiceStatusID    ,InvoiceDate)
-VALUES
-    (1              ,1                  ,DATEADD(DAY,-1,GetDate()))
+Exec DeliverExistingItems 2 
 GO
-
-INSERT INTO InvoiceItems
-    (InvoiceHeaderID    ,OrderItemID    ,InvoiceItemStatusID    ,InvoiceItemQty )
-VALUES
-    (1                  ,1              ,3                      ,1),
-    (1                  ,2              ,3                      ,3)
+Exec DeliverExistingItems 3 
+GO
+Exec DeliverExistingItems 4 
+GO
+Exec GenerateInvoiceForOrder 1
+GO
+Exec GenerateInvoiceForOrder 2
+GO
+Exec GenerateInvoiceForOrder 3
 GO
 /*----------------------------------
 RETRIEVE DATA FOR VIEWING PLEASURE

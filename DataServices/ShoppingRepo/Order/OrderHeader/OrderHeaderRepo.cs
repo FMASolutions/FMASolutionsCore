@@ -145,7 +145,6 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return null;
             }
         }
-
         public OrderHeaderEntity GetLatestOrder()
         {
             try

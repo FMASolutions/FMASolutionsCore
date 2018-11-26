@@ -137,12 +137,19 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-3">        
+        <div class="row mt-3">
+            @if(Model.OrderStatus == "Complete")
+            {
+                <div class="col-sm-4"><a href="/Order/ViewDeliveryNote/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">View Del Notes</a></div>
+            }   
+            @if(Model.OrderStatus == "Delivered")
+            {
+                <div class="col-sm-4"><a href="/Order/ViewDeliveryNote/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">View Del Notes</a></div>
+            }
             @foreach(var status in Model.DistinctItemStatusList)
             {
                 @if(status == "Delivered")
                 {
-                    <div class="col-sm-4"><a href="/Order/ViewDeliveryNote/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">View Del Notes</a></div>
                     <div class="col-sm-4"><a href="/Order/GenInvoice/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">Generate Invoice</a></div>
                     
                 }

@@ -14,8 +14,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         {
             _service = service;
         }
-
         private IOrderService _service;
+        
         public IActionResult Index()
         {
             return View("Search",new GenericSearchViewModel());
@@ -107,29 +107,21 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 OrderModel model = GetNewModel();
                 DeliveryNoteViewModel vmReturn = model.DeliverItems(id);
                 if(vmReturn != null)
-                    return View("DeliveryNote",vmReturn);
+                    return View("DisplayDeliveryNote",vmReturn);
                 else
                     return Search();
             }
             else
                 return Search();
         }
-        public IActionResult GenInvoice(int id=0)
-        {
-            return null;
-        }
-        public IActionResult ViewInvoice(int id=0)
-        {
-            return null;
-        }
-        public IActionResult ViewDeliveryNote(int id=0)
+        public IActionResult ViewDeliveryNote(int id=0) //id = OrderHeaderID
         {            
             OrderModel model = GetNewModel();
             List<DeliveryNoteViewModel> deliveryNotes = model.GetDeliveryNoteByOrder(id);
             if(deliveryNotes != null)
             {
                 if(deliveryNotes.Count == 1)                
-                    return View("DeliveryNote", deliveryNotes[0]);
+                    return View("DisplayDeliveryNote", deliveryNotes[0]);
                 else
                 {
                     //IMPLEMENT MULTI SELECTOR FOR DELIVERY NOTE SELECTION.
@@ -139,6 +131,27 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             else
                 return Search(id);
         }
+        public IActionResult GenInvoice(int id=0) //id = OrderHeaderID
+        {
+            OrderModel model = GetNewModel();
+            InvoiceViewModel vm = model.GenerateInvoiceForOrder(id);
+            if(vm != null)
+                return View("DisplayInvoice",vm);
+            else
+                return Search(id);
+        }
+        public IActionResult ViewInvoice(int id=0)
+        {
+            OrderModel model = GetNewModel();
+            List<InvoiceViewModel> invoices = model.GetInvoicesByOrder(id);
+            if(invoices != null && invoices.Count == 1)
+                return View("DisplayInvoice", invoices[0]);
+            else
+            {
+                return null;
+            }
+        }
+        
         private OrderModel GetNewModel()
         {
             return new OrderModel(new ModelStateConverter(this).Convert(), _service);

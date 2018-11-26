@@ -122,7 +122,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             else
                 return 0;
         }        
-        
         public int AddItemToOrder(OrderItem item)
         {
             try
@@ -168,7 +167,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return false;
             }
         }
-
         public List<Order> GetAllOrders()
         {
             var headers = _uow.OrderHeaderRepo.GetAll();
@@ -206,11 +204,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
             return null;
         }
-
-        public List<StockHierarchyItem> GetStockHierarchy()
-        {
-            return _itemService.GetStockHierarchy();
-        }
         public List<DeliveryNote> GetDeliveryNotesForOrder(int orderID)
         {
             List<DeliveryNote> returnList = new List<DeliveryNote>();
@@ -224,6 +217,37 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             }
 
             return returnList;
+        }
+        
+        public Invoice GenerateInvoiceForOrder(int orderHeaderID)
+        {
+            int invoiceHeaderID = _uow.InvoiceHeaderRepo.GenerateInvoiceForOrder(orderHeaderID);
+            InvoiceHeaderEntity invoiceHeader = _uow.InvoiceHeaderRepo.GetByID(invoiceHeaderID);
+            IEnumerable<InvoiceItemEntity> invoiceItems = _uow.InvoiceItemRepo.GetAllItemsForInvoice(invoiceHeaderID);
+            Invoice returnInvoice = ConvertInvoiceEntityToModel(invoiceHeader,invoiceItems);
+            if(returnInvoice != null && returnInvoice.Items.Count > 1)
+            {
+                _uow.SaveChanges();
+                return returnInvoice;
+            }
+            else
+                return null;
+        }
+        public List<Invoice> GetInvoicesForOrder(int orderHeaderID)
+        {
+            List<Invoice> returnInvoiceList = new List<Invoice>();
+            IEnumerable<int> invoiceHeaderIDList = _uow.InvoiceHeaderRepo.GetInvoicesForOrder(orderHeaderID);
+            foreach(int ID in invoiceHeaderIDList)
+                returnInvoiceList.Add(ConvertInvoiceEntityToModel(_uow.InvoiceHeaderRepo.GetByID(ID), _uow.InvoiceItemRepo.GetAllItemsForInvoice(ID)));
+            if(returnInvoiceList.Count > 0)
+                return returnInvoiceList;
+            else
+                return null;
+        }
+        
+        public List<StockHierarchyItem> GetStockHierarchy()
+        {
+            return _itemService.GetStockHierarchy();
         }
         public List<Customer> GetAvailableCustomers()
         {
@@ -244,6 +268,15 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             foreach(var item in _uow.OrderStatusRepo.GetAll())
                 returnDic.Add(item.OrderStatusID, item.OrderStatusValue);
 
+            return returnDic;
+        }
+        public Dictionary<int, string> GetInvoiceStatusDic()
+        {
+            Dictionary<int,string> returnDic = new Dictionary<int, string>();
+
+            foreach(var item in _uow.InvoiceStatusRepo.GetAll())
+                returnDic.Add(item.InvoiceStatusID, item.InvoiceStatusValue);
+            
             return returnDic;
         }
 
@@ -307,6 +340,14 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 entity.DeliveryDate
             );
         }
+        private Invoice ConvertInvoiceEntityToModel(InvoiceHeaderEntity headerEntity, IEnumerable<InvoiceItemEntity> itemsEntity)
+        {
+            Invoice returnInvoice = new Invoice();
+            returnInvoice.Header = new InvoiceHeader(headerEntity.InvoiceHeaderID, headerEntity.OrderHeaderID, headerEntity.InvoiceStatusID, headerEntity.InvoiceDate);
+            foreach(var invoiceItem in itemsEntity)
+                returnInvoice.Items.Add(new InvoiceItem(invoiceItem.InvoiceItemID,invoiceItem.InvoiceHeaderID,invoiceItem.OrderItemID,invoiceItem.InvoiceItemStatusID,invoiceItem.InvoiceItemQty));
+            return returnInvoice;
+        } 
 
         private bool ValidateHeaderForCreate(OrderHeader model)
         {

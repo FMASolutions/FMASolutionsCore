@@ -14,10 +14,13 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         bool UpdateHeader(Order newModel);
         DeliveryNote DeliverOrderItems(int orderHeaderID);
         List<DeliveryNote> GetDeliveryNotesForOrder(int orderID);
+        Invoice GenerateInvoiceForOrder(int orderHeaderID);
+        List<Invoice> GetInvoicesForOrder(int orderHeaderID);
         List<StockHierarchyItem> GetStockHierarchy();
         List<Customer> GetAvailableCustomers();
         List<AddressLocation> GetAvailableAddresses();
         List<CityArea>  GetAvailableCityAreas();
         Dictionary<int, string> GetOrderStatusDictionary();
+        Dictionary<int, string> GetInvoiceStatusDic();
     }
 }
