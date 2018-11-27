@@ -11,6 +11,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             _uow = new UnitOfWork(connectionString, dbType);
         }
+        internal CountryService(IUnitOfWork uow)
+        {
+            _uow = uow;
+        }
         public void Dispose()
         {
             if(!_disposing)

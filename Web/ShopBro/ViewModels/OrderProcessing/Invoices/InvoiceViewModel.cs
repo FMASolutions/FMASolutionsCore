@@ -16,6 +16,14 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public string InvoiceStatus {get;set;}
         public DateTime InvoiceDate{get;set;}
         public string StatusMessage {get;set;}
+        public decimal InvoiceTotal {get 
+        { 
+            decimal tot = 0.0m; 
+            if(Items != null && Items.Count > 0)
+            foreach(var item in Items)
+                tot += item.ItemTotal;
+            return tot;
+        }}
 
     }
 

@@ -17,6 +17,9 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             AvailableAddresses = new List<AddressLocationViewModel>();
             UseExistingAddress = true;
             NewDeliveryAddress = new AddressLocationViewModel();
+            CurrentDeliveryAddress = new AddressLocationViewModel();
+            InvoicesFOrOrder = new List<int>();
+            DeliveryNotesForOrder = new List<int>();
         }
 
         public int OrderID {get; set;}
@@ -29,6 +32,8 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public Dictionary<int,string> AvailableCustomers {get; set;}
         public List<AddressLocationViewModel> AvailableAddresses {get; set;}        
         public List<string> DistinctItemStatusList {get; set;}
+        public List<int> DeliveryNotesForOrder {get; set;}
+        public List<int> InvoicesFOrOrder {get; set;}        
         public DateTime DeliveryDate {get; set;}
         public DateTime OrderDate {get;set;}
         public int CustomerID {get; set;}
@@ -37,5 +42,6 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         public int SelectedItem {get;set;}
         public bool UseExistingAddress {get; set;}
         public AddressLocationViewModel NewDeliveryAddress {get; set;}
+        public AddressLocationViewModel CurrentDeliveryAddress {get;set;}
     }
 }

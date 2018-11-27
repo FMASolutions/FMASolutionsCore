@@ -9,18 +9,18 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         int CreateOrder(OrderHeader model,AddressLocation newAddress = null);
         int AddItemToOrder(OrderItem item);
         bool RemoveItemFromOrder(OrderItem item);
-        
         List<Order> GetAllOrders();
         bool UpdateHeader(Order newModel);
-        DeliveryNote DeliverOrderItems(int orderHeaderID);
+        
+        //Wrappers to other services.
         List<DeliveryNote> GetDeliveryNotesForOrder(int orderID);
-        Invoice GenerateInvoiceForOrder(int orderHeaderID);
         List<Invoice> GetInvoicesForOrder(int orderHeaderID);
         List<StockHierarchyItem> GetStockHierarchy();
         List<Customer> GetAvailableCustomers();
         List<AddressLocation> GetAvailableAddresses();
         List<CityArea>  GetAvailableCityAreas();
+        List<CustomerAddress> GetAvailableCustomerAddresses();
         Dictionary<int, string> GetOrderStatusDictionary();
-        Dictionary<int, string> GetInvoiceStatusDic();
+        
     }
 }

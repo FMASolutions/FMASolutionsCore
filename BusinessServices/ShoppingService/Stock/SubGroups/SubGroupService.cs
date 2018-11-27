@@ -12,6 +12,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _uow = new UnitOfWork(connectionString, dbType);
             _productGroupService = new ProductGroupService(connectionString, dbType);
         }
+        internal SubGroupService(IUnitOfWork uow)
+        {
+            _uow = uow;
+        }
         public void Dispose()
         {
             if(!_disposing)

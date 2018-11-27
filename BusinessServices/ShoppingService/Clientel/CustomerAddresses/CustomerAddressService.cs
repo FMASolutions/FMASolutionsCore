@@ -13,6 +13,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _customerService = new CustomerService(connectionString, dbType);
             _addressLocationService = new AddressLocationService(connectionString, dbType);
         }
+        internal CustomerAddressService(IUnitOfWork uow)
+        {
+            _uow = uow;
+        }
         public void Dispose()
         {
             if (!_disposing)

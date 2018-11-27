@@ -47,6 +47,8 @@ namespace FMASolutionsCore.Web.ShopBro
             services.AddTransient<IAddressLocationService>(s => new AddressLocationService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<ICustomerService>(s => new CustomerService(shopDBConnectionString,shopSQLDBType));
             services.AddTransient<IOrderService>(s => new OrderService(shopDBConnectionString,shopSQLDBType));
+            services.AddTransient<IDeliveryNoteService>(s => new DeliveryNoteService(shopDBConnectionString, shopSQLDBType));
+            services.AddTransient<IInvoiceService>(s => new InvoiceService(shopDBConnectionString, shopSQLDBType));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

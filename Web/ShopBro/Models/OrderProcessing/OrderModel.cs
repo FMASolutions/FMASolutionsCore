@@ -85,33 +85,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
                 return Search(newModel.OrderID);
         }
-        public DeliveryNoteViewModel DeliverItems(int orderHeaderID)
-        {            
-            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
-
-            if(orderHeaderID > 0){
-                DeliveryNote deliveryNote = _service.DeliverOrderItems(orderHeaderID);
-                if(deliveryNote != null)
-                    vmReturn = ConvertDeliveryModelToViewModel(deliveryNote);
-                else
-                    return null;
-                return vmReturn;
-            }
-            else
-                return null;
-        }        
-        public List<DeliveryNoteViewModel> GetDeliveryNoteByOrder(int orderID)
-        {
-            List<DeliveryNoteViewModel> deliveryNotes = new List<DeliveryNoteViewModel>();
-            List<DeliveryNote> searchResult = _service.GetDeliveryNotesForOrder(orderID);
-
-            foreach(var item in searchResult)
-            {
-                DeliveryNoteViewModel current = ConvertDeliveryModelToViewModel(item);
-                deliveryNotes.Add(current);
-            }
-            return deliveryNotes;            
-        }
         public int CreateOrder(OrderViewModel vmCreate)
         {
             OrderHeader headerModel = null;
@@ -136,28 +109,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             }
             return returnOrderID;
         }
-        public InvoiceViewModel GenerateInvoiceForOrder(int orderHeaderID)
-        {
-            InvoiceViewModel returnInvoice = null;
-            Invoice inv = _service.GenerateInvoiceForOrder(orderHeaderID);
-            if(inv != null)
-                returnInvoice = ConvertToInvoiceViewModel(inv.Header, inv.Items);
-            return returnInvoice;            
-        }
-        public List<InvoiceViewModel> GetInvoicesByOrder(int orderHeaderID)
-        {
-            List<InvoiceViewModel> returnInvoices = new List<InvoiceViewModel>();
-            var invoices = _service.GetInvoicesForOrder(orderHeaderID);
-            
-            if(invoices != null && invoices.Count > 0)
-                foreach(var invoice in invoices)
-                    returnInvoices.Add(ConvertToInvoiceViewModel(invoice.Header, invoice.Items));
-            
-            if(returnInvoices.Count > 0)
-                return returnInvoices;
-            else
-                return null;
-        }
+        
         
         internal OrderViewModel GetDefaultViewModel()
         {            
@@ -168,8 +120,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             AppendStockHierarchyAndAvailableItems(vmReturn);
             return vmReturn;
         }
-        
-        
         private OrderViewModel ConvertToViewModel(Order model)
         {
             OrderViewModel vmReturn = GetDefaultViewModel();
@@ -179,8 +129,32 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             vmReturn.DeliveryDate = model.Header.DeliveryDate;
             vmReturn.OrderDate = model.Header.OrderDate;
             vmReturn.CustomerID = model.Header.CustomerID;
+            vmReturn.CustomerAddressID = model.Header.CustomerAddressID;
             
+            List<CustomerAddress> customerAddresses = _service.GetAvailableCustomerAddresses();
+            var currentCustAddress = customerAddresses.Find(x => x.CustomerAddressID == model.Header.CustomerAddressID);
+            var currentAddress = vmReturn.AvailableAddresses.Find(x => x.AddressLocationID == currentCustAddress.AddressLocationID);
+            AddressLocationViewModel addressLocVM = new AddressLocationViewModel();
+            addressLocVM.AddressLine1 = currentAddress.AddressLine1;
+            addressLocVM.AddressLine2 = currentAddress.AddressLine2;
+            addressLocVM.AddressLocationID = currentAddress.AddressLocationID;
+            addressLocVM.AvailableCityAreas = GetAvailableCityAreas();
+            addressLocVM.CityAreaID = currentAddress.CityAreaID;
+            addressLocVM.PostCode = currentAddress.PostCode;
             
+            vmReturn.CurrentDeliveryAddress = addressLocVM;
+
+            var delNotes = _service.GetDeliveryNotesForOrder(model.Header.OrderHeaderID);
+            var invoices = _service.GetInvoicesForOrder(model.Header.OrderHeaderID);
+            
+            if(delNotes != null && delNotes.Count > 0)
+                foreach(var note in delNotes)
+                    vmReturn.DeliveryNotesForOrder.Add(note.DeliveryNoteID);
+            
+            if(invoices != null && invoices.Count > 0)
+                foreach(var inv in invoices)
+                    vmReturn.InvoicesFOrOrder.Add(inv.Header.InvoiceHeaderID);
+
             //Set up the Existing OrderItem List
             List<OrderItemViewModel> orderItems = new List<OrderItemViewModel>();
             if(model.OrderItems != null && model.OrderItems.Count > 0)
@@ -241,32 +215,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return orderItemVM;
 
         }   
-        private DeliveryNoteViewModel ConvertDeliveryModelToViewModel(DeliveryNote model)
-        {            
-            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
-            List<DeliveryNoteItemViewModel> vmItems = new List<DeliveryNoteItemViewModel>();
-            Order orderModel = _service.GetByID(model.OrderHeaderID);
-            vmReturn.DeliveryDateTime = model.DeliveryDate;
-            vmReturn.DeliveryNoteID = model.DeliveryNoteID;
-            vmReturn.orderHeaderID = model.OrderHeaderID;
-            foreach(var item in model.Items)
-            {
-                DeliveryNoteItemViewModel current = new DeliveryNoteItemViewModel();
-                
-                current.DeliveryNoteItemID = item.DeliveryNoteItemID;
-                current.ItemDeliveryDate = model.DeliveryDate;
-                current.OrderItemID = item.OrderItemID;
-                current.DeliveryNoteID = item.DeliveryNoteID;                
-
-                OrderItem currentOrderItem = orderModel.OrderItems.Find(e => e.OrderItemID == current.OrderItemID);
-                current.ItemID = currentOrderItem.ItemID;
-                current.ItemQty = currentOrderItem.OrderItemQty;
-                current.ItemDescription = currentOrderItem.OrderItemDescription;
-                vmItems.Add(current);
-            }
-            vmReturn.Items = vmItems;
-            return vmReturn;
-        }
         private OrderHeader ConvertToOrderHeaderModel(OrderViewModel vm)
         {            
             Dictionary<int,string> statusDictionary = _service.GetOrderStatusDictionary();
@@ -285,33 +233,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 orderStatusInt
             );
             return returnHeader;
-        }
-        private InvoiceViewModel ConvertToInvoiceViewModel(InvoiceHeader header, IEnumerable<InvoiceItem> items)
-        {
-            InvoiceViewModel returnViewModel = new InvoiceViewModel();
-            Dictionary<int,string> invoiceStatusDic = _service.GetInvoiceStatusDic();
-            Order orderForInvoice = _service.GetByID(header.OrderHeaderID);
-
-            returnViewModel.InvoiceDate = header.InvoiceDate;
-            returnViewModel.InvoiceHeaderID = header.InvoiceHeaderID;
-            returnViewModel.InvoiceStatus = invoiceStatusDic[header.InvoiceStatusID];
-            returnViewModel.OrderHeaderID = header.OrderHeaderID;
-            
-            foreach(var item in items)
-            {
-                InvoiceItemViewModel currentItem = new InvoiceItemViewModel();
-                OrderItem currentOrderItem = orderForInvoice.OrderItems.Find(e => e.OrderItemID == item.OrderItemID);
-                currentItem.InvoiceHeaderID = item.InvoiceHeaderID;
-                currentItem.InvoiceItemID = item.InvoiceItemID;
-                currentItem.InvoiceItemQty = item.InvoiceItemQty;
-                currentItem.InvoiceItemStatus = invoiceStatusDic[item.InvoiceItemStatusID];
-                currentItem.OrderItemID = item.OrderItemID;
-                currentItem.ItemDescription = currentOrderItem.OrderItemDescription;
-                currentItem.ItemPrice = currentOrderItem.OrderItemUnitPrice;
-
-                returnViewModel.Items.Add(currentItem);                
-            }
-            return returnViewModel;
         }
         private Dictionary<int,string> GetAvailableCustomers()
         {

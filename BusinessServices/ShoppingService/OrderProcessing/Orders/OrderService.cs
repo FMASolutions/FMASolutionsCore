@@ -15,6 +15,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             _addressService = new AddressLocationService(connectionString, dbType);
             _cityAreaService = new CityAreaService(connectionString, dbType);
             _customerAddressService = new CustomerAddressService(connectionString, dbType);
+            _deliveryNoteService = new DeliveryNoteService(connectionString, dbType);
+            _invoiceService = new InvoiceService(connectionString,dbType);
+        }
+        internal OrderService(IUnitOfWork uow)
+        {
+            _uow = uow;
         }
         public void Dispose()
         {
@@ -26,6 +32,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 _addressService.Dispose();
                 _cityAreaService.Dispose();
                 _customerAddressService.Dispose();
+                _deliveryNoteService.Dispose();
+                _invoiceService.Dispose();
                 _uow.Dispose();
             }
         }
@@ -37,7 +45,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         IAddressLocationService _addressService;
         ICityAreaService _cityAreaService;
         ICustomerAddressService _customerAddressService;
+        IDeliveryNoteService _deliveryNoteService;
+        IInvoiceService _invoiceService;
 
+        //Direct Services
         public Order GetByID(int id)
         {
             Order returnOrder = null;
@@ -191,60 +202,26 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             //Interesting?????
             return false;
         }
-
-        public DeliveryNote DeliverOrderItems(int orderHeaderID)
-        {            
-            DeliveryNoteEntity entity = _uow.DeliveryNoteRepo.DeliverOrder(orderHeaderID);
-            DeliveryNote returnModel = ConvertDeliveryNoteToModel(entity);
-
-            if(returnModel != null)
-            {
-                _uow.SaveChanges();
-                return returnModel;
-            }
-            return null;
-        }
-        public List<DeliveryNote> GetDeliveryNotesForOrder(int orderID)
+        public Dictionary<int, string> GetOrderStatusDictionary()
         {
-            List<DeliveryNote> returnList = new List<DeliveryNote>();
+            Dictionary<int, string> returnDic = new Dictionary<int, string>();
+            
+            foreach(var item in _uow.OrderStatusRepo.GetAll())
+                returnDic.Add(item.OrderStatusID, item.OrderStatusValue);
 
-            IEnumerable<DeliveryNoteEntity> searchResult = _uow.DeliveryNoteRepo.GetByOrderHeaderID(orderID);
-
-            foreach(var item in searchResult)
-            {
-                DeliveryNote currentItem = ConvertDeliveryNoteToModel(item);
-                returnList.Add(currentItem);
-            }
-
-            return returnList;
+            return returnDic;
         }
         
-        public Invoice GenerateInvoiceForOrder(int orderHeaderID)
+
+        //Wrappers to other services
+        public List<DeliveryNote> GetDeliveryNotesForOrder(int orderID)
         {
-            int invoiceHeaderID = _uow.InvoiceHeaderRepo.GenerateInvoiceForOrder(orderHeaderID);
-            InvoiceHeaderEntity invoiceHeader = _uow.InvoiceHeaderRepo.GetByID(invoiceHeaderID);
-            IEnumerable<InvoiceItemEntity> invoiceItems = _uow.InvoiceItemRepo.GetAllItemsForInvoice(invoiceHeaderID);
-            Invoice returnInvoice = ConvertInvoiceEntityToModel(invoiceHeader,invoiceItems);
-            if(returnInvoice != null && returnInvoice.Items.Count > 1)
-            {
-                _uow.SaveChanges();
-                return returnInvoice;
-            }
-            else
-                return null;
+            return _deliveryNoteService.GetDeliveryNotesForOrder(orderID);
         }
         public List<Invoice> GetInvoicesForOrder(int orderHeaderID)
         {
-            List<Invoice> returnInvoiceList = new List<Invoice>();
-            IEnumerable<int> invoiceHeaderIDList = _uow.InvoiceHeaderRepo.GetInvoicesForOrder(orderHeaderID);
-            foreach(int ID in invoiceHeaderIDList)
-                returnInvoiceList.Add(ConvertInvoiceEntityToModel(_uow.InvoiceHeaderRepo.GetByID(ID), _uow.InvoiceItemRepo.GetAllItemsForInvoice(ID)));
-            if(returnInvoiceList.Count > 0)
-                return returnInvoiceList;
-            else
-                return null;
+            return _invoiceService.GetInvoicesForOrder(orderHeaderID);
         }
-        
         public List<StockHierarchyItem> GetStockHierarchy()
         {
             return _itemService.GetStockHierarchy();
@@ -261,25 +238,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             return _cityAreaService.GetAll();
         }
-        public Dictionary<int, string> GetOrderStatusDictionary()
+        public List<CustomerAddress> GetAvailableCustomerAddresses()
         {
-            Dictionary<int, string> returnDic = new Dictionary<int, string>();
-            
-            foreach(var item in _uow.OrderStatusRepo.GetAll())
-                returnDic.Add(item.OrderStatusID, item.OrderStatusValue);
-
-            return returnDic;
-        }
-        public Dictionary<int, string> GetInvoiceStatusDic()
-        {
-            Dictionary<int,string> returnDic = new Dictionary<int, string>();
-
-            foreach(var item in _uow.InvoiceStatusRepo.GetAll())
-                returnDic.Add(item.InvoiceStatusID, item.InvoiceStatusValue);
-            
-            return returnDic;
-        }
-
+            return _customerAddressService.GetAll();
+        }        
+        
+        //PRivate Conversion
         private OrderHeaderEntity ConvertHeaderModelToEntity(OrderHeader model)
         {            
             return new OrderHeaderEntity(model.OrderHeaderID
@@ -290,7 +254,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 ,model.DeliveryDate
             );            
         }
-
         private OrderHeader ConvertHeaderEntityToModel(OrderHeaderEntity entity)
         {
             return new OrderHeader(new CustomModelState()
@@ -302,7 +265,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 ,entity.OrderStatusID
             );
         }
-
         private OrderItemEntity ConvertItemModelToEntity(OrderItem model)
         {
             return new OrderItemEntity(model.OrderItemID
@@ -315,7 +277,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 ,model.OrderItemDescription
             );
         }
-
         private OrderItem ConvertItemEntityToModel(OrderItemEntity entity)
         {
             return new OrderItem(new CustomModelState()
@@ -329,47 +290,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 ,entity.OrderItemUnitPriceAfterDiscount
             );
         }
-
-        private DeliveryNote ConvertDeliveryNoteToModel(DeliveryNoteEntity entity)
-        {
-            return new DeliveryNote( 
-                new CustomModelState(),
-                entity.Items,
-                entity.DeliveryNoteID,
-                entity.OrderHeaderID,
-                entity.DeliveryDate
-            );
-        }
-        private Invoice ConvertInvoiceEntityToModel(InvoiceHeaderEntity headerEntity, IEnumerable<InvoiceItemEntity> itemsEntity)
-        {
-            Invoice returnInvoice = new Invoice();
-            returnInvoice.Header = new InvoiceHeader(headerEntity.InvoiceHeaderID, headerEntity.OrderHeaderID, headerEntity.InvoiceStatusID, headerEntity.InvoiceDate);
-            foreach(var invoiceItem in itemsEntity)
-                returnInvoice.Items.Add(new InvoiceItem(invoiceItem.InvoiceItemID,invoiceItem.InvoiceHeaderID,invoiceItem.OrderItemID,invoiceItem.InvoiceItemStatusID,invoiceItem.InvoiceItemQty));
-            return returnInvoice;
-        } 
-
-        private bool ValidateHeaderForCreate(OrderHeader model)
-        {
-            try
-            {
-                var custAddress = _uow.CustomerAddressRepo.GetByID(model.CustomerAddressID);
-                var customer = _uow.CustomerRepo.GetByID(model.CustomerID);
-                //Order Status eventually too.....
-                
-                if(custAddress != null && customer != null && model.OrderDate != null && model.DeliveryDate != null)
-                {                    
-                    return true;
-                }
-                return false;
-            }
-            catch(System.Exception ex)
-            {
-                model.ModelState.AddError(ex.GetType().ToString(), ex.Message);
-                return false;
-            }
-        }
-
+        
+        //Validation
         private bool ValidateItemForCreate(OrderItem model)
         {
             //RUSHED NEEDS LOTS MORE WORK ON VALIDATION

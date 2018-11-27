@@ -62,19 +62,13 @@
                 Customer Delivery Address:             
             </div>
             <div class="row no-gutters" id="CustomerAddressLine1">
-                36 Bewick Drive
+                @Model.CurrentDeliveryAddress.AddressLine1 @Model.CurrentDeliveryAddress.AddressLine2
             </div>
             <div class="row no-gutters" id="CustomerAddressLine1">
-                Bakersfield
+                @Model.CurrentDeliveryAddress.AvailableCityAreas[@Model.CurrentDeliveryAddress.CityAreaID]
             </div>
             <div class="row no-gutters" id="CustomerAddressCity">
-                Nottingham
-            </div>
-            <div class="row no-gutters" id="CustomerAddressPostCode">
-                NG3 7GB
-            </div>
-            <div class="row no-gutters" id="CustomerAddressPostCode">
-                United Kingdom
+                @Model.CurrentDeliveryAddress.PostCode
             </div>
         </div>
 
@@ -127,7 +121,7 @@
                                 {
                                     @if(status == "Estimate")
                                     {
-                                        <a href="/Order/DeliverItems/@Model.OrderID" class="btn btn-outline-dark bg-light btn-block mt-2 mb-2">Deliver Items</a>
+                                        <a href="/DeliveryNote/DeliverItems/@Model.OrderID" class="btn btn-outline-dark bg-light btn-block mt-2 mb-2">Deliver Items</a>
                                     }
                                 }
                             </div>
@@ -137,27 +131,44 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-3">
-            @if(Model.OrderStatus == "Complete")
-            {
-                <div class="col-sm-4"><a href="/Order/ViewDeliveryNote/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">View Del Notes</a></div>
-            }   
-            @if(Model.OrderStatus == "Delivered")
-            {
-                <div class="col-sm-4"><a href="/Order/ViewDeliveryNote/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">View Del Notes</a></div>
-            }
+        <div class="row mt-3">            
             @foreach(var status in Model.DistinctItemStatusList)
             {
                 @if(status == "Delivered")
                 {
-                    <div class="col-sm-4"><a href="/Order/GenInvoice/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">Generate Invoice</a></div>
+                    <div class="col-sm-4"><a href="/Invoice/GenInvoice/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">Generate Invoice</a></div>
                     
-                }
-                @if(status == "Complete")
+                }     
+            }
+            @if(Model.DeliveryNotesForOrder.Count > 0)
+            {
+                <div class="dropdown">
+                    <button class="btn btn-outline-dark text-light bg-dark mb-3 ml-3 mr-3 dropdown-toggle" type="button" id="deliveryNotesDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Delivery Notes
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                @foreach(var item in Model.DeliveryNotesForOrder)
                 {
-                    <div class="col-sm-4"><a href="/Order/ViewInvoice/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">View Invoice</a></div>
-                }            
-            }                        
+                        <a class="dropdown-item" href="/DeliveryNote/ViewDeliveryNote/@item">@item</a>
+                }
+                    </div>
+                </div>
+            }    
+            @if(Model.InvoicesFOrOrder.Count > 0)
+            {
+                <div class="dropdown">
+                    <button class="btn btn-outline-dark text-light bg-dark mb-3 mr-3 dropdown-toggle" type="button" id="invoicesDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Invoices
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                @foreach(var item in Model.InvoicesFOrOrder)
+                {
+                    <a class="dropdown-item" href="/Invoice/ViewInvoice/@item">@item</a>
+                }
+                    </div>
+                </div>
+            }   
+                             
         </div>
         <div class="row">
                 <div class="col-sm-12">

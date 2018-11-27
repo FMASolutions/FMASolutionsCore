@@ -100,58 +100,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return View("Create",vm);
             
         }
-        public IActionResult DeliverItems(int id=0)
-        {
-            if(id>0)
-            {
-                OrderModel model = GetNewModel();
-                DeliveryNoteViewModel vmReturn = model.DeliverItems(id);
-                if(vmReturn != null)
-                    return View("DisplayDeliveryNote",vmReturn);
-                else
-                    return Search();
-            }
-            else
-                return Search();
-        }
-        public IActionResult ViewDeliveryNote(int id=0) //id = OrderHeaderID
-        {            
-            OrderModel model = GetNewModel();
-            List<DeliveryNoteViewModel> deliveryNotes = model.GetDeliveryNoteByOrder(id);
-            if(deliveryNotes != null)
-            {
-                if(deliveryNotes.Count == 1)                
-                    return View("DisplayDeliveryNote", deliveryNotes[0]);
-                else
-                {
-                    //IMPLEMENT MULTI SELECTOR FOR DELIVERY NOTE SELECTION.
-                    return null;
-                }
-            }
-            else
-                return Search(id);
-        }
-        public IActionResult GenInvoice(int id=0) //id = OrderHeaderID
-        {
-            OrderModel model = GetNewModel();
-            InvoiceViewModel vm = model.GenerateInvoiceForOrder(id);
-            if(vm != null)
-                return View("DisplayInvoice",vm);
-            else
-                return Search(id);
-        }
-        public IActionResult ViewInvoice(int id=0)
-        {
-            OrderModel model = GetNewModel();
-            List<InvoiceViewModel> invoices = model.GetInvoicesByOrder(id);
-            if(invoices != null && invoices.Count == 1)
-                return View("DisplayInvoice", invoices[0]);
-            else
-            {
-                return null;
-            }
-        }
-        
+         
         private OrderModel GetNewModel()
         {
             return new OrderModel(new ModelStateConverter(this).Convert(), _service);
