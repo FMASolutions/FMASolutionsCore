@@ -10,13 +10,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public OrderService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _itemService = new ItemService(connectionString, dbType);
-            _customerService = new CustomerService(connectionString, dbType);
-            _addressService = new AddressLocationService(connectionString, dbType);
-            _cityAreaService = new CityAreaService(connectionString, dbType);
-            _customerAddressService = new CustomerAddressService(connectionString, dbType);
-            _deliveryNoteService = new DeliveryNoteService(connectionString, dbType);
-            _invoiceService = new InvoiceService(connectionString,dbType);
         }
         internal OrderService(IUnitOfWork uow)
         {
@@ -27,26 +20,13 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             if(!_disposing)
             {
                 _disposing = true;
-                _itemService.Dispose();
-                _customerService.Dispose();
-                _addressService.Dispose();
-                _cityAreaService.Dispose();
-                _customerAddressService.Dispose();
-                _deliveryNoteService.Dispose();
-                _invoiceService.Dispose();
                 _uow.Dispose();
             }
         }
 
         private bool _disposing = false;
         private IUnitOfWork _uow;
-        IItemService _itemService;
-        ICustomerService _customerService;
-        IAddressLocationService _addressService;
-        ICityAreaService _cityAreaService;
-        ICustomerAddressService _customerAddressService;
-        IDeliveryNoteService _deliveryNoteService;
-        IInvoiceService _invoiceService;
+
 
         //Direct Services
         public Order GetByID(int id)
@@ -72,6 +52,9 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         public int CreateOrder(OrderHeader model, AddressLocation newAddress = null)
         {   
+            IAddressLocationService _addressService = new AddressLocationService(_uow);
+            ICustomerAddressService _customerAddressService = new CustomerAddressService(_uow);
+
             OrderHeaderEntity entityToCreate = ConvertHeaderModelToEntity(model);
 
             if(newAddress != null)
@@ -216,30 +199,37 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         //Wrappers to other services
         public List<DeliveryNote> GetDeliveryNotesForOrder(int orderID)
         {
+            IDeliveryNoteService _deliveryNoteService = new DeliveryNoteService(_uow);
             return _deliveryNoteService.GetDeliveryNotesForOrder(orderID);
         }
         public List<Invoice> GetInvoicesForOrder(int orderHeaderID)
         {
+            IInvoiceService _invoiceService = new InvoiceService(_uow);
             return _invoiceService.GetInvoicesForOrder(orderHeaderID);
         }
         public List<StockHierarchyItem> GetStockHierarchy()
         {
+            IItemService _itemService = new ItemService(_uow);
             return _itemService.GetStockHierarchy();
         }
         public List<Customer> GetAvailableCustomers()
         {
+            ICustomerService _customerService = new CustomerService(_uow);
             return _customerService.GetAll();
         }
         public List<AddressLocation> GetAvailableAddresses()
         {
+            IAddressLocationService _addressService = new AddressLocationService(_uow);
             return _addressService.GetAll();
         }
         public List<CityArea>  GetAvailableCityAreas()
         {
+            ICityAreaService _cityAreaService = new CityAreaService(_uow);
             return _cityAreaService.GetAll();
         }
         public List<CustomerAddress> GetAvailableCustomerAddresses()
         {
+            ICustomerAddressService _customerAddressService = new CustomerAddressService(_uow);
             return _customerAddressService.GetAll();
         }        
         
