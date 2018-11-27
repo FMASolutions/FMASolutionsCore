@@ -10,8 +10,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public CustomerAddressService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _customerService = new CustomerService(connectionString, dbType);
-            _addressLocationService = new AddressLocationService(connectionString, dbType);
         }
         internal CustomerAddressService(IUnitOfWork uow)
         {
@@ -22,16 +20,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             if (!_disposing)
             {
                 _disposing = true;
-                _customerService.Dispose();
-                _addressLocationService.Dispose();
                 _uow.Dispose();
             }
         }
 
         private bool _disposing = false;
         private IUnitOfWork _uow;
-        ICustomerService _customerService;
-        IAddressLocationService _addressLocationService;
 
         #region ICustomerAddressService
         public CustomerAddress GetByID(int id)
@@ -89,10 +83,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         public List<Customer> GetAvailableCustomers()
         {
+            ICustomerService _customerService = new CustomerService(_uow);
             return _customerService.GetAll();
         }
         public List<AddressLocation> GetAvailableAddressLocations()
         {
+            IAddressLocationService _addressLocationService = new AddressLocationService(_uow);
             return _addressLocationService.GetAll();
         }
         public bool UpdateDB(CustomerAddress newModel)

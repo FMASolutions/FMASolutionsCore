@@ -9,10 +9,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
     {
         public AddressLocationService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
-            _connectionSTring = connectionString;
-            _dbType = dbType;
-            _uow = new UnitOfWork(connectionString, dbType);
-            _cityAreaService = new CityAreaService(connectionString, dbType);            
+            _uow = new UnitOfWork(connectionString, dbType);     
         }
         internal AddressLocationService(IUnitOfWork uow)
         {
@@ -22,17 +19,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             if(!_disposing)
             {
-                _disposing = true;
-                _cityAreaService.Dispose();                
+                _disposing = true;   
                 _uow.Dispose();
             }
         }
         private bool _disposing = false;
         private IUnitOfWork _uow;
-        ICityAreaService _cityAreaService;        
-        private string _connectionSTring;
-        private SQLAppConfigTypes.SQLAppConfigTypes _dbType;
-
 
         #region ICityService
         public AddressLocation GetByID(int id)
@@ -90,6 +82,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         public List<CityArea> GetAvailableCityAreas()
         {
+            ICityAreaService _cityAreaService = new CityAreaService(_uow);
             return _cityAreaService.GetAll();
         }   
         public bool UpdateDB(AddressLocation newModel)

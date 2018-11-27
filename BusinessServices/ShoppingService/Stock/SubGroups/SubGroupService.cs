@@ -10,7 +10,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public SubGroupService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _productGroupService = new ProductGroupService(connectionString, dbType);
         }
         internal SubGroupService(IUnitOfWork uow)
         {
@@ -21,14 +20,12 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             if(!_disposing)
             {
                 _disposing = true;
-                _productGroupService.Dispose();
                 _uow.Dispose();
             }
         }
 
         private bool _disposing = false;
         private IUnitOfWork _uow;
-        IProductGroupService _productGroupService;
 
         #region ISubGroupService
         public SubGroup GetByID(int id)
@@ -102,6 +99,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         public List<ProductGroup> GetAvailableProductGroups()
         {
+            IProductGroupService _productGroupService = new ProductGroupService(_uow);
             return _productGroupService.GetAll();
         }
         public bool UpdateDB(SubGroup newModel)

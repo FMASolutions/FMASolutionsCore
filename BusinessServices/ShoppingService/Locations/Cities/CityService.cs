@@ -10,7 +10,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public CityService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _countryService = new CountryService(connectionString, dbType);
         }
         internal CityService(IUnitOfWork uow)
         {
@@ -21,13 +20,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             if(!_disposing)
             {
                 _disposing = true;
-                _countryService.Dispose();
                 _uow.Dispose();
             }
         }
         private bool _disposing = false;
         private IUnitOfWork _uow;
-        ICountryService _countryService;
 
         #region ICityService
         public City GetByID(int id)
@@ -101,6 +98,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         public List<Country> GetAvailableCountries()
         {
+            ICountryService _countryService = new CountryService(_uow);
             return _countryService.GetAll();
         }
         public bool UpdateDB(City newModel)

@@ -12,7 +12,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public CityAreaService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _cityService = new CityService(connectionString, dbType);
         }
         internal CityAreaService(IUnitOfWork uow)
         {
@@ -23,13 +22,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             if(!_disposing)
             {
                 _disposing = true;
-                _cityService.Dispose();
                 _uow.Dispose();
             }
         }
         private bool _disposing = false;
         private IUnitOfWork _uow;
-        ICityService _cityService;
 
         #region ICityService
         public CityArea GetByID(int id)
@@ -103,6 +100,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         public List<City> GetAvailableCities()
         {
+            ICityService _cityService = new CityService(_uow);
             return _cityService.GetAll();
         }
         public bool UpdateDB(CityArea newModel)

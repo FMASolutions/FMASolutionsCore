@@ -10,7 +10,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         public CustomerService(string connectionString, SQLAppConfigTypes.SQLAppConfigTypes dbType)
         {
             _uow = new UnitOfWork(connectionString, dbType);
-            _customerTypeService = new CustomerTypeService(connectionString, dbType);
         }
         internal CustomerService(IUnitOfWork uow)
         {
@@ -22,12 +21,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             {
                 _disposing = true;
                 _uow.Dispose();
-                _customerTypeService.Dispose();
             }
         }
         private bool _disposing = false;
         private IUnitOfWork _uow;
-        ICustomerTypeService _customerTypeService;
 
         #region ICustomerService
         public Customer GetByID(int id)
@@ -101,6 +98,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 
         public List<CustomerType> GetAvailableCustomerTypes()
         {
+            ICustomerTypeService _customerTypeService = new CustomerTypeService(_uow);
             return _customerTypeService.GetAll();
         }
         public bool UpdateDB(Customer newModel)

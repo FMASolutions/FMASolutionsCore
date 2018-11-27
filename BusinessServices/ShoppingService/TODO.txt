@@ -1,0 +1,2 @@
+Where a service requires calling another service, change this behaviour such that the returned model includes the data required.
+This will more than likely require implementing DTO's and writing new queries to pull back data from the data access layer to conform to the DTO's
