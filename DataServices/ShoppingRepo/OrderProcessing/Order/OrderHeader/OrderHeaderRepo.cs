@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using Dapper;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
@@ -142,6 +143,46 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             catch (Exception ex)
             {
                 Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAll: " + ex.Message, this);
+                return null;
+            }
+        }
+        public IEnumerable<DTOOrderItemDetailed> GetAmendOrderItemsDTO(int orderHeaderID)
+        {
+            try
+            {
+                string query = @"
+                SELECT ordHead.OrderHeaderID, ordHead.OrderDate, ordHead.DeliveryDate AS [OrderDueDate]
+                , ohStatus.OrderStatusID, ohStatus.OrderstatusValue, ordItm.OrderItemID, ordItm.OrderItemDescription, ordItm.OrderItemQty
+                , ordItm.OrderItemUnitPrice, ordItm.OrderItemUnitPriceAfterDiscount, oiStatus.OrderStatusID AS [OrderItemStatusID]
+                , oiStatus.OrderstatusValue AS [OrderItemStatusValue], cust.CustomerID, cust.CustomerCode, cust.CustomerName, cust.CustomerContactNumber
+                , cust.CustomerEmailAddress, itm.ItemID, itm.ItemCode, itm.ItemImageFilename, sub.SubGroupID, sub.SubGroupCode, sub.SubGroupName
+                , sub.SubGroupDescription, prod.ProductGroupID, prod.ProductGroupCode, prod.ProductGroupName, prod.ProductGroupDescription
+                , custAdd.CustomerAddressID, custAdd.CustomerAddressDescription, custAdd.IsDefaultAddress, addLoc.AddressLocationID
+                , addLoc.AddressLine1, addLoc.AddressLine2, addLoc.PostCode, ca.CityAreaID, ca.CityAreaCode, ca.CityAreaName
+                , cit.CityID, cit.CityCode, cit.CityName, c.CountryID, c.CountryCode, c.CountryName
+                FROM OrderHeaders ordHead
+                INNER JOIN OrderItems ordItm ON ordHead.OrderHeaderID = ordItm.OrderHeaderID
+                INNER JOIN OrderStatus ohStatus ON ohStatus.OrderStatusID = ordHead.OrderStatusID
+                INNER JOIN OrderStatus oiStatus ON oiStatus.OrderStatusID = ordItm.OrderItemStatusID
+                INNER JOIN Customers cust ON ordHead.CustomerID = cust.CustomerID
+                INNER JOIN Items itm ON itm.ItemID = ordItm.ItemID
+                INNER JOIN SubGroups sub ON itm.SubGroupID = sub.SubGroupID
+                INNER JOIN ProductGroups prod ON sub.ProductGroupID = prod.ProductGroupID
+                INNER JOIN CustomerAddresses custAdd ON custAdd.CustomerAddressID = ordHead.CustomerAddressID
+                INNER JOIN AddressLocations addLoc ON addLoc.AddressLocationID = custAdd.AddressLocationID
+                INNER JOIN CityAreas ca ON ca.CityAreaID = addLoc.CityAreaID
+                INNER JOIN Cities cit ON cit.CityID = ca.CityID
+                INNER JOIN Countries c ON c.CountryID = cit.CountryID
+                WHERE ordHead.OrderHeaderID = @OrderHeaderID 
+                ORDER BY ordItm.OrderItemID ASC
+                ";
+
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
+                return _dbConnection.Query<DTOOrderItemDetailed>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAmendOrderItemsDTO: " + ex.Message, this);
                 return null;
             }
         }

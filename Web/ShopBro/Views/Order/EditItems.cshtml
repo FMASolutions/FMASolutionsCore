@@ -79,19 +79,13 @@
             Customer Delivery Address:             
         </div>
         <div class="row no-gutters" id="CustomerAddressLine1">
-            36 Bewick Drive
+            @Model.CurrentDeliveryAddress.AddressLine1 @Model.CurrentDeliveryAddress.AddressLine2
         </div>
         <div class="row no-gutters" id="CustomerAddressLine1">
-            Bakersfield
+            @Model.CurrentDeliveryAddress.AvailableCityAreas[@Model.CurrentDeliveryAddress.CityAreaID]
         </div>
         <div class="row no-gutters" id="CustomerAddressCity">
-            Nottingham
-        </div>
-        <div class="row no-gutters" id="CustomerAddressPostCode">
-            NG3 7GB
-        </div>
-        <div class="row no-gutters" id="CustomerAddressPostCode">
-            United Kingdom
+            @Model.CurrentDeliveryAddress.PostCode
         </div>
     </div>
 

@@ -5,11 +5,17 @@ using System.Collections.Generic;
 using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.Web.ShopBro.Models;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class OrderController : BaseController
     {
+        public IActionResult Test(int id=0)
+        {
+            var orderItemsDetailed = _service.GetDetailedOrderAndItemInfo(id);
+            return null;
+        }
         public OrderController(IOrderService service)
         {
             _service = service;
@@ -24,9 +30,16 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Search(int id=0)
         {
+            
             GenericSearchViewModel vm = new GenericSearchViewModel();
-            vm.ID = id;
-            return ProcessSearch(vm);
+            if(id > 0)
+            {
+                vm.ID = id;
+                return ProcessSearch(vm);
+            }
+            else
+                return View("Search",vm);
+                
         }
         
         [HttpPost]

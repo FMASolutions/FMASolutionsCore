@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FMASolutionsCore.DataServices.ShoppingRepo;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
@@ -184,6 +185,11 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             //Interesting?????
             return false;
+        }
+        
+        public IEnumerable<DTOOrderItemDetailed> GetDetailedOrderAndItemInfo(int orderHeaderID)
+        {
+            return _uow.OrderHeaderRepo.GetAmendOrderItemsDTO(orderHeaderID);
         }
         public Dictionary<int, string> GetOrderStatusDictionary()
         {

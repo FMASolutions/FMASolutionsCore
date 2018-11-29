@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../BusinessServices/BusinessCore/BusinessCore.csproj" />
+    <ProjectReference Include="../../BusinessServices/ShoppingDTOFactory/ShoppingDTOFactory.csproj" />
     <ProjectReference Include="../../DataServices/DataRepository/DataRepository.csproj" />
     <ProjectReference Include="../../DataServices/ShoppingRepo/ShoppingRepo.csproj" />
   </ItemGroup>

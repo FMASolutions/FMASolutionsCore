@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FMASolutionsCore.Web.ShopBro.ViewModels;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.BusinessServices.ShoppingService;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
@@ -110,7 +111,19 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return returnOrderID;
         }
         
-        
+        public AmendOrderItemsViewModel GetAmendOrderItemsViewModel(int orderID)
+        {
+            AmendOrderItemsViewModel returnVM = new AmendOrderItemsViewModel();
+            var searchResults = _service.GetDetailedOrderAndItemInfo(orderID);
+            if(searchResults != null)
+            {
+                foreach(var result in searchResults)
+                {
+                    
+                }
+            }
+            return null;
+        }       
         internal OrderViewModel GetDefaultViewModel()
         {            
             OrderViewModel vmReturn = new OrderViewModel();
@@ -119,6 +132,12 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             vmReturn.NewDeliveryAddress.AvailableCityAreas = GetAvailableCityAreas();
             AppendStockHierarchyAndAvailableItems(vmReturn);
             return vmReturn;
+        }
+        private AmendOrderItemViewModel ConvertToAmendOrderItemViewModel(DTOOrderItemDetailed dto)
+        {
+            AmendOrderItemViewModel returnVM = new AmendOrderItemViewModel();
+            
+            return null;
         }
         private OrderViewModel ConvertToViewModel(Order model)
         {

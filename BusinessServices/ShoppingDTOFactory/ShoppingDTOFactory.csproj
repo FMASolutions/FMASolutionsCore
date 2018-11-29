@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PackageId>ShoppingDTOFactory</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Faisal Ahmed</Authors>
+    <Description>Provide DTO Objects to various Layers of the application</Description>
+    <Copyright>Copyright 2018 (c) FMASolutions Ltd. All rights reserved.</Copyright>
+  </PropertyGroup>
+</Project>

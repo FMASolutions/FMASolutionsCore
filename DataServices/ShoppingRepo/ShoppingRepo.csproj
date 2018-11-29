@@ -7,5 +7,6 @@
     <PackageReference Include="Dapper" Version="1.50.5" />
     <ProjectReference Include="../../DataServices/DataRepository/DataRepository.csproj" />
     <ProjectReference Include="../../BusinessServices/AppLoggerExtension/AppLoggerExtension.csproj" />
+    <ProjectReference Include="../../BusinessServices/ShoppingDTOFactory/ShoppingDTOFactory.csproj" />
   </ItemGroup>
 </Project>

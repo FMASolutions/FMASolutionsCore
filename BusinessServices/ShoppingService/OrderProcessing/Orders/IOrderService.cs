@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
@@ -11,6 +12,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         bool RemoveItemFromOrder(OrderItem item);
         List<Order> GetAllOrders();
         bool UpdateHeader(Order newModel);
+        IEnumerable<DTOOrderItemDetailed> GetDetailedOrderAndItemInfo(int orderHeaderID);
+        
         
         //Wrappers to other services.
         List<DeliveryNote> GetDeliveryNotesForOrder(int orderID);

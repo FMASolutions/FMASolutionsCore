@@ -14,6 +14,7 @@
     <ProjectReference Include="../../BusinessServices/AppLoggerExtension/AppLoggerExtension.csproj" />
     <ProjectReference Include="../../BusinessServices/AppConfigExtension/AppConfigExtension.csproj" />
     <ProjectReference Include="../../BusinessServices/ShoppingService/ShoppingService.csproj" />
+    <ProjectReference Include="../../BusinessServices/ShoppingDTOFactory/ShoppingDTOFactory.csproj" />
     <ProjectReference Include="../../BusinessServices/ControllerTemplate/ControllerTemplate.csproj" />    
     <ProjectReference Include="../../BusinessServices/SQLAppConfigTypes/SQLAppConfigTypes.csproj" />    
   </ItemGroup>
