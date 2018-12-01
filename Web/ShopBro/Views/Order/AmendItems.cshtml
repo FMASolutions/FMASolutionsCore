@@ -1,0 +1,91 @@
+@using FMASolutionsCore.Web.ShopBro
+@model FMASolutionsCore.Web.ShopBro.ViewModels.AmendOrderItemsViewModel
+@{
+    ViewData["Title"] = "Items - Update Page";
+    Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
+}
+
+<div id="DataRoot" style="display:none">
+    <div id="OrderItemsRaw">
+        @for (var i = 0; i < Model.Details.Count; i++)
+        {
+            <div class="OrderItemRaw">
+                <span class="OrderItemDescriptionRaw">@(Model.Details[i].OrderItemDescription)</span>
+                <span class="OrderItemUnitPriceRaw">@(Model.Details[i].OrderItemUnitPriceAfterDiscount)</span>
+                <span class="OrderItemQtyRaw">@(Model.Details[i].OrderItemQty)</span>
+                <span class="OrderItemItemIDRaw">@(Model.Details[i].ItemID)</span>
+                <span class="OrderItemItemRowIDRaw">@(Model.Details[i].OrderItemID)</span>     
+                <span class="OrderItemStatusRaw">@(Model.Details[i].OrderItemStatusID)</span>           
+            </div>
+        }
+    </div>
+    <div id="ItemsRaw">
+        @for (var i = 0; i < Model.AvailableItems.Count; i++)
+        {
+            <div class="ItemRaw">
+                <span class="ItemIDRaw">@(Model.AvailableItems[i].ItemID)</span>
+                <span class="ItemCodeRaw">@(Model.AvailableItems[i].ItemCode)</span>
+                <span class="SubGroupIDRaw">@(Model.AvailableItems[i].SubGroupID)</span>
+                <span class="ItemNameRaw">@(Model.AvailableItems[i].ItemName)</span>
+                <span class="ItemDescriptionRaw">@(Model.AvailableItems[i].ItemDescription)</span>
+                <span class="ItemUnitPriceRaw">@(Model.AvailableItems[i].ItemUnitPrice)</span>
+                <span class="ItemUnitPriceWithMaxDiscountRaw">@(Model.AvailableItems[i].ItemUnitPriceWithMaxDiscount)</span>
+                <span class="ItemAvailableQtyRaw">@(Model.AvailableItems[i].ItemAvailableQty)</span>
+                <span class="ItemImageFilenameRaw">@(Model.AvailableItems[i].ItemImageFilename)</span>
+                <span class="ItemCode">@(Model.AvailableItems[i].ItemCode)</span>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container rounded">
+    @if (Model != null && Model.StatusMessage != null)
+    {
+        <Label class="error-text">@(Model.StatusMessage) </Label>
+    }
+    <form class="form-signin">
+        <div class="row mb-2 no-gutters" id="OrderTitleRow">
+            <div class="col-6 text-left" id="OrderIDHeading">            
+                <h2 class="pr-2">Order Number:</h3>            
+            </div>
+            <div class="col-6 text-right" id="OrderStatusHeading">
+                <h2 class="pl-2">Order Status:</h3>
+            </div>
+        </div>
+        <div class="row mb-2 no-gutters" id="OrderTitleRow">
+            <div class="col-6 text-left" id="OrderIDHeading">            
+                @Html.DisplayFor(model => model.Details[0].OrderHeaderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
+                @Html.HiddenFor(model => model.Details[0].OrderHeaderID)          
+            </div>
+            <div class="col-6 text-right" id="OrderStatusHeading">
+                @Html.DisplayFor(model => model.Details[0].OrderStatusValue, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
+            </div>
+        </div>
+        <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-dark text-light" id="CustomerInfoContainer">
+            <h3>Customer Info:</h3>
+            <div class="row no-gutters" id="SelectdCustomerRow">
+                <div class="col-12 text-left customHeading" id="SelectedCustomerControlColumn">
+                    Customer: @Html.DisplayFor(m => m.Details[0].CustomerName,new { ReadOnly="true", Class="form-control mb-2 mr-1"})
+                </div>
+            </div>
+            <div class="row no-gutters customHeading pt-2" id="CustomerAddressHeadingRow">
+                Customer Delivery Address:             
+            </div>
+            <div class="row no-gutters" id="AddressLine1And2">
+                @Model.Details[0].AddressLine1 @Model.Details[0].AddressLine2
+            </div>
+            <div class="row no-gutters" id="AddressCityAreaName">
+                @Model.Details[0].CityAreaName
+            </div>
+            <div class="row no-gutters" id="AddressCityName">
+                @Model.Details[0].CityName
+            </div>
+            <div class="row no-gutters" id="AddressPostcode">
+                @Model.Details[0].AddressPostCode
+            </div>
+            <div class="row no-gutters" id="AddressCountry">
+                @Model.Details[0].CountryName
+            </div>            
+        </div>    
+    </form>
+</div>

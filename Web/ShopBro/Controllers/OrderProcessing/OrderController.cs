@@ -11,10 +11,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class OrderController : BaseController
     {
-        public IActionResult Test(int id=0)
+        public IActionResult AmendItems(int id=0)
         {
-            var orderItemsDetailed = _service.GetDetailedOrderAndItemInfo(id);
-            return null;
+            OrderModel model = GetNewModel();
+            var vm =  model.GetAmendOrderItemsViewModel(id);
+            return View("AmendItems",vm);
         }
         public OrderController(IOrderService service)
         {

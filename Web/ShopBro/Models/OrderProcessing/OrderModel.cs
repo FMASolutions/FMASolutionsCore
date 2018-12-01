@@ -114,14 +114,18 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public AmendOrderItemsViewModel GetAmendOrderItemsViewModel(int orderID)
         {
             AmendOrderItemsViewModel returnVM = new AmendOrderItemsViewModel();
+
             var searchResults = _service.GetDetailedOrderAndItemInfo(orderID);
             if(searchResults != null)
             {
                 foreach(var result in searchResults)
                 {
-                    
+                    returnVM.Details.Add(result);                    
                 }
+                AppendStockHierarchyAndAvailableItems(returnVM);
+                return returnVM;
             }
+
             return null;
         }       
         internal OrderViewModel GetDefaultViewModel()
@@ -133,12 +137,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             AppendStockHierarchyAndAvailableItems(vmReturn);
             return vmReturn;
         }
-        private AmendOrderItemViewModel ConvertToAmendOrderItemViewModel(DTOOrderItemDetailed dto)
-        {
-            AmendOrderItemViewModel returnVM = new AmendOrderItemViewModel();
-            
-            return null;
-        }
+        
         private OrderViewModel ConvertToViewModel(Order model)
         {
             OrderViewModel vmReturn = GetDefaultViewModel();
@@ -291,6 +290,59 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             return returnAddresses;
         }
         private void AppendStockHierarchyAndAvailableItems(OrderViewModel vmDestination)
+        {
+            //Set up Stock Hierarchy Object as well as Available Item List
+            StockHierarchyViewModel stockHierarchy = new StockHierarchyViewModel();
+            List<ItemViewModel> availableItems = new List<ItemViewModel>();
+            List<StockHierarchyItem> itemDataRows = _service.GetStockHierarchy();
+            foreach(var item in itemDataRows)
+            {
+                PGroupDetailed currentPGroupDetailed = null;
+                SGroupDetailed currentSGroupDetailed = null;
+                ItemViewModel currentItemViewModel = new ItemViewModel();
+
+                if(stockHierarchy.ProductGroups.Exists(e => e.ToString() == item.ProductGroupCode))                
+                    currentPGroupDetailed = stockHierarchy.ProductGroups.Find(e => e.ToString() == item.ProductGroupCode);
+                else
+                {
+                    currentPGroupDetailed = new PGroupDetailed();
+                    currentPGroupDetailed.ProductGroupCode = item.ProductGroupCode;
+                    currentPGroupDetailed.ProductGroupDescription = item.ProductGroupDescription;
+                    currentPGroupDetailed.ProductGroupID = item.ProductGroupID;
+                    currentPGroupDetailed.ProductGroupName = item.ProductGroupName;
+                    stockHierarchy.ProductGroups.Add(currentPGroupDetailed);
+                }
+
+                if(currentPGroupDetailed.AvailableSubs.Exists(e => e.ToString() == item.SubGroupCode))
+                    currentSGroupDetailed = currentPGroupDetailed.AvailableSubs.Find(e => e.ToString() == item.SubGroupCode);
+                else
+                {
+                    //Add new SubGroup to currentPGroup if it's not in the list already.
+                    currentSGroupDetailed = new SGroupDetailed();
+                    currentSGroupDetailed.SubGroupCode = item.SubGroupCode;
+                    currentSGroupDetailed.SubGroupDescription = item.SubGroupDescription;
+                    currentSGroupDetailed.SubGroupID = item.SubGroupID;
+                    currentSGroupDetailed.SubGroupName = item.SubGroupName;
+                    currentPGroupDetailed.AvailableSubs.Add(currentSGroupDetailed);
+                }
+                currentItemViewModel.ItemAvailableQty = item.ItemAvailableQty;
+                currentItemViewModel.ItemCode = item.ItemCode;
+                currentItemViewModel.ItemDescription = item.ItemDescription;
+                currentItemViewModel.ItemID = item.ItemID;
+                currentItemViewModel.ItemImageFilename = item.ItemImageFilename;
+                currentItemViewModel.ItemName = item.ItemName;
+                currentItemViewModel.ItemUnitPrice = item.ItemUnitPrice;
+                currentItemViewModel.ItemUnitPriceWithMaxDiscount = item.ItemUnitPriceWithMaxDiscount;
+                currentItemViewModel.SubGroupID = item.SubGroupID;
+                
+                currentSGroupDetailed.AvailableItems.Items.Add(currentItemViewModel);
+                availableItems.Add(currentItemViewModel);
+            }
+            vmDestination.AvailableItems = availableItems;
+            vmDestination.StockHierarchy = stockHierarchy;
+        }
+
+        private void AppendStockHierarchyAndAvailableItems(AmendOrderItemsViewModel vmDestination)
         {
             //Set up Stock Hierarchy Object as well as Available Item List
             StockHierarchyViewModel stockHierarchy = new StockHierarchyViewModel();
