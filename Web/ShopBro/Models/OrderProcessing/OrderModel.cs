@@ -9,24 +9,26 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 {
     public class OrderModel : IModel, IDisposable
     {
-        public OrderModel(ICustomModelState modelState, IOrderService orderService)
+        public OrderModel(ICustomModelState modelState, IOrderService orderService, IOrderItemService orderItemService)
         {
             _modelState = modelState;
-            _service = orderService;
+            _orderService = orderService;
+            _orderItemService = orderItemService;
         }
         public void Dispose()
-        {           
-            _service.Dispose();
+        {
+            _orderService.Dispose();
         }
 
         private ICustomModelState _modelState;
-        private IOrderService _service;
+        private IOrderService _orderService;
+        private IOrderItemService _orderItemService;
         public ICustomModelState ModelState { get { return _modelState; } }
 
         public OrderViewModel Search(int OrderHeaderID)
         {
             OrderViewModel returnVM = null;
-            var orderModel = _service.GetByID(OrderHeaderID);
+            var orderModel = _orderService.GetByID(OrderHeaderID);
             if(orderModel != null)
             {
                 returnVM = ConvertToViewModel(orderModel);
@@ -42,9 +44,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public OrdersViewModel GetAllOrders()
         {
             OrdersViewModel returnVM = new OrdersViewModel();
-            var searchResults = _service.GetAllOrders();
+            var searchResults = _orderService.GetAllOrders();
             var customers = GetAvailableCustomers();
-            var orderStatusDic = _service.GetOrderStatusDictionary();
+            var orderStatusDic = _orderService.GetOrderStatusDictionary();
             foreach(var order in searchResults)
             { 
                 OrderViewModel current = new OrderViewModel();
@@ -60,9 +62,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
         public OrderViewModel UpdateItems(OrderViewModel newModel)
         {
-            Order dbExistingOrder = _service.GetByID(newModel.OrderID);
-            Dictionary<int,string> orderStatusDic = _service.GetOrderStatusDictionary();
-            List<StockHierarchyItem> stockHierarcy = _service.GetStockHierarchy();
+            Order dbExistingOrder = _orderService.GetByID(newModel.OrderID);
+            Dictionary<int,string> orderStatusDic = _orderService.GetOrderStatusDictionary();
+            List<StockHierarchyItem> stockHierarcy = _orderService.GetStockHierarchy();
             bool errorDetected = false;
 
             foreach(var item in newModel.ExistingItems)
@@ -70,7 +72,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 item.OrderHeaderID = newModel.OrderID;
                 if(item.OrderItemRowID == 0) //New item, this needs adding.
                 {
-                    if(_service.AddItemToOrder(ConvertToOrderItemModel(item,orderStatusDic,stockHierarcy)) <= 0)                    
+                    if(_orderItemService.AddItemToOrder(ConvertToOrderItemModel(item,orderStatusDic,stockHierarcy)) <= 0)                    
                         errorDetected = true;
                 }
             }
@@ -78,7 +80,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             {
                 //Check if the item still exists in the new model, it may need deleting.
                 if(!newModel.ExistingItems.Exists(e => e.OrderItemRowID == item.ID && e.OrderItemRowID != 0))
-                    if(!_service.RemoveItemFromOrder(item))
+                    if(!_orderItemService.RemoveItemFromOrder(item))
                         errorDetected = true;
             }
             if(errorDetected)
@@ -95,7 +97,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             headerModel = ConvertToOrderHeaderModel(vmCreate);
             if(vmCreate.UseExistingAddress)
             {        
-                returnOrderID = _service.CreateOrder(headerModel);
+                returnOrderID = _orderService.CreateOrder(headerModel);
             }
             else
             {
@@ -106,7 +108,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                     , vmCreate.NewDeliveryAddress.AddressLine2
                     , vmCreate.NewDeliveryAddress.PostCode
                 );
-                returnOrderID = _service.CreateOrder(headerModel, addressLocation);
+                returnOrderID = _orderService.CreateOrder(headerModel, addressLocation);
             }
             return returnOrderID;
         }
@@ -114,13 +116,13 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public AmendOrderItemsViewModel GetAmendOrderItemsViewModel(int orderID)
         {
             AmendOrderItemsViewModel returnVM = new AmendOrderItemsViewModel();
-
-            var searchResults = _service.GetDetailedOrderAndItemInfo(orderID);
-            if(searchResults != null)
+            var searchHeader = _orderService.GetOrderHeaderDetailed(orderID);
+            var searchItems = _orderItemService.GetOrderItemsDetailed(orderID);
+            if(searchItems != null)
             {
-                foreach(var result in searchResults)
+                foreach(var result in searchItems)
                 {
-                    returnVM.Details.Add(result);                    
+                    returnVM.ItemDetails.Add(result);                    
                 }
                 AppendStockHierarchyAndAvailableItems(returnVM);
                 return returnVM;
@@ -141,7 +143,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         private OrderViewModel ConvertToViewModel(Order model)
         {
             OrderViewModel vmReturn = GetDefaultViewModel();
-            Dictionary<int,string> statusDictionary = _service.GetOrderStatusDictionary();                     
+            Dictionary<int,string> statusDictionary = _orderService.GetOrderStatusDictionary();                     
             vmReturn.OrderStatus = statusDictionary[model.Header.OrderStatusID];
             vmReturn.OrderID = model.Header.OrderHeaderID;            
             vmReturn.DeliveryDate = model.Header.DeliveryDate;
@@ -149,7 +151,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             vmReturn.CustomerID = model.Header.CustomerID;
             vmReturn.CustomerAddressID = model.Header.CustomerAddressID;
             
-            List<CustomerAddress> customerAddresses = _service.GetAvailableCustomerAddresses();
+            List<CustomerAddress> customerAddresses = _orderService.GetAvailableCustomerAddresses();
             var currentCustAddress = customerAddresses.Find(x => x.CustomerAddressID == model.Header.CustomerAddressID);
             var currentAddress = vmReturn.AvailableAddresses.Find(x => x.AddressLocationID == currentCustAddress.AddressLocationID);
             AddressLocationViewModel addressLocVM = new AddressLocationViewModel();
@@ -162,8 +164,8 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             
             vmReturn.CurrentDeliveryAddress = addressLocVM;
 
-            var delNotes = _service.GetDeliveryNotesForOrder(model.Header.OrderHeaderID);
-            var invoices = _service.GetInvoicesForOrder(model.Header.OrderHeaderID);
+            var delNotes = _orderService.GetDeliveryNotesForOrder(model.Header.OrderHeaderID);
+            var invoices = _orderService.GetInvoicesForOrder(model.Header.OrderHeaderID);
             
             if(delNotes != null && delNotes.Count > 0)
                 foreach(var note in delNotes)
@@ -235,7 +237,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }   
         private OrderHeader ConvertToOrderHeaderModel(OrderViewModel vm)
         {            
-            Dictionary<int,string> statusDictionary = _service.GetOrderStatusDictionary();
+            Dictionary<int,string> statusDictionary = _orderService.GetOrderStatusDictionary();
             int orderStatusInt = 0;
             foreach(KeyValuePair<int,string> pair in statusDictionary)            
                 if(pair.Value == vm.OrderStatus)
@@ -255,13 +257,13 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         private Dictionary<int,string> GetAvailableCustomers()
         {
             Dictionary<int,string> availableCustomers = new Dictionary<int, string>();
-            foreach(var customer in _service.GetAvailableCustomers())
+            foreach(var customer in _orderService.GetAvailableCustomers())
                 availableCustomers.Add(customer.CustomerID, customer.CustomerName);
             return availableCustomers;
         }
         private Dictionary<int,string> GetAvailableCityAreas()
         {
-            List<CityArea> cityAreas = _service.GetAvailableCityAreas();
+            List<CityArea> cityAreas = _orderService.GetAvailableCityAreas();
             Dictionary<int,string> returnDic = new Dictionary<int, string>();
             foreach(var cityArea in cityAreas)
                 returnDic.Add(cityArea.CityAreaID, cityArea.CityAreaName);
@@ -273,7 +275,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             List<AddressLocationViewModel> returnAddresses = new List<AddressLocationViewModel>();
             Dictionary<int,string> cityAreaDic = GetAvailableCityAreas();
             
-            foreach(var address in _service.GetAvailableAddresses())
+            foreach(var address in _orderService.GetAvailableAddresses())
             {
                 var current = new AddressLocationViewModel(){
                     AddressLine1 = address.AddressLine1
@@ -294,7 +296,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             //Set up Stock Hierarchy Object as well as Available Item List
             StockHierarchyViewModel stockHierarchy = new StockHierarchyViewModel();
             List<ItemViewModel> availableItems = new List<ItemViewModel>();
-            List<StockHierarchyItem> itemDataRows = _service.GetStockHierarchy();
+            List<StockHierarchyItem> itemDataRows = _orderService.GetStockHierarchy();
             foreach(var item in itemDataRows)
             {
                 PGroupDetailed currentPGroupDetailed = null;
@@ -341,13 +343,12 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             vmDestination.AvailableItems = availableItems;
             vmDestination.StockHierarchy = stockHierarchy;
         }
-
         private void AppendStockHierarchyAndAvailableItems(AmendOrderItemsViewModel vmDestination)
         {
             //Set up Stock Hierarchy Object as well as Available Item List
             StockHierarchyViewModel stockHierarchy = new StockHierarchyViewModel();
             List<ItemViewModel> availableItems = new List<ItemViewModel>();
-            List<StockHierarchyItem> itemDataRows = _service.GetStockHierarchy();
+            List<StockHierarchyItem> itemDataRows = _orderService.GetStockHierarchy();
             foreach(var item in itemDataRows)
             {
                 PGroupDetailed currentPGroupDetailed = null;

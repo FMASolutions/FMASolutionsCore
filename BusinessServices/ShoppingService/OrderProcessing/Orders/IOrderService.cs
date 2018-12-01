@@ -6,14 +6,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface IOrderService : IDisposable
     {
-        Order GetByID(int id);        
+        Order GetByID(int id);
         int CreateOrder(OrderHeader model,AddressLocation newAddress = null);
-        int AddItemToOrder(OrderItem item);
-        bool RemoveItemFromOrder(OrderItem item);
-        List<Order> GetAllOrders();
-        bool UpdateHeader(Order newModel);
-        IEnumerable<DTOOrderItemDetailed> GetDetailedOrderAndItemInfo(int orderHeaderID);
-        
+        List<Order> GetAllOrders();              
+        DTOOrderHeaderDetailed GetOrderHeaderDetailed(int orderHeaderID);
         
         //Wrappers to other services.
         List<DeliveryNote> GetDeliveryNotesForOrder(int orderID);

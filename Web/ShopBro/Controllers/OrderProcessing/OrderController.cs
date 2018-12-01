@@ -17,11 +17,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             var vm =  model.GetAmendOrderItemsViewModel(id);
             return View("AmendItems",vm);
         }
-        public OrderController(IOrderService service)
+        public OrderController(IOrderService orderService, IOrderItemService orderItemService)
         {
-            _service = service;
+            _orderService = orderService;
+            _orderItemService = orderItemService;
         }
-        private IOrderService _service;
+        private IOrderService _orderService;
+        private IOrderItemService _orderItemService;
         
         public IActionResult Index()
         {
@@ -117,7 +119,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
          
         private OrderModel GetNewModel()
         {
-            return new OrderModel(new ModelStateConverter(this).Convert(), _service);
+            return new OrderModel(new ModelStateConverter(this).Convert(), _orderService, _orderItemService);
         }
     }
 }

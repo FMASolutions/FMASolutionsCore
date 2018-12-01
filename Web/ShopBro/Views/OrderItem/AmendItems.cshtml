@@ -7,15 +7,15 @@
 
 <div id="DataRoot" style="display:none">
     <div id="OrderItemsRaw">
-        @for (var i = 0; i < Model.Details.Count; i++)
+        @for (var i = 0; i < Model.ItemDetails.Count; i++)
         {
             <div class="OrderItemRaw">
-                <span class="OrderItemDescriptionRaw">@(Model.Details[i].OrderItemDescription)</span>
-                <span class="OrderItemUnitPriceRaw">@(Model.Details[i].OrderItemUnitPriceAfterDiscount)</span>
-                <span class="OrderItemQtyRaw">@(Model.Details[i].OrderItemQty)</span>
-                <span class="OrderItemItemIDRaw">@(Model.Details[i].ItemID)</span>
-                <span class="OrderItemItemRowIDRaw">@(Model.Details[i].OrderItemID)</span>     
-                <span class="OrderItemStatusRaw">@(Model.Details[i].OrderItemStatusID)</span>           
+                <span class="OrderItemDescriptionRaw">@(Model.ItemDetails[i].OrderItemDescription)</span>
+                <span class="OrderItemUnitPriceRaw">@(Model.ItemDetails[i].OrderItemUnitPriceAfterDiscount)</span>
+                <span class="OrderItemQtyRaw">@(Model.ItemDetails[i].OrderItemQty)</span>
+                <span class="OrderItemItemIDRaw">@(Model.ItemDetails[i].ItemID)</span>
+                <span class="OrderItemItemRowIDRaw">@(Model.ItemDetails[i].OrderItemID)</span>     
+                <span class="OrderItemStatusRaw">@(Model.ItemDetails[i].OrderItemStatusID)</span>           
             </div>
         }
     </div>
@@ -54,37 +54,37 @@
         </div>
         <div class="row mb-2 no-gutters" id="OrderTitleRow">
             <div class="col-6 text-left" id="OrderIDHeading">            
-                @Html.DisplayFor(model => model.Details[0].OrderHeaderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
-                @Html.HiddenFor(model => model.Details[0].OrderHeaderID)          
+                @Html.DisplayFor(model => model.HeaderDetail.OrderHeaderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
+                @Html.HiddenFor(model => model.HeaderDetail.OrderHeaderID)          
             </div>
             <div class="col-6 text-right" id="OrderStatusHeading">
-                @Html.DisplayFor(model => model.Details[0].OrderStatusValue, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
+                @Html.DisplayFor(model => model.HeaderDetail.OrderStatusValue, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
             </div>
         </div>
         <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-dark text-light" id="CustomerInfoContainer">
             <h3>Customer Info:</h3>
             <div class="row no-gutters" id="SelectdCustomerRow">
                 <div class="col-12 text-left customHeading" id="SelectedCustomerControlColumn">
-                    Customer: @Html.DisplayFor(m => m.Details[0].CustomerName,new { ReadOnly="true", Class="form-control mb-2 mr-1"})
+                    Customer: @Html.DisplayFor(m => m.HeaderDetail.CustomerName,new { ReadOnly="true", Class="form-control mb-2 mr-1"})
                 </div>
             </div>
             <div class="row no-gutters customHeading pt-2" id="CustomerAddressHeadingRow">
                 Customer Delivery Address:             
             </div>
             <div class="row no-gutters" id="AddressLine1And2">
-                @Model.Details[0].AddressLine1 @Model.Details[0].AddressLine2
+                @Model.HeaderDetail.AddressLine1 @Model.HeaderDetail.AddressLine2
             </div>
             <div class="row no-gutters" id="AddressCityAreaName">
-                @Model.Details[0].CityAreaName
+                @Model.HeaderDetail.CityAreaName
             </div>
             <div class="row no-gutters" id="AddressCityName">
-                @Model.Details[0].CityName
+                @Model.HeaderDetail.CityName
             </div>
             <div class="row no-gutters" id="AddressPostcode">
-                @Model.Details[0].AddressPostCode
+                @Model.HeaderDetail.AddressPostCode
             </div>
             <div class="row no-gutters" id="AddressCountry">
-                @Model.Details[0].CountryName
+                @Model.HeaderDetail.CountryName
             </div>            
         </div>    
     </form>

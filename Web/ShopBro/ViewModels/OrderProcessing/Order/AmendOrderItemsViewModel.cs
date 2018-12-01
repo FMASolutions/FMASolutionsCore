@@ -8,11 +8,14 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
     {
         public AmendOrderItemsViewModel()
         {
-            Details = new List<DTOOrderItemDetailed>();
+            ItemDetails = new List<DTOOrderItemDetailed>();
             AvailableItems = new List<ItemViewModel>();
+            HeaderDetail = new DTOOrderHeaderDetailed();
+            StockHierarchy = new StockHierarchyViewModel();
             
         }
-        public List<DTOOrderItemDetailed> Details;
+        public List<DTOOrderItemDetailed> ItemDetails;
+        public DTOOrderHeaderDetailed HeaderDetail {get;set;}
         public List<ItemViewModel> AvailableItems {get; set;}
         public StockHierarchyViewModel StockHierarchy {get;set;}
         public string StatusMessage {get; set;}

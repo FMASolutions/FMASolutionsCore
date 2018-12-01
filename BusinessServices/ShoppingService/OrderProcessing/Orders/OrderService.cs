@@ -36,18 +36,13 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             OrderHeaderEntity headerEntity = _uow.OrderHeaderRepo.GetByID(id);
 
             if(headerEntity != null && headerEntity.OrderHeaderID > 0)
-            {
-                returnOrder = new Order();
+            {                
+                returnOrder = new Order();                
+                IOrderItemService _itemService = new OrderItemService(_uow);
+                List<OrderItem> searchItems = _itemService.GetOrderItemsForOrder(id);
                 returnOrder.Header = ConvertHeaderEntityToModel(headerEntity);
-
-                IEnumerable<OrderItemEntity> orderItems = _uow.OrderHeaderRepo.GetAllItemsForOrder(id);
-                if(orderItems != null)
-                {
-                    foreach(var item in orderItems)
-                    {
-                        returnOrder.OrderItems.Add(ConvertItemEntityToModel(item));                        
-                    }
-                }
+                if(searchItems != null && searchItems.Count > 0)
+                    returnOrder.OrderItems = searchItems;
             }
             return returnOrder;
         }
@@ -117,51 +112,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             else
                 return 0;
         }        
-        public int AddItemToOrder(OrderItem item)
-        {
-            try
-            {
-                bool success = false;
-                if(ValidateItemForCreate(item))
-                {
-                    item.OrderItemStatusID = 1; //Estimate as new item
-                    OrderItemEntity entity = ConvertItemModelToEntity(item);
-                    success = _uow.OrderItemRepo.Create(item);
-                    if(success)
-                    {   
-                        _uow.SaveChanges();                     
-                        item.OrderItemID = _uow.OrderItemRepo.GetLatestOrderItemByOrder(item.OrderHeaderID);
-                    }   
-                    else
-                    {                        
-                        item.ModelState.AddError("CreateFailed","Unable to add Item To Order");
-                        return -1;
-                    }
-                }
-                return item.OrderItemID;
-            }
-            catch(Exception ex)
-            {
-                item.ModelState.AddError(ex.GetType().ToString(), ex.Message);
-                return -1;
-            }
-        }
-        public bool RemoveItemFromOrder(OrderItem item)
-        {
-            if (item.OrderItemID > 0)
-                if(_uow.OrderItemRepo.Delete(ConvertItemModelToEntity(item)))
-                {
-                    _uow.SaveChanges();
-                    return true;
-                }            
-                else
-                    return false;
-            else
-            {
-                item.ModelState.AddError("Unable To Remove","Unable to remove item from oreder, please specify OrderItemID");
-                return false;
-            }
-        }
         public List<Order> GetAllOrders()
         {
             var headers = _uow.OrderHeaderRepo.GetAll();
@@ -180,16 +130,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             {
                 return null;
             }            
-        }
-        public bool UpdateHeader(Order newModel)
+        }    
+        public DTOOrderHeaderDetailed GetOrderHeaderDetailed(int orderHeaderID)
         {
-            //Interesting?????
-            return false;
-        }
-        
-        public IEnumerable<DTOOrderItemDetailed> GetDetailedOrderAndItemInfo(int orderHeaderID)
-        {
-            return _uow.OrderHeaderRepo.GetAmendOrderItemsDTO(orderHeaderID);
+            return _uow.OrderHeaderRepo.GetOrderHeaderDetailed(orderHeaderID);
         }
         public Dictionary<int, string> GetOrderStatusDictionary()
         {
@@ -239,7 +183,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return _customerAddressService.GetAll();
         }        
         
-        //PRivate Conversion
+
+        //Private Conversion
         private OrderHeaderEntity ConvertHeaderModelToEntity(OrderHeader model)
         {            
             return new OrderHeaderEntity(model.OrderHeaderID
@@ -260,41 +205,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 ,entity.OrderHeaderID
                 ,entity.OrderStatusID
             );
-        }
-        private OrderItemEntity ConvertItemModelToEntity(OrderItem model)
-        {
-            return new OrderItemEntity(model.OrderItemID
-                ,model.OrderHeaderID
-                ,model.ItemID
-                ,model.OrderItemStatusID
-                ,model.OrderItemUnitPrice
-                ,model.OrderItemUnitPriceAfterDiscount
-                ,model.OrderItemQty
-                ,model.OrderItemDescription
-            );
-        }
-        private OrderItem ConvertItemEntityToModel(OrderItemEntity entity)
-        {
-            return new OrderItem(new CustomModelState()
-                ,entity.ItemID
-                ,entity.OrderItemStatusID
-                ,entity.OrderHeaderID
-                ,entity.OrderItemDescription
-                ,entity.OrderItemID
-                ,entity.OrderItemQty
-                ,entity.OrderItemUnitPrice
-                ,entity.OrderItemUnitPriceAfterDiscount
-            );
-        }
-        
-        //Validation
-        private bool ValidateItemForCreate(OrderItem model)
-        {
-            //RUSHED NEEDS LOTS MORE WORK ON VALIDATION
-            if(model.ItemID > 0 && model.OrderHeaderID > 0 && model.OrderItemQty > 0)
-                return true;
-            else
-                return false;            
         }
     }
 }
