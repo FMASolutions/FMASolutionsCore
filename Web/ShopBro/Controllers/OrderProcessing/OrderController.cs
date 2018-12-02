@@ -73,18 +73,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         
         [HttpPost]
-        public IActionResult ProcessAmendItems(AmendOrderItemsViewModel vm)
+        public IActionResult ProcessAmendItems(AmendOrderItemsPreviewViewModel viewModel)
         {
             OrderModel model = GetOrderModel();
 
-            DisplayOrderViewModel updatedVM = model.UpdateItems(vm);
+            DisplayOrderViewModel updatedVM = model.UpdateItems(viewModel);
             if(updatedVM != null)
                 return View("Display",updatedVM);
-            else
-            {
-                vm.StatusMessage = "Unable to update Order";                
-                return View("AmendItems",vm);
-            }
+            else     
+                return AmendItems(viewModel.HeaderDetail.OrderID);            
         }
 
         [HttpGet]

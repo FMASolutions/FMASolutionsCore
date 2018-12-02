@@ -18,11 +18,8 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         {
             _orderService.Dispose();
         }
-
-
         private ICustomModelState _modelState;
         private IOrderService _orderService;
-
 
         public ICustomModelState ModelState { get { return _modelState; } }
         public DisplayOrderViewModel Search(int OrderHeaderID)
@@ -47,7 +44,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 returnVM.StatusMessage = "No Orders Found";
             return returnVM;
         }
-        public DisplayOrderViewModel UpdateItems(AmendOrderItemsViewModel newModel)
+        public DisplayOrderViewModel UpdateItems(AmendOrderItemsPreviewViewModel newModel)
         {
             //DO MORE WORK ON THIS DEFO!!!!!!!!!! CLEAN UP !!!!!!!!!
             var dbExistingOrderItems = _orderService.GetOrderItemsForOrder(newModel.HeaderDetail.OrderID);
@@ -56,8 +53,15 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             {
                 if(item.OrderItemID == 0) //New item, this needs adding.
                 {
-                    int orderItemID = _orderService.AddItemToOrder(ConvertDetailedItemDTOToCreateItemDTO(item));
-                    if(orderItemID == 0)                    
+                    OrderItemCreationDTO creationDTO = new OrderItemCreationDTO();
+                    creationDTO.ItemID = item.ItemID;
+                    creationDTO.OrderHeaderID = newModel.HeaderDetail.OrderID;
+                    creationDTO.OrderItemDescription = item.OrderItemDescription;
+                    creationDTO.OrderItemQty = item.OrderItemQty;
+                    creationDTO.OrderItemStatusID = 1;
+                    creationDTO.OrderItemUnitPriceAfterDiscount = item.OrderItemUnitPriceAfterDiscount;
+                    int orderItemID = _orderService.AddItemToOrder(creationDTO);
+                    if(orderItemID == 0)
                         errorDetected = true;
                 }
             }
@@ -99,20 +103,23 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
         public AmendOrderItemsViewModel GetAmendOrderItemsViewModel(int orderID)
         {
-            AmendOrderItemsViewModel returnVM = null;
+            AmendOrderItemsViewModel returnVM = new AmendOrderItemsViewModel();
+            
             var searchHeader = _orderService.GetOrderHeaderDetailed(orderID);
+            if(searchHeader != null)
+                returnVM.HeaderDetail = searchHeader;
+            else 
+                return null;//No Search Result
+            
             var searchItems = _orderService.GetOrderItemsDetailed(orderID);
             if(searchItems != null)
-            {
-                returnVM = new AmendOrderItemsViewModel();
                 foreach(var result in searchItems)
                     returnVM.ItemDetails.Add(result);
 
-                AppendStockHierarchyAndAvailableItems(returnVM);
-            }
+            AppendStockHierarchyAndAvailableItems(returnVM);
+
             return returnVM;
         }       
-        
         public CreateOrderViewModel GetEmptyCreateModel()
         {
             CreateOrderViewModel emptyModel = new CreateOrderViewModel();
@@ -171,6 +178,8 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         }
         private void AppendStockHierarchyAndAvailableItems(AmendOrderItemsViewModel vmDestination)
         {
+            //THIS NEEDS A GOOD REWORK TO MOVE SOME FUNCTIONALITY AND LOGIC TO THE BLL SERVICE MODULE
+            
             //Set up Stock Hierarchy Object as well as Available Item List
             StockHierarchyViewModel stockHierarchy = new StockHierarchyViewModel();
             List<ItemViewModel> availableItems = new List<ItemViewModel>();

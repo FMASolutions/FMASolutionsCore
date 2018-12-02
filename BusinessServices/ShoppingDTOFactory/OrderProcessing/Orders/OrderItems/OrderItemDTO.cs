@@ -10,7 +10,5 @@ namespace FMASolutionsCore.BusinessServices.ShoppingDTOFactory
         public int OrderItemUnitPrice {get;set;}
         public string OrderItemStatus {get;set;}
         public int ItemID {get;set;}
-
-
     }
 }

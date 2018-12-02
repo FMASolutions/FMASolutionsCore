@@ -44,6 +44,7 @@
         <Label class="error-text">@(Model.StatusMessage) </Label>
     }
     <form class="form-signin">
+
         <div class="row mb-2 no-gutters" id="OrderTitleRow">
             <div class="col-6 text-left" id="OrderIDHeading">            
                 <h2 class="pr-2">Order Number:</h3>            
@@ -52,6 +53,7 @@
                 <h2 class="pl-2">Order Status:</h3>
             </div>
         </div>
+
         <div class="row mb-2 no-gutters" id="OrderTitleRow">
             <div class="col-6 text-left" id="OrderIDHeading">            
                 @Html.DisplayFor(model => model.HeaderDetail.OrderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
@@ -61,6 +63,7 @@
                 @Html.DisplayFor(model => model.HeaderDetail.OrderStatusValue, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
             </div>
         </div>
+
         <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-dark text-light" id="CustomerInfoContainer">
             <h3>Customer Info:</h3>
             <div class="row no-gutters" id="SelectdCustomerRow">
@@ -86,6 +89,146 @@
             <div class="row no-gutters" id="AddressCountry">
                 @Model.HeaderDetail.CountryName
             </div>            
-        </div>    
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6"><button type="submit" formaction=@Url.Action("ProcessAmendItems") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>                     
+            <div class="col-sm-6"><a href="/Order/Search/@Model.HeaderDetail.OrderID" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></button></div>
+        </div>
+
+        <div class="container-fluid rounded mb-3 pt-2 pb-2 pl-0 pr-0 ml-0 mr-0 text-light bg-dark" id="ExistingItemsContainer">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="text-left">
+                        <h3 class="pl-2">Current Items:</h3>
+                        <table class="table table-striped table-dark" id="ExistingItemsTable">
+                            <thead>
+                                <tr>
+                                    <th>Item Description</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-center">Unit Price</th>
+                                    <th class="text-center">Remove?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @for (var i = 0; i < Model.ItemDetails.Count; i++)
+                            {
+                                <tr id="ItemRow@(Model.ItemDetails[i].OrderItemID)">
+                                    <td><span> 
+                                        @Html.DisplayFor(model => model.ItemDetails[i].OrderItemDescription, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.ItemDetails[i].OrderItemDescription)
+                                    </span></td>
+                                    <td class="text-center"><span>
+                                        @Html.DisplayFor(model => model.ItemDetails[i].OrderItemQty, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.ItemDetails[i].OrderItemQty)
+                                    </span></td>
+                                    <td class="text-center"><span>
+                                        @Html.DisplayFor(model => model.ItemDetails[i].OrderItemUnitPriceAfterDiscount, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.ItemDetails[i].OrderItemUnitPriceAfterDiscount)
+                                    </span></td>
+                                    @if (Model.ItemDetails[i].OrderItemStatusValue == "Estimate")
+                                    { 
+                                        <td class="ExistingItemsRemovalButton text-center"><span class="form-control">                                                                           
+                                            Remove
+                                        </span></td> 
+                                    }          
+                                    else
+                                    {
+                                        <td class="text-center"><span>                                                                           
+                                            N/A
+                                        </span></td> 
+                                    }                     
+                                    @Html.HiddenFor(model => model.ItemDetails[i].ItemID)
+                                    @Html.HiddenFor(model => model.ItemDetails[i].OrderItemID)
+                                </tr>  
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-dark" id="AddSearchItemWrapper">
+                <h3>Search and Add:</h3>
+                <span>Code:<input type="text" class="form-control" placeholder="Code" id="CodeInputSearch"></span>
+                <span>Qty:<input type="number" class="form-control" placeholder="Qty" id="QtyInputSearch"></span>
+                <span>Price:<input type="number" class="form-control" placeholder="Price" id="PriceInputSearch"></span>
+                <span><input type="button" class="btn btn-outline-light btn-block mb-3 mt-2" value="Add Item" id="AddItemButtonSearch"></span>
+        </div>
+
+        <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-secondary" id="ItemSelectorContainer">
+            <h3>Item Selector:</h3>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="text-left" id="AvailableItemDropdown">
+                        Item:
+                        @(Html.DropDownList("SelectedItem", 
+                            new SelectList(Model.AvailableItems, "ItemID", "ItemName",""),
+                            "Select Item",
+                            new { @class = "form-control" }
+                        ))
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="text-left">
+                        Qty: <input type="text" class="form-control" placeholder="Qty" id="QtyInput">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="text-left">
+                        Unit Price:  <input type="text" class="form-control" placeholder="Qty" id="UnitPriceInput">
+                    </div>
+                </div>
+            </div> 
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="text-left">
+                        <input type="button" value="Add Item" id="DDAddItemButton" class="btn btn-outline-light btn-block mb-3 mt-2">
+                    </div>
+                </div>
+            </div>   
+        </div>
+
+        <div id="ItemAccordionWrapper">
+            <h3 class="bg-dark text-light mb-0 pb-2">Item Hierarchy:</h2>
+            @for (var i = 0; i < Model.StockHierarchy.ProductGroups.Count; i++)
+            {
+                <div class="ProductWrapper">
+                    <h3 class="ProductHeading text-light mb-0">@(Model.StockHierarchy.ProductGroups[i].ProductGroupName)</h3>    
+                    @for(var j = 0; j < Model.StockHierarchy.ProductGroups[i].AvailableSubs.Count; j++)
+                    {
+                        <div class="SubGroupWrapper mb-0 mt-0 pt-0 pb-2">
+                            <h3 class="SubHeading mb-0 mt-0 pt-0 pb-0">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].SubGroupName)</h3>
+                            <ul class="ItemList mb-0 pb-0">
+                                @for(var k=0; k < Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items.Count; k++)
+                                {
+                                    <li class="btn-outline-dark pb-3 pl-1 pr-1 ">
+                                        <span class="ItemDescritpion text-light ">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemDescription)</span>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <span><input type="number" placeholder="Qty" class="QtyInput form-control"></span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span><input type="number" placeholder="Price" class="PriceInput form-control"></span>
+                                            </div>
+                                        </div>
+                                        <span><input type="button" value="Add Item" class="AddAccordItemButton form-control btn btn-outline-light btn-block mt-3"></span>
+                                        <span style="display: none" class="ItemID">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemID)</span>
+                                        <span style="display: none" class="MinimumPrice">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemUnitPriceWithMaxDiscount)</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="row mt-3">        
+            <div class="col-sm-6"><button type="submit" formaction=@Url.Action("ProcessAmendItems") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>            
+            <div class="col-sm-6"><a href="/Order/Search/@Model.HeaderDetail.OrderID" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></div>        
+        </div>
     </form>
 </div>
+<script src="~/SiteAssets/js/order.js"></script>

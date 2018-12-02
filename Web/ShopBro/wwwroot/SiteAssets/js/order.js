@@ -126,15 +126,15 @@ function GenerateItemHTML(itemID, itemDescription, itemStatus, qty, price, index
     var newHTML = '<tr id=' + tableRowID + '>';
         newHTML += '<td><span>'; 
             newHTML += itemDescription;
-            newHTML += '<input id="ExistingItems_' + indexValue + '__ItemDescription" name="ExistingItems[' + indexValue + '].ItemDescription" type="hidden" value="' + itemDescription + '">';
+            newHTML += '<input id="ItemDetails_' + indexValue + '__OrderItemDescription" name="ItemDetails[' + indexValue + '].OrderItemDescription" type="hidden" value="' + itemDescription + '">';
         newHTML += '</span></td>';
         newHTML += '<td class="text-center"><span>';
             newHTML += qty;
-            newHTML += '<input data-val="true" data-val-number="The field Qty must be a number." data-val-required="The Qty field is required." id="ExistingItems_' + indexValue + '__Qty" name="ExistingItems[' + indexValue + '].Qty" type="hidden" value="' + qty + '">';
+            newHTML += '<input data-val="true" data-val-number="The field Qty must be a number." data-val-required="The Qty field is required." id="ItemDetails_' + indexValue + '__OrderItemQty" name="ItemDetails[' + indexValue + '].OrderItemQty" type="hidden" value="' + qty + '">';
         newHTML += '</span></td>';
         newHTML += '<td class="text-center"><span>';
             newHTML += price; 
-            newHTML += '<input data-val="true" data-val-number="The field UnitPrice must be a number." data-val-required="The UnitPrice field is required." id="ExistingItems_' + indexValue + '__UnitPrice" name="ExistingItems[' + indexValue + '].UnitPrice" type="hidden" value="' + Number(Math.round(price+'e2')+'e-2').toFixed(2) + '">';
+            newHTML += '<input data-val="true" data-val-number="The field UnitPrice must be a number." data-val-required="The UnitPrice field is required." id="ItemDetails_' + indexValue + '__OrderItemUnitPriceAfterDiscount" name="ItemDetails[' + indexValue + '].OrderItemUnitPriceAfterDiscount" type="hidden" value="' + Number(Math.round(price+'e2')+'e-2').toFixed(2) + '">';
         newHTML += '</span></td>';
 
         if(itemStatus.indexOf("Estimate") >= 0){
@@ -149,10 +149,10 @@ function GenerateItemHTML(itemID, itemDescription, itemStatus, qty, price, index
             newHTML += '</span></td>';
         }
    
-        newHTML += '<input data-val="true" data-val-required="The ItemID field is required." id="ExistingItems_' + indexValue + '__ItemID" name="ExistingItems[' + indexValue + '].ItemID" type="hidden" value="' + itemID + '">';
+        newHTML += '<input data-val="true" data-val-required="The ItemID field is required." id="ItemDetails_' + indexValue + '__ItemID" name="ItemDetails[' + indexValue + '].ItemID" type="hidden" value="' + itemID + '">';
         if(orderItemRowID > 0)
         {
-            newHTML += '<input data-val="true" data-val-required="The OrderItemRowID field is required." id="ExistingItems_' + indexValue + '__OrderItemRowID" name="ExistingItems[' + indexValue + '].OrderItemRowID" type="hidden" value="' + orderItemRowID + '">'
+            newHTML += '<input data-val="true" data-val-required="The OrderItemRowID field is required." id="ItemDetails_' + indexValue + '__OrderItemID" name="ItemDetails[' + indexValue + '].OrderItemID" type="hidden" value="' + orderItemRowID + '">'
         }
     newHTML += '</tr>'
     return newHTML;
