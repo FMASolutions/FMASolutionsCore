@@ -132,6 +132,8 @@ namespace FMASolutionsCore.Web.ShopBro.Models
                 emptyModel.AvailableCustomers.Add(customer.CustomerID, customer.CustomerName);
 
             emptyModel.NewAddressLocationVM = newAddressVM;
+            emptyModel.OrderDeliveryDueDate = DateTime.Now;
+            emptyModel.OrderDate = DateTime.Now.AddDays(3);
             return emptyModel;
         }
         

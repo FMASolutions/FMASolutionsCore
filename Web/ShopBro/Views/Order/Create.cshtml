@@ -51,7 +51,7 @@
                 <div class="col-9" id="DeliveryAddressExistingDDListCol">                
                     @(Html.DropDownListFor(
                         m => m.SelectedAddressID,
-                        new SelectList(Model.AvailableAddresses, "AddressLocationID", "AddressFull",Model.SelectedAddressID),     
+                        new SelectList(Model.AvailableAddresses, "Key", "Value",Model.SelectedAddressID),     
                         new { @class = "form-control bg-secondary text-light", @id = "DeliveryAddressExistingDDList"}
                     ))
                 </div>           
