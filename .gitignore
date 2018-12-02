@@ -12,6 +12,7 @@
 *.png
 *.jpeg
 *.jpg
+*.txt
 Logs/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
