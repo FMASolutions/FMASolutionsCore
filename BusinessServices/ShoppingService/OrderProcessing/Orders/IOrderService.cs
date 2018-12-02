@@ -20,7 +20,5 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         List<Customer> GetAvailableCustomers();
         List<AddressLocation> GetAvailableAddresses();
         List<CityArea>  GetAvailableCityAreas();
-        
-        
     }
 }
