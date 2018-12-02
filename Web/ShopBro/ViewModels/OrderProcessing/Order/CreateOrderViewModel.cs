@@ -10,6 +10,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
         {
             AvailableCustomers = new Dictionary<int, string>();
             AvailableAddresses = new Dictionary<int, string>();
+            UseExistingAddress = true;
         }
         public string StatusMessage {get;set;}
         public Dictionary<int, string> AvailableCustomers {get;set;}

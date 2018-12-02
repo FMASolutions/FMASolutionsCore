@@ -17,7 +17,6 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             _orderService = orderService;
         }
         private IOrderService _orderService;
-        
 
         public IActionResult Index()
         {
@@ -65,7 +64,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return View("Search",new GenericSearchViewModel());
         }
 
-       [HttpGet]
+        [HttpGet]
         public IActionResult AmendItems(int id=0)
         {
             OrderModel model = GetOrderModel();

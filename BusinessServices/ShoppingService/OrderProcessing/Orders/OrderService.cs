@@ -55,7 +55,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                     customerAddressID = _uow.CustomerAddressRepo.GetCustomerAddressIDByCustomerAndAddress(customerID, addressID);
             
             return CreateOrder(customerAddressID, customerID, orderHeader.OrderDate, orderHeader.DeliveryDate, 1);
-        
         }
         private int CreateOrder(int customerAddressID, int customerID, DateTime orderDate, DateTime deliveryDate, int statusID)
         {
