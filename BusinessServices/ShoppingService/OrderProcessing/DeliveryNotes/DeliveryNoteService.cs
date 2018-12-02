@@ -47,16 +47,5 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             return _uow.DeliveryNoteRepo.GetDeliveryNoteItems(deliveryNoteID);
         }
-
-        private DeliveryNote ConvertDeliveryNoteToModel(DeliveryNoteEntity entity)
-        {
-            return new DeliveryNote( 
-                new CustomModelState(),
-                entity.Items,
-                entity.DeliveryNoteID,
-                entity.OrderHeaderID,
-                entity.DeliveryDate
-            );
-        }
     }
 }
