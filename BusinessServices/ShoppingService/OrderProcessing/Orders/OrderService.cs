@@ -90,14 +90,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
             return returnDic;
         }
         
-
-
-
-
-
-
-
-
         public int AddItemToOrder(OrderItemCreationDTO item)
         {
             bool success = false;
@@ -134,14 +126,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             return  _uow.OrderItemRepo.GetOrderItemsForOrder(orderHeaderID);
         }
-
-
-
-
-
-
-        
-
 
         //Wrappers to other services
         public IEnumerable<int> GetDeliveryNotesForOrder(int orderID)
