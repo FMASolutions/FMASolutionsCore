@@ -160,7 +160,9 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             if (uploadFile != null && uploadFile.FileName.Length > 0)
             {
                 var uploads = System.IO.Path.Combine(he.WebRootPath, "SiteAssets/images/Items");
-                var filePath = System.IO.Path.Combine(uploads, newModel.ItemCode + uploadFile.FileName);                
+                System.IO.Directory.CreateDirectory(uploads);
+                var filePath = System.IO.Path.Combine(uploads, newModel.ItemCode + uploadFile.FileName);
+                
                 using (var stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
                 {
                     uploadFile.CopyTo(stream);
