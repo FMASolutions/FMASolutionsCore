@@ -92,6 +92,58 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         }
         
 
+
+
+
+
+
+
+
+        public int AddItemToOrder(OrderItemCreationDTO item)
+        {
+            bool success = false;
+            int orderItemID = -1; //Error Value
+            item.OrderItemStatusID = 1; //Estimate as new item
+            OrderItemEntity entity = new OrderItemEntity(0, item.OrderHeaderID, item.ItemID, item.OrderItemStatusID
+                ,item.OrderItemUnitPrice, item.OrderItemUnitPriceAfterDiscount, item.OrderItemQty, item.OrderItemDescription);
+            success = _uow.OrderItemRepo.Create(entity);
+            if(success)
+            {   
+                _uow.SaveChanges();                     
+                return _uow.OrderItemRepo.GetLatestOrderItemByOrder(item.OrderHeaderID);
+            }
+            
+            return orderItemID;           
+        }
+        public bool RemoveItemFromOrder(int orderItemID)
+        {
+            OrderItemEntity orderItem = new OrderItemEntity();
+            orderItem.OrderItemID = orderItemID;
+            if (orderItemID > 0)
+                if(_uow.OrderItemRepo.Delete(orderItem))
+                {
+                    _uow.SaveChanges();
+                    return true;
+                }
+            return false;     
+        }
+        public IEnumerable<OrderItemDetailedDTO> GetOrderItemsDetailed(int orderHeaderID)
+        {
+            return _uow.OrderItemRepo.GetOrderItemsDetailedForOrder(orderHeaderID);            
+        }
+        public IEnumerable<OrderItemDTO> GetOrderItemsForOrder(int orderHeaderID)
+        {
+            return  _uow.OrderItemRepo.GetOrderItemsForOrder(orderHeaderID);
+        }
+
+
+
+
+
+
+        
+
+
         //Wrappers to other services
         public IEnumerable<int> GetDeliveryNotesForOrder(int orderID)
         {

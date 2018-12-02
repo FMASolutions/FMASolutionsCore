@@ -12,6 +12,17 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         IEnumerable<OrderPreviewDTO> GetAllOrders();              
         OrderHeaderDetailedDTO GetOrderHeaderDetailed(int orderHeaderID);
         Dictionary<int, string> GetOrderStatusDictionary();
+
+
+
+
+        int AddItemToOrder(OrderItemCreationDTO item);
+        bool RemoveItemFromOrder(int orderItemID);
+        IEnumerable<OrderItemDTO> GetOrderItemsForOrder(int orderHeaderID);
+        IEnumerable<OrderItemDetailedDTO> GetOrderItemsDetailed(int orderHeaderID);
+
+
+        
         
         //Wrappers to other services.
         IEnumerable<int> GetDeliveryNotesForOrder(int orderID);

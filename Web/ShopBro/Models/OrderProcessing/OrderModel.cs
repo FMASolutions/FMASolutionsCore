@@ -9,11 +9,10 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 {
     public class OrderModel : IModel, IDisposable
     {
-        public OrderModel(ICustomModelState modelState, IOrderService orderService, IOrderItemService orderItemService)
+        public OrderModel(ICustomModelState modelState, IOrderService orderService)
         {
             _modelState = modelState;
             _orderService = orderService;
-            _orderItemService = orderItemService;
         }
         public void Dispose()
         {
@@ -23,7 +22,6 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
         private ICustomModelState _modelState;
         private IOrderService _orderService;
-        private IOrderItemService _orderItemService;
 
 
         public ICustomModelState ModelState { get { return _modelState; } }
@@ -31,7 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         {
             DisplayOrderViewModel returnVM = null;
             var orderModel = _orderService.GetOrderHeader(OrderHeaderID);
-            var items = _orderItemService.GetOrderItemsForOrder(OrderHeaderID);
+            var items = _orderService.GetOrderItemsForOrder(OrderHeaderID);
             if(orderModel != null && items != null)
             {                
                 returnVM = ConvertToDisplayViewModel(orderModel, items);
@@ -52,13 +50,13 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public DisplayOrderViewModel UpdateItems(AmendOrderItemsViewModel newModel)
         {
             //DO MORE WORK ON THIS DEFO!!!!!!!!!! CLEAN UP !!!!!!!!!
-            var dbExistingOrderItems = _orderItemService.GetOrderItemsForOrder(newModel.HeaderDetail.OrderID);
+            var dbExistingOrderItems = _orderService.GetOrderItemsForOrder(newModel.HeaderDetail.OrderID);
             bool errorDetected = false;
             foreach(var item in newModel.ItemDetails)
             {
                 if(item.OrderItemID == 0) //New item, this needs adding.
                 {
-                    int orderItemID = _orderItemService.AddItemToOrder(ConvertDetailedItemDTOToCreateItemDTO(item));
+                    int orderItemID = _orderService.AddItemToOrder(ConvertDetailedItemDTOToCreateItemDTO(item));
                     if(orderItemID == 0)                    
                         errorDetected = true;
                 }
@@ -67,7 +65,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             {
                 //Check if the item still exists in the new model, it may need deleting.
                 if(!newModel.ItemDetails.Exists(e => e.OrderItemID == item.OrderItemID && e.OrderItemID != 0))
-                    if(!_orderItemService.RemoveItemFromOrder(item.OrderItemID))
+                    if(!_orderService.RemoveItemFromOrder(item.OrderItemID))
                         errorDetected = true;
             }
             if(errorDetected)
@@ -103,7 +101,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         {
             AmendOrderItemsViewModel returnVM = null;
             var searchHeader = _orderService.GetOrderHeaderDetailed(orderID);
-            var searchItems = _orderItemService.GetOrderItemsDetailed(orderID);
+            var searchItems = _orderService.GetOrderItemsDetailed(orderID);
             if(searchItems != null)
             {
                 returnVM = new AmendOrderItemsViewModel();

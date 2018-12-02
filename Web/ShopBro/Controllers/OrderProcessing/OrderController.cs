@@ -12,13 +12,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
     public class OrderController : BaseController
     {
         
-        public OrderController(IOrderService orderService, IOrderItemService orderItemService)
+        public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
-            _orderItemService = orderItemService;
         }
         private IOrderService _orderService;
-        private IOrderItemService _orderItemService;
         
 
         public IActionResult Index()
@@ -112,7 +110,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
          
         private OrderModel GetOrderModel()
         {
-            return new OrderModel(new ModelStateConverter(this).Convert(), _orderService, _orderItemService);
+            return new OrderModel(new ModelStateConverter(this).Convert(), _orderService);
         }
     }
 }
