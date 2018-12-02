@@ -18,33 +18,33 @@
         {
             <Label class="error-text">@Model.StatusMessage </Label>
         }
-        @foreach (var item in Model.ProductGroups)
-        {
-            <div class="container rounded mb-3 pb-3 pt-3 bg-dark">
-                <div class="row ">
-                    <div class="col-sm-3 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">ProductGroup ID: @item.ProductGroupID</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">ProductGroup Code: @item.ProductGroupCode</span>
-                        </div>            
-                    </div>
-                    <div class="col-sm-6 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">ProductGroup Name: @item.ProductGroupName</span>
-                        </div>            
-                    </div>
-                </div>            
-                <div class="row">
-                    <div class="col-sm-12">      
-                        <a href="/ProductGroup/Search/@item.ProductGroupID" class="btn btn-outline-light btn-block">View</a>
-                    </div>                
-                </div>                         
-            </div>                          
-        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                                    
+                    <table class="table table-striped table-dark" id="DisplayAllTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ProductGroups)
+                            {
+                                <tr>
+                                    <td>@(item.ProductGroupID)</td>
+                                    <td>@(item.ProductGroupCode)</td>
+                                    <td>@(item.ProductGroupName)</td>
+                                    <td><a href="/ProductGroup/Search/@item.ProductGroupID" class="btn btn-outline-light btn-block">View</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>                
+            </div>
+        </div>
         <div class="col-sm-12 mt-5">
             <a href="/ProductGroup" class="btn btn-outline-dark btn-block mb-3">Back</a>
         </div>            

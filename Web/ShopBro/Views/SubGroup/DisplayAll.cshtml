@@ -19,33 +19,34 @@
         {
             <Label class="error-text">@Model.StatusMessage </Label>
         }
-        @foreach (var item in Model.SubGroups)
-        {
-            <div class="container rounded mb-3 pb-3 pt-3 bg-dark">
-                <div class="row ">
-                    <div class="col-sm-3 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">SubGroup ID: @item.SubGroupID</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">SubGroup Code: @item.SubGroupCode</span>
-                        </div>            
-                    </div>
-                    <div class="col-sm-6 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">SubGroup Name: @item.SubGroupName</span>
-                        </div>            
-                    </div>
-                </div>            
-                <div class="row">
-                    <div class="col-sm-12">      
-                        <a href="/SubGroup/Search/@item.SubGroupID" class="btn btn-outline-light btn-block">View</a>
-                    </div>                
-                </div>                         
-            </div>                          
-        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                                    
+                    <table class="table table-striped table-dark" id="DisplayAllTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Qty</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.SubGroups)
+                            {
+                                <tr>
+                                    <td>@(item.SubGroupID)</td>
+                                    <td>@(item.SubGroupCode)</td>
+                                    <td>@(item.SubGroupName)</td>
+                                    <td><a href="/SubGroup/Search/@item.SubGroupID" class="btn btn-outline-light btn-block">View</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>                
+            </div>
+        </div>
         <div class="col-sm-12 mt-5">
             <a href="/SubGroup" class="btn btn-outline-dark btn-block mb-3">Back</a>
         </div>            

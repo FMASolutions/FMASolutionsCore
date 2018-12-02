@@ -19,33 +19,33 @@
         {
             <Label class="error-text">@Model.StatusMessage </Label>
         }
-        @foreach (var item in Model.CustomerTypes)
-        {
-            <div class="container rounded mb-3 pb-3 pt-3 bg-dark">
-                <div class="row ">
-                    <div class="col-sm-3 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">Customer Type ID: @item.CustomerTypeID</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">Customer Type Code: @item.CustomerTypeCode</span>
-                        </div>            
-                    </div>
-                    <div class="col-sm-6 mb-2">
-                        <div class="text-left">                    
-                            <span class="form-control">Customer Type Name: @item.CustomerTypeName</span>
-                        </div>            
-                    </div>
-                </div>            
-                <div class="row">
-                    <div class="col-sm-12">      
-                        <a href="/CustomerType/Search/@item.CustomerTypeID" class="btn btn-outline-light btn-block">View</a>
-                    </div>                
-                </div>                         
-            </div>                          
-        }
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-left">                                    
+                    <table class="table table-striped table-dark" id="DisplayAllTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Code</th>
+                                <th>Type</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CustomerTypes)
+                            {
+                                <tr>
+                                    <td>@(item.CustomerTypeID)</td>
+                                    <td>@(item.CustomerTypeCode)</td>
+                                    <td>@(item.CustomerTypeName)</td>
+                                    <td><a href="/CustomerType/Search/@item.CustomerTypeID" class="btn btn-outline-light btn-block">View</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>                
+            </div>
+        </div>
         <div class="col-sm-12 mt-5">
             <a href="/CustomerType" class="btn btn-outline-dark btn-block mb-3">Back</a>
         </div>            
