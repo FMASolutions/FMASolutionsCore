@@ -49,12 +49,13 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             //DO MORE WORK ON THIS DEFO!!!!!!!!!! CLEAN UP !!!!!!!!!
             var dbExistingOrderItems = _orderService.GetOrderItemsForOrder(newModel.HeaderDetail.OrderID);
             bool errorDetected = false;
+            var stockHierarchy = _orderService.GetStockHierarchy();
             foreach(var item in newModel.ItemDetails)
             {
                 if(item.OrderItemID == 0) //New item, this needs adding.
                 {
-                    
-                    int orderItemID = _orderService.AddItemToOrder(GetItemCreationDTOFromItemPreview(item, newModel.HeaderDetail.OrderID));
+                    var currentStockItem = stockHierarchy.Find(x => x.ItemID == item.ItemID);
+                    int orderItemID = _orderService.AddItemToOrder(GetItemCreationDTOFromItemPreview(item, newModel.HeaderDetail.OrderID, currentStockItem.ItemUnitPrice));
                     if(orderItemID == 0)
                         errorDetected = true;
                 }
@@ -158,7 +159,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
             return returnVM;
         }
-        private OrderItemCreationDTO GetItemCreationDTOFromItemPreview(OrderItemPreviewDTO itemPreviewDTO, int orderHeaderID)
+        private OrderItemCreationDTO GetItemCreationDTOFromItemPreview(OrderItemPreviewDTO itemPreviewDTO, int orderHeaderID, decimal priceWithoutDiscount)
         {
             OrderItemCreationDTO creationDTO = new OrderItemCreationDTO();
             creationDTO.ItemID = itemPreviewDTO.ItemID;
@@ -166,6 +167,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             creationDTO.OrderItemDescription = itemPreviewDTO.OrderItemDescription;
             creationDTO.OrderItemQty = itemPreviewDTO.OrderItemQty;
             creationDTO.OrderItemStatusID = 1;
+            creationDTO.OrderItemUnitPrice = priceWithoutDiscount; //Preview doesn't hold this, we need to be given the current stock price from the stock record.
             creationDTO.OrderItemUnitPriceAfterDiscount = itemPreviewDTO.OrderItemUnitPriceAfterDiscount;
             return creationDTO;
         }
