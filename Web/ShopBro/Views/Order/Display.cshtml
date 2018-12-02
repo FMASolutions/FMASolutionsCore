@@ -74,8 +74,8 @@
                             {
                                 <tr id="ItemRow@(Model.OrderItems[i].OrderItemID)">
                                     <td><span> 
-                                        @Html.DisplayFor(model => model.OrderItems[i].ItemDescription, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
-                                        @Html.HiddenFor(model => model.OrderItems[i].ItemDescription)
+                                        @Html.DisplayFor(model => model.OrderItems[i].OrderItemDescription, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.OrderItems[i].OrderItemDescription)
                                     </span></td>
                                     <td class="text-center"><span>
                                         @Html.DisplayFor(model => model.OrderItems[i].OrderItemQty, new { ReadOnly="true", Class="form-control mb-2 ml-1"})

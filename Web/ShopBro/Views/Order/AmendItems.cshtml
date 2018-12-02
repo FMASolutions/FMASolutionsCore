@@ -54,8 +54,8 @@
         </div>
         <div class="row mb-2 no-gutters" id="OrderTitleRow">
             <div class="col-6 text-left" id="OrderIDHeading">            
-                @Html.DisplayFor(model => model.HeaderDetail.OrderHeaderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
-                @Html.HiddenFor(model => model.HeaderDetail.OrderHeaderID)          
+                @Html.DisplayFor(model => model.HeaderDetail.OrderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
+                @Html.HiddenFor(model => model.HeaderDetail.OrderID)          
             </div>
             <div class="col-6 text-right" id="OrderStatusHeading">
                 @Html.DisplayFor(model => model.HeaderDetail.OrderStatusValue, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
