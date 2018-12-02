@@ -53,14 +53,8 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             {
                 if(item.OrderItemID == 0) //New item, this needs adding.
                 {
-                    OrderItemCreationDTO creationDTO = new OrderItemCreationDTO();
-                    creationDTO.ItemID = item.ItemID;
-                    creationDTO.OrderHeaderID = newModel.HeaderDetail.OrderID;
-                    creationDTO.OrderItemDescription = item.OrderItemDescription;
-                    creationDTO.OrderItemQty = item.OrderItemQty;
-                    creationDTO.OrderItemStatusID = 1;
-                    creationDTO.OrderItemUnitPriceAfterDiscount = item.OrderItemUnitPriceAfterDiscount;
-                    int orderItemID = _orderService.AddItemToOrder(creationDTO);
+                    
+                    int orderItemID = _orderService.AddItemToOrder(GetItemCreationDTOFromItemPreview(item, newModel.HeaderDetail.OrderID));
                     if(orderItemID == 0)
                         errorDetected = true;
                 }
@@ -164,16 +158,15 @@ namespace FMASolutionsCore.Web.ShopBro.Models
 
             return returnVM;
         }
-        private OrderItemCreationDTO ConvertDetailedItemDTOToCreateItemDTO(OrderItemDetailedDTO detailedDTO)
+        private OrderItemCreationDTO GetItemCreationDTOFromItemPreview(OrderItemPreviewDTO itemPreviewDTO, int orderHeaderID)
         {
             OrderItemCreationDTO creationDTO = new OrderItemCreationDTO();
-            creationDTO.ItemID = detailedDTO.ItemID;
-            creationDTO.OrderHeaderID = detailedDTO.OrderID;
-            creationDTO.OrderItemDescription = detailedDTO.OrderItemDescription;
-            creationDTO.OrderItemQty = detailedDTO.OrderItemQty;
+            creationDTO.ItemID = itemPreviewDTO.ItemID;
+            creationDTO.OrderHeaderID = orderHeaderID;
+            creationDTO.OrderItemDescription = itemPreviewDTO.OrderItemDescription;
+            creationDTO.OrderItemQty = itemPreviewDTO.OrderItemQty;
             creationDTO.OrderItemStatusID = 1;
-            creationDTO.OrderItemUnitPrice = detailedDTO.OrderItemUnitPrice;
-            creationDTO.OrderItemUnitPriceAfterDiscount = detailedDTO.OrderItemUnitPriceAfterDiscount;
+            creationDTO.OrderItemUnitPriceAfterDiscount = itemPreviewDTO.OrderItemUnitPriceAfterDiscount;
             return creationDTO;
         }
         private void AppendStockHierarchyAndAvailableItems(AmendOrderItemsViewModel vmDestination)
