@@ -227,7 +227,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT OrderItemID,OrderItemDescription,OrderItemQty,OrderItemUnitPrice,oiStatus.OrderStatusValue AS [OrderItemStatus],ItemID
+                SELECT OrderItemID,OrderItemDescription,OrderItemQty,OrderItemUnitPriceAfterDiscount AS [OrderItemUnitPrice],oiStatus.OrderStatusValue AS [OrderItemStatus],ItemID
                 FROM OrderItems ordItm
                 INNER JOIN OrderStatus oiStatus ON oiStatus.OrderStatusID = ordItm.OrderItemStatusID
                 WHERE ordItm.OrderHeaderID = @OrderHeaderID
