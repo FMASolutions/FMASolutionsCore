@@ -6,6 +6,7 @@ using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.Web.ShopBro.Models;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
@@ -18,11 +19,13 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         private IOrderService _orderService;
 
+        [Authorize(Policy = "Admin")]
         public IActionResult Index()
         {
             return View("Search",new GenericSearchViewModel());
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public IActionResult Search(int id=0)
         {
@@ -38,6 +41,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 
         }
         
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {            
@@ -53,6 +57,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             }
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public IActionResult DisplayAll()
         {
@@ -72,6 +77,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             return View("AmendItems",vm);
         }
         
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public IActionResult ProcessAmendItems(AmendOrderItemsPreviewViewModel viewModel)
         {
@@ -84,6 +90,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return AmendItems(viewModel.HeaderDetail.OrderID);            
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public IActionResult Create()
         {
@@ -92,6 +99,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             return View("Create",emptyVM);
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public IActionResult Create(CreateOrderViewModel vm)
         {

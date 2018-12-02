@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.Web.ShopBro.Models;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
@@ -17,6 +18,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 
         private IInvoiceService _service;
 
+        [Authorize(Policy = "Admin")]
         public IActionResult GenInvoice(int id=0) //id = orderID
         {
             InvoiceModel model = GetNewModel();
@@ -27,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             else
                 return null;
         }
+        [Authorize(Policy = "Admin")]
         public IActionResult ViewInvoice(int id=0)
         {
             InvoiceModel model = GetNewModel();
@@ -37,6 +40,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
                 return null;
         }
 
+        [Authorize(Policy = "Admin")]
         private InvoiceModel GetNewModel()
         {
             return new InvoiceModel(new ModelStateConverter(this).Convert(), _service);

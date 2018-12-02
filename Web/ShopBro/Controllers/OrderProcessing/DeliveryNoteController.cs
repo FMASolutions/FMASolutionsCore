@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.Web.ShopBro.Models;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
@@ -16,6 +17,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         private IDeliveryNoteService _service;
 
+        [Authorize(Policy = "Admin")]
         public IActionResult DeliverItems(int id=0)
         {
             if(id>0)
@@ -30,6 +32,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             else
                 return null;
         }
+
+        [Authorize(Policy = "Admin")]
         public IActionResult ViewDeliveryNote(int id=0) //id = deliverynoteID
         {            
             DeliveryNoteModel model = GetNewModel();
