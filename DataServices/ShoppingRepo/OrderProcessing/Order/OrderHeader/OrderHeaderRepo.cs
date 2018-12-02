@@ -133,10 +133,10 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             try
             {
                 string query = @"
-                SELECT ordHead.OrderHeaderID AS [OrderID], ohStatus.OrderstatusValue AS [OrderStatus], cust.CustomerName
+                SELECT ordHead.OrderHeaderID AS [OrderID], ohStatus.OrderstatusValue AS [OrderStatus], cust.CustomerName AS [Customer]
                     ,ordHead.OrderDate, ordHead.DeliveryDate AS [OrderDueDate]
-                FROM OrderHeaders ordHead                
-                INNER JOIN OrderStatus ohStatus ON ohStatus.OrderStatusID = ordHead.OrderStatusID                
+                FROM OrderHeaders ordHead
+                INNER JOIN OrderStatus ohStatus ON ohStatus.OrderStatusID = ordHead.OrderStatusID
                 INNER JOIN Customers cust ON ordHead.CustomerID = cust.CustomerID
                 ";
 

@@ -95,11 +95,11 @@
                             }
                             </tbody>                        
                         </table>
-                        <div class="row">
+                        <div class="row ml-1 mr-1">
                             <div class="col-sm-6">
-                                <a href="/Order/AmendItems/@Model.OrderHeader.OrderID" class="btn btn-outline-dark bg-light btn-block ml-0 mt-2 mb-2 ml-2 pl-0 pr-0">Edit Items</a>                            
+                                <a href="/Order/AmendItems/@Model.OrderHeader.OrderID" class="btn btn-outline-dark bg-light btn-block mt-2 mb-2">Edit Items</a>                            
                             </div>
-                            <div class="col-sm-6 pr-4">                            
+                            <div class="col-sm-6">                            
                                 @if(Model.HasItemsAtEstimateStage)
                                 {
                                     <a href="/DeliveryNote/DeliverItems/@Model.OrderHeader.OrderID" class="btn btn-outline-dark bg-light btn-block mt-2 mb-2">Deliver Items</a>
