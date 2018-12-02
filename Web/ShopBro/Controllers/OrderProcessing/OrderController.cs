@@ -76,7 +76,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         
         [HttpPost]
-        public IActionResult ProcessEditItems(AmendOrderItemsViewModel vm)
+        public IActionResult ProcessAmendItems(AmendOrderItemsViewModel vm)
         {
             OrderModel model = GetOrderModel();
 
@@ -86,7 +86,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             else
             {
                 vm.StatusMessage = "Unable to update Order";                
-                return View("EditItems",vm);
+                return View("AmendItems",vm);
             }
         }
 
