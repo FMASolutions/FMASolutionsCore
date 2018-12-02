@@ -1,9 +1,9 @@
 using System;
 namespace FMASolutionsCore.BusinessServices.ShoppingDTOFactory
 {
-    public class DTOOrderItemDetailed
+    public class OrderItemDetailedDTO
     {
-        public int OrderHeaderID {get; set;}
+        public int OrderID {get; set;}
         public int OrderItemID {get; set;}
         public string OrderItemDescription {get;set;}
         public int OrderItemQty {get; set;}

@@ -16,20 +16,21 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public void Dispose()
         {           
             _service.Dispose();
+            
         }
 
         private ICustomModelState _modelState;
         private IDeliveryNoteService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
 
-        public DeliveryNoteViewModel DeliverItems(int orderHeaderID)
+        public DisplayDeliveryNoteViewModel DeliverItems(int orderHeaderID)
         {            
-            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
-
-            if(orderHeaderID > 0){
-                DeliveryNote deliveryNote = _service.DeliverOrderItems(orderHeaderID);
-                if(deliveryNote != null)
-                    vmReturn = ConvertDeliveryModelToViewModel(deliveryNote);
+            DisplayDeliveryNoteViewModel vmReturn = new DisplayDeliveryNoteViewModel();
+            if(orderHeaderID > 0)
+            {
+                int deliveryNoteID = _service.DeliverOrderItems(orderHeaderID);
+                if(deliveryNoteID > 0)
+                    vmReturn = GetDeliveryNoteByDeliveryNoteID(deliveryNoteID);
                 else
                     return null;
                 return vmReturn;
@@ -37,53 +38,21 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             else
                 return null;
         }        
-        public List<DeliveryNoteViewModel> GetDeliveryNoteByOrder(int orderID)
+        public DisplayDeliveryNoteViewModel GetDeliveryNoteByDeliveryNoteID(int deliveryNoteID)
         {
-            List<DeliveryNoteViewModel> deliveryNotes = new List<DeliveryNoteViewModel>();
-            List<DeliveryNote> searchResult = _service.GetDeliveryNotesForOrder(orderID);
-
-            foreach(var item in searchResult)
+            var notes = _service.GetDeliveryNoteByDeliveryNoteID(deliveryNoteID);
+            DisplayDeliveryNoteViewModel returnVM = null;
+            
+            if(notes != null)
             {
-                DeliveryNoteViewModel current = ConvertDeliveryModelToViewModel(item);
-                deliveryNotes.Add(current);
+                 returnVM = new DisplayDeliveryNoteViewModel();
+                foreach(var note in notes)
+                {
+                    returnVM.DeliveryNoteItems.Add(note);
+                }
             }
-            return deliveryNotes;            
-        }
-        public DeliveryNoteViewModel GetDeliveryNoteByDeliveryNoteID(int deliveryNoteID)
-        {
-            var note = _service.GetDeliveryNoteByID(deliveryNoteID);
-            if(note != null)
-                return ConvertDeliveryModelToViewModel(note);
-            return null;
+            return returnVM;
                    
-        }
-
-        private DeliveryNoteViewModel ConvertDeliveryModelToViewModel(DeliveryNote model)
-        {            
-            DeliveryNoteViewModel vmReturn = new DeliveryNoteViewModel();
-            List<DeliveryNoteItemViewModel> vmItems = new List<DeliveryNoteItemViewModel>();
-            Order orderModel = _service.GetOrder(model.OrderHeaderID);
-            vmReturn.DeliveryDateTime = model.DeliveryDate;
-            vmReturn.DeliveryNoteID = model.DeliveryNoteID;
-            vmReturn.orderHeaderID = model.OrderHeaderID;
-            foreach(var item in model.Items)
-            {
-                DeliveryNoteItemViewModel current = new DeliveryNoteItemViewModel();
-                
-                current.DeliveryNoteItemID = item.DeliveryNoteItemID;
-                current.ItemDeliveryDate = model.DeliveryDate;
-                current.OrderItemID = item.OrderItemID;
-                current.DeliveryNoteID = item.DeliveryNoteID;                
-
-                OrderItem currentOrderItem = orderModel.OrderItems.Find(e => e.OrderItemID == current.OrderItemID);
-                current.ItemID = currentOrderItem.ItemID;
-                current.ItemQty = currentOrderItem.OrderItemQty;
-                current.ItemDescription = currentOrderItem.OrderItemDescription;
-                vmItems.Add(current);
-            }
-            vmReturn.Items = vmItems;
-            return vmReturn;
-        }
-        
+        }        
     }
 }

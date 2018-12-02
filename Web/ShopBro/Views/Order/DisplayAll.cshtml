@@ -1,5 +1,5 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.OrdersViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.DisplayAllOrdersViewModel
 @{
     ViewData["Title"] = "Items - Update Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
@@ -17,7 +17,7 @@
                             <th>Order Status</th>
                             <th>Customer</th>
                             <th>Order Date</th>
-                            <th>Delivery Date</th>
+                            <th>Order Due Date</th>
                             <th>View Order</th>
                         </tr>
                     </thead>
@@ -27,9 +27,9 @@
                             <tr>
                                 <td>@order.OrderID</td>
                                 <td>@order.OrderStatus</td>
-                                <td>@order.AvailableCustomers[@order.CustomerID]</td>
-                                <td>@order.DeliveryDate</td>
+                                <td>@order.Customer</td>
                                 <td>@order.OrderDate</td>
+                                <td>@order.OrderDueDate</td>
                                 <td><a href="/Order/Search/@order.OrderID" class="btn btn-outline-light btn-block mb-3">View Order</a></td>
                             </tr>
                         }                

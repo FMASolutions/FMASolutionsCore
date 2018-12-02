@@ -154,7 +154,25 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             }
         }
         #endregion
+        public IEnumerable<OrderItemEntity> GetAllItemsForOrder(int orderID)
+        {
+            try
+            {
+                string query = @"
+                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemStatusID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
+                FROM OrderItems
+                WHERE OrderHeaderID = @OrderHeaderID";
 
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAllItemsForOrder Started: " + query);
+
+                return _dbConnection.Query<OrderItemEntity>(query, new { OrderHeaderID = orderID }, transaction: Transaction);
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAll: " + ex.Message, this);
+                return null;
+            }
+        }
         public int GetLatestOrderItemByOrder(int orderHeaderID)
         {
             try
@@ -176,12 +194,12 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return -1;
             }
         }
-        public IEnumerable<DTOOrderItemDetailed> GetOrderItemsDetailedForOrder(int orderHeaderID)
+        public IEnumerable<OrderItemDetailedDTO> GetOrderItemsDetailedForOrder(int orderHeaderID)
         {
             try
             {
                 string query = @"
-                SELECT ordHead.OrderHeaderID, ordItm.OrderItemID, ordItm.OrderItemDescription, ordItm.OrderItemQty
+                SELECT ordHead.OrderHeaderID AS [OrderID], ordItm.OrderItemID, ordItm.OrderItemDescription, ordItm.OrderItemQty
                 , ordItm.OrderItemUnitPrice, ordItm.OrderItemUnitPriceAfterDiscount, oiStatus.OrderStatusID AS [OrderItemStatusID]
                 , oiStatus.OrderstatusValue AS [OrderItemStatusValue], itm.ItemID, itm.ItemCode, itm.ItemImageFilename, sub.SubGroupID, sub.SubGroupCode, sub.SubGroupName
                 , sub.SubGroupDescription, prod.ProductGroupID, prod.ProductGroupCode, prod.ProductGroupName, prod.ProductGroupDescription
@@ -196,7 +214,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 ";
 
                 Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
-                return _dbConnection.Query<DTOOrderItemDetailed>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
+                return _dbConnection.Query<OrderItemDetailedDTO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
             }
             catch(Exception ex)
             {
@@ -204,19 +222,20 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 return null;
             }
         }
-        public IEnumerable<OrderItemEntity> GetOrderItemsForOrder(int orderHeaderID)
+        public IEnumerable<OrderItemDTO> GetOrderItemsForOrder(int orderHeaderID)
         {
             try
             {
                 string query = @"
-                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemStatusID,,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
-                FROM OrderItems
-                WHERE OrderHeaderID = @OrderHeaderID
+                SELECT OrderItemID,OrderItemDescription,OrderItemQty,OrderItemUnitPrice,oiStatus.OrderStatusValue AS [OrderItemStatus],ItemID
+                FROM OrderItems ordItm
+                INNER JOIN OrderStatus oiStatus ON oiStatus.OrderStatusID = ordItm.OrderItemStatusID
+                WHERE ordItm.OrderHeaderID = @OrderHeaderID
                 ";
 
                 Helper.logger.WriteToProcessLog("OrderItemRepo.GetByID Started for ID: " + orderHeaderID.ToString() + " full query = " + query);
 
-                return _dbConnection.Query<OrderItemEntity>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);
+                return _dbConnection.Query<OrderItemDTO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);
             }
             catch (Exception ex)
             {

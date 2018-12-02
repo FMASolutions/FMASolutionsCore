@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FMASolutionsCore.DataServices.ShoppingRepo;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
@@ -28,49 +29,24 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         private bool _disposing = false;
         private IUnitOfWork _uow;
 
-        public DeliveryNote DeliverOrderItems(int orderHeaderID)
+        public int DeliverOrderItems(int orderHeaderID)
         {            
-            DeliveryNoteEntity entity = _uow.DeliveryNoteRepo.DeliverOrder(orderHeaderID);
-            DeliveryNote returnModel = ConvertDeliveryNoteToModel(entity);
+            int deliveryNoteID = _uow.DeliveryNoteRepo.DeliverOrder(orderHeaderID);
 
-            if(returnModel != null)
-            {
+            if(deliveryNoteID > 0)
                 _uow.SaveChanges();
-                return returnModel;
-            }
-            return null;
+            
+            return deliveryNoteID;
         }
-        public List<DeliveryNote> GetDeliveryNotesForOrder(int orderID)
+        public IEnumerable<int> GetDeliveryNotesForOrder(int orderID)
         {
-            List<DeliveryNote> returnList = new List<DeliveryNote>();
-
-            IEnumerable<DeliveryNoteEntity> searchResult = _uow.DeliveryNoteRepo.GetByOrderHeaderID(orderID);
-
-            foreach(var item in searchResult)
-            {
-                DeliveryNote currentItem = ConvertDeliveryNoteToModel(item);
-                returnList.Add(currentItem);
-            }
-
-            return returnList;
+            return _uow.DeliveryNoteRepo.GetByOrderHeaderID(orderID);
         }
-        public DeliveryNote GetDeliveryNoteByID(int deliveryNoteID)
+
+        public IEnumerable<DeliveryNoteItemDTO> GetDeliveryNoteByDeliveryNoteID(int deliveryNoteID)
         {
-            DeliveryNote returnNote;
-            DeliveryNoteEntity entity = _uow.DeliveryNoteRepo.GetByID(deliveryNoteID);
-            if(entity != null)
-            {
-                returnNote = ConvertDeliveryNoteToModel(entity);
-                return returnNote;
-            }
-            return null;
+            return _uow.DeliveryNoteRepo.GetDeliveryNoteItems(deliveryNoteID);
         }
-        public Order GetOrder(int orderHeaderID)
-        {
-            IOrderService orderService = new OrderService(_uow);
-            return orderService.GetByID(orderHeaderID);
-        }
-
 
         private DeliveryNote ConvertDeliveryNoteToModel(DeliveryNoteEntity entity)
         {

@@ -1,5 +1,5 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.DeliveryNoteViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.DisplayDeliveryNoteViewModel
 @{
     ViewData["Title"] = "Delivery Note";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="text-left">                      
-                    Delivery Note: @Html.TextBoxFor(model => model.DeliveryNoteID, new { Class="form-control mb-2"})                    
+                    Delivery Note: @Html.TextBoxFor(model => model.DeliveryNoteItems[0].DeliveryNoteID, new { Class="form-control mb-2"})                    
                 </div>
             </div>
         </div>
@@ -34,16 +34,16 @@
                 </tr>
             </thead>
             <tbody>        
-        @foreach(var item in Model.Items)
+        @foreach(var item in Model.DeliveryNoteItems)
         {
             <tr>
-                <td>@item.ItemDescription</td>
-                <td>@item.ItemQty</td>                
-                <td>@item.ItemDeliveryDate</td>
+                <td>@item.OrderItemDescription</td>
+                <td>@item.OrderItemQty</td>                
+                <td>@item.DeliveryDate</td>
             </tr>           
         }
          <div class="row">
-            <div class="col-sm-3"><a href="/Order/Search/@Model.orderHeaderID" class="btn btn-outline-dark btn-block mb-3">Back</a></div>
+            <div class="col-sm-3"><a href="/Order/Search/@Model.DeliveryNoteItems[0].OrderHeaderID" class="btn btn-outline-dark btn-block mb-3">Back</a></div>
         </div>        
     </form>
 </div>

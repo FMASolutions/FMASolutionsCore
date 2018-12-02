@@ -20,7 +20,8 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult GenInvoice(int id=0) //id = orderID
         {
             InvoiceModel model = GetNewModel();
-            InvoiceViewModel vm = model.GenerateInvoiceForOrder(id);
+            int invoiceID = model.GenerateInvoiceForOrder(id);
+            DisplayInvoiceViewModel vm = model.GetInvoiceByInvoiceID(invoiceID);
             if(vm != null)
                 return View("DisplayInvoice",vm);
             else
@@ -29,7 +30,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult ViewInvoice(int id=0)
         {
             InvoiceModel model = GetNewModel();
-            InvoiceViewModel searchResult = model.GetInvoiceByInvoiceID(id);
+            DisplayInvoiceViewModel searchResult = model.GetInvoiceByInvoiceID(id);
             if(searchResult != null)
                 return View("DisplayInvoice",searchResult);
             else

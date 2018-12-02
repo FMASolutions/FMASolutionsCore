@@ -1,27 +1,16 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.OrderViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.DisplayOrderViewModel
 @{
     ViewData["Title"] = "Items - Update Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
 }
-<div id="DataRoot" style="display:none">
-    <div id="OrderItemsRaw">
-        @for (var i = 0; i < Model.ExistingItems.Count; i++)
-        {
-            <div class="OrderItemRaw">
-                <span class="OrderItemDescriptionRaw">@(Model.ExistingItems[i].ItemDescription)</span>
-                <span class="OrderItemUnitPriceRaw">@(Model.ExistingItems[i].UnitPrice)</span>
-                <span class="OrderItemQtyRaw">@(Model.ExistingItems[i].Qty)</span>
-                <span class="OrderItemItemIDRaw">@(Model.ExistingItems[i].ItemID)</span>
-                <span class="OrderItemItemRowIDRaw">@(Model.ExistingItems[i].OrderItemRowID)</span>
-                <span class="OrderItemStatusRaw">@(Model.ExistingItems[i].OrderItemStatus)</span>
-            </div>
-        }
-    </div>
-</div>
 
 <div class="container rounded">
     <form class="form-signin">
+        @if (Model != null && Model.StatusMessage != null)
+        {
+            <Label class="error-text">@(Model.StatusMessage) </Label>
+        }
         <div class="row mb-2 no-gutters" id="OrderTitleRow">
             <div class="col-6 text-left" id="OrderIDHeading">            
                 <h2 class="pr-2">Order Number:</h3>            
@@ -32,18 +21,13 @@
         </div>
             <div class="row mb-2 no-gutters" id="OrderTitleRow">
             <div class="col-6 text-left" id="OrderIDHeading">            
-                @Html.DisplayFor(model => model.OrderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
-                @Html.HiddenFor(model => model.OrderID)          
+                @Html.DisplayFor(model => model.OrderHeader.OrderID, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
+                @Html.HiddenFor(model => model.OrderHeader.OrderID)          
             </div>
             <div class="col-6 text-right" id="OrderStatusHeading">
-                @Html.DisplayFor(model => model.OrderStatus, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
+                @Html.DisplayFor(model => model.OrderHeader.OrderStatus, new { ReadOnly="true", Class="form-control mb-2 ml-1 text-right"})            
             </div>
-        </div>
-
-        @if (Model != null && Model.StatusMessage != null)
-        {
-            <Label class="error-text">@(Model.StatusMessage) </Label>
-        }
+        </div>        
         <div class="container-fluid rounded mb-3 pt-2 pb-2 pr-2 pl-2 bg-dark text-light" id="CustomerInfoContainer">
             <h3>Customer Info:</h3>
             <div class="row no-gutters" id="SelectdCustomerRow">
@@ -51,24 +35,23 @@
                     Customer:
                 </div>
                 <div class="col-9" id="SelectedCustomerControlColumn">
-                    @(Html.DropDownListFor(
-                        m => m.CustomerID,
-                        new SelectList(Model.AvailableCustomers, "Key", "Value",Model.CustomerID),     
-                        new { @class = "form-control bg-secondary text-light", @id = "SelectedCustomerControl", @disabled = "disabled"}
-                    ))
+                    @Html.DisplayFor(model => model.OrderHeader.CustomerName, new { ReadOnly="true", Class="form-control mb-2 mr-1"})     
                 </div>
             </div>
             <div class="row no-gutters customHeading pt-2" id="CustomerAddressHeadingRow">
                 Customer Delivery Address:             
             </div>
             <div class="row no-gutters" id="CustomerAddressLine1">
-                @Model.CurrentDeliveryAddress.AddressLine1 @Model.CurrentDeliveryAddress.AddressLine2
+                @Model.OrderHeader.AddressLine1 @Model.OrderHeader.AddressLine2
             </div>
             <div class="row no-gutters" id="CustomerAddressLine1">
-                @Model.CurrentDeliveryAddress.AvailableCityAreas[@Model.CurrentDeliveryAddress.CityAreaID]
+                @Model.OrderHeader.CityArea
             </div>
             <div class="row no-gutters" id="CustomerAddressCity">
-                @Model.CurrentDeliveryAddress.PostCode
+                @Model.OrderHeader.PostCode
+            </div>
+            <div class="row no-gutters" id="CustomerAddressCity">
+                @Model.OrderHeader.Country
             </div>
         </div>
 
@@ -87,43 +70,40 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @for (var i = 0; i < Model.ExistingItems.Count; i++)
+                            @for (var i = 0; i < Model.OrderItems.Count; i++)
                             {
-                                <tr id="ItemRow@(Model.ExistingItems[i].OrderItemRowID)">
+                                <tr id="ItemRow@(Model.OrderItems[i].OrderItemID)">
                                     <td><span> 
-                                        @Html.DisplayFor(model => model.ExistingItems[i].ItemDescription, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
-                                        @Html.HiddenFor(model => model.ExistingItems[i].ItemDescription)
+                                        @Html.DisplayFor(model => model.OrderItems[i].ItemDescription, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.OrderItems[i].ItemDescription)
                                     </span></td>
                                     <td class="text-center"><span>
-                                        @Html.DisplayFor(model => model.ExistingItems[i].Qty, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
-                                        @Html.HiddenFor(model => model.ExistingItems[i].Qty)
+                                        @Html.DisplayFor(model => model.OrderItems[i].OrderItemQty, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.OrderItems[i].OrderItemQty)
                                     </span></td>
                                     <td class="text-center"><span>
-                                        @Html.DisplayFor(model => model.ExistingItems[i].UnitPrice, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
-                                        @Html.HiddenFor(model => model.ExistingItems[i].UnitPrice)                                    
+                                        @Html.DisplayFor(model => model.OrderItems[i].OrderItemUnitPrice, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.OrderItems[i].OrderItemUnitPrice)                                    
                                     </span></td>  
                                     <td class="text-center"><span>                                    
-                                        @Html.DisplayFor(model => model.ExistingItems[i].OrderItemStatus, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
-                                        @Html.HiddenFor(model => model.ExistingItems[i].OrderItemStatus)                                    
+                                        @Html.DisplayFor(model => model.OrderItems[i].OrderItemStatus, new { ReadOnly="true", Class="form-control mb-2 ml-1"})
+                                        @Html.HiddenFor(model => model.OrderItems[i].OrderItemStatus)                                    
                                     </span></td>
-                                    @Html.HiddenFor(model => model.ExistingItems[i].ItemID)
-                                    @Html.HiddenFor(model => model.ExistingItems[i].OrderItemRowID)
+                                    @Html.HiddenFor(model => model.OrderItems[i].ItemID)
+                                    @Html.HiddenFor(model => model.OrderItems[i].OrderItemID)
                                 </tr>  
                             }
                             </tbody>                        
                         </table>
                         <div class="row">
                             <div class="col-sm-6">
-                                <a href="/Order/EditItems/@Model.OrderID" class="btn btn-outline-dark bg-light btn-block ml-0 mt-2 mb-2 ml-2 pl-0 pr-0">Edit Items</a>                            
+                                <a href="/Order/EditItems/@Model.OrderHeader.OrderID" class="btn btn-outline-dark bg-light btn-block ml-0 mt-2 mb-2 ml-2 pl-0 pr-0">Edit Items</a>                            
                             </div>
                             <div class="col-sm-6 pr-4">                            
-                                @foreach(var status in Model.DistinctItemStatusList)
+                                @if(Model.HasItemsAtEstimateStage)
                                 {
-                                    @if(status == "Estimate")
-                                    {
-                                        <a href="/DeliveryNote/DeliverItems/@Model.OrderID" class="btn btn-outline-dark bg-light btn-block mt-2 mb-2">Deliver Items</a>
-                                    }
-                                }
+                                    <a href="/DeliveryNote/DeliverItems/@Model.OrderHeader.OrderID" class="btn btn-outline-dark bg-light btn-block mt-2 mb-2">Deliver Items</a>
+                                }                               
                             </div>
                         </div>
                         
@@ -132,13 +112,9 @@
             </div>
         </div>
         <div class="row mt-3">            
-            @foreach(var status in Model.DistinctItemStatusList)
+            @if(Model.HasItemsAtDeliveredStage)
             {
-                @if(status == "Delivered")
-                {
-                    <div class="col-sm-4"><a href="/Invoice/GenInvoice/@Model.OrderID" class="btn btn-outline-dark btn-block mb-3">Generate Invoice</a></div>
-                    
-                }     
+                <div class="col-sm-4"><a href="/Invoice/GenInvoice/@Model.OrderHeader.OrderID" class="btn btn-outline-dark btn-block mb-3">Generate Invoice</a></div>
             }
             @if(Model.DeliveryNotesForOrder.Count > 0)
             {
@@ -154,14 +130,14 @@
                     </div>
                 </div>
             }    
-            @if(Model.InvoicesFOrOrder.Count > 0)
+            @if(Model.InvoicesForOrder.Count > 0)
             {
                 <div class="dropdown">
                     <button class="btn btn-outline-dark text-light bg-dark mb-3 mr-3 dropdown-toggle" type="button" id="invoicesDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Invoices
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                @foreach(var item in Model.InvoicesFOrOrder)
+                @foreach(var item in Model.InvoicesForOrder)
                 {
                     <a class="dropdown-item" href="/Invoice/ViewInvoice/@item">@item</a>
                 }

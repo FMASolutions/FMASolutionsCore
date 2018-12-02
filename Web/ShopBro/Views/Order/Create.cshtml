@@ -1,5 +1,5 @@
 @using FMASolutionsCore.Web.ShopBro
-@model FMASolutionsCore.Web.ShopBro.ViewModels.OrderViewModel
+@model FMASolutionsCore.Web.ShopBro.ViewModels.CreateOrderViewModel
 @{
     ViewData["Title"] = "Item - Search";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
@@ -25,8 +25,8 @@
             </div>
             <div class="col-9" id="SelectedCustomerControlColumn">
                 @(Html.DropDownListFor(
-                    m => m.CustomerID,
-                    new SelectList(Model.AvailableCustomers, "Key", "Value",Model.CustomerID),     
+                    m => m.SelectedCustomerID,
+                    new SelectList(Model.AvailableCustomers, "Key", "Value",Model.SelectedCustomerID),     
                     new { @class = "form-control bg-secondary text-light", @id = "SelectedCustomerControl"}
                 ))
             </div>
@@ -64,7 +64,7 @@
                     <span>Line 1:</span>
                 </div>
                 <div class="col-9" id="DeliveryAddressNewLine1Col">
-                    @Html.TextBoxFor(model => model.NewDeliveryAddress.AddressLine1, new { @class = "form-control" })
+                    @Html.TextBoxFor(model => model.NewAddressLocationVM.AddressLine1, new { @class = "form-control" })
                 </div>
             </div>
             
@@ -73,7 +73,7 @@
                     <span>Line 2:</span>
                 </div>
                 <div class="col-9" id="DeliveryAddressNewLine2Col">
-                    @Html.TextBoxFor(model => model.NewDeliveryAddress.AddressLine2, new { @class = "form-control" })
+                    @Html.TextBoxFor(model => model.NewAddressLocationVM.AddressLine2, new { @class = "form-control" })
                 </div>
             </div>
 
@@ -83,8 +83,8 @@
                 </div>
                 <div class="col-9" id="DeliveryAddressNewCityAreaCol">
                     @Html.DropDownListFor(
-                        m => m.NewDeliveryAddress.CityAreaID,
-                        new SelectList(Model.NewDeliveryAddress.AvailableCityAreas, "Key", "Value"),
+                        m => m.NewAddressLocationVM.CityAreaID,
+                        new SelectList(Model.NewAddressLocationVM.AvailableCityAreas, "Key", "Value"),
                         "- Select City Area -",
                         new { @class = "form-control" } 
                     )
@@ -95,21 +95,12 @@
                     <span>Post Code</span>
                 </div>
                 <div class="col-9" id="DeliveryAddressNewPostCodeCol">
-                    @Html.TextBoxFor(model => model.NewDeliveryAddress.PostCode, new { @class = "form-control" })
+                    @Html.TextBoxFor(model => model.NewAddressLocationVM.PostCode, new { @class = "form-control" })
                 </div>
             </div> 
         </div>                           
         
         
-
-        <div class="row no-gutters mb-2" id="DeliveryDateRow">
-            <div class="col-3 text-left customHeading" id="DeliveryDateHead">
-                Del Date:
-            </div>
-            <div class="col-9" id="DeliveryDateCol">
-                @Html.TextBoxFor(model => model.DeliveryDate, "{0:yyyy/MM/dd}", new { @class="form-control" })     
-            </div>
-        </div>       
         <div class="row no-gutters mb-2" id="OrderDateRow">
             <div class="col-3 text-left customHeading" id="OrderDateHead">
                 Order Date:
@@ -117,7 +108,15 @@
             <div class="col-9" id="OrderDateCol">
                 @Html.TextBoxFor(model => model.OrderDate, "{0:yyyy/MM/dd}", new { @class="form-control mb-2" })     
             </div>
-        </div>  
+        </div> 
+        <div class="row no-gutters mb-2" id="DeliveryDateRow">
+            <div class="col-3 text-left customHeading" id="DeliveryDateHead">
+                Del Date:
+            </div>
+            <div class="col-9" id="DeliveryDateCol">
+                @Html.TextBoxFor(model => model.OrderDeliveryDueDate, "{0:yyyy/MM/dd}", new { @class="form-control" })     
+            </div>
+        </div>        
     </div>   
     <div class="container rounded bg-ligth text-dark pl-0 pr-0">
         <div class="row mb-2 mt-2">

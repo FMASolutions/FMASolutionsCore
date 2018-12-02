@@ -127,32 +127,34 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #endregion
 
         #region IOrderHeaderRepo
-        public IEnumerable<OrderItemEntity> GetAllItemsForOrder(int orderID)
+        
+        public IEnumerable<OrderPreviewDTO> GetAllOrderPreviews()
         {
             try
             {
                 string query = @"
-                SELECT OrderItemID,OrderHeaderID,ItemID,OrderItemStatusID,OrderItemUnitPrice,OrderItemUnitPriceAfterDiscount,OrderItemQty,OrderItemDescription
-                FROM OrderItems
-                WHERE OrderHeaderID = @OrderHeaderID";
+                SELECT ordHead.OrderHeaderID AS [OrderID], ohStatus.OrderstatusValue AS [OrderStatus], cust.CustomerName
+                    ,ordHead.OrderDate, ordHead.DeliveryDate AS [OrderDueDate]
+                FROM OrderHeaders ordHead                
+                INNER JOIN OrderStatus ohStatus ON ohStatus.OrderStatusID = ordHead.OrderStatusID                
+                INNER JOIN Customers cust ON ordHead.CustomerID = cust.CustomerID
+                ";
 
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAllItemsForOrder Started: " + query);
-
-                return _dbConnection.Query<OrderItemEntity>(query, new { OrderHeaderID = orderID }, transaction: Transaction);
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
+                return _dbConnection.Query<OrderPreviewDTO>(query, transaction: Transaction);             
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAll: " + ex.Message, this);
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAmendOrderItemsDTO: " + ex.Message, this);
                 return null;
             }
         }
-
-        public DTOOrderHeaderDetailed GetOrderHeaderDetailed(int orderHeaderID)
+        public OrderHeaderDetailedDTO GetOrderHeaderDetailed(int orderHeaderID)
         {
             try
             {
                 string query = @"
-                SELECT ordHead.OrderHeaderID, ordHead.OrderDate, ordHead.DeliveryDate AS [OrderDueDate]
+                SELECT ordHead.OrderHeaderID AS [OrderID], ordHead.OrderDate, ordHead.DeliveryDate AS [OrderDueDate]
                     , ohStatus.OrderStatusID, ohStatus.OrderstatusValue,cust.CustomerID, cust.CustomerCode, cust.CustomerName, cust.CustomerContactNumber
                     , cust.CustomerEmailAddress, custAdd.CustomerAddressID, custAdd.CustomerAddressDescription, custAdd.IsDefaultAddress, addLoc.AddressLocationID
                     , addLoc.AddressLine1, addLoc.AddressLine2, addLoc.PostCode, ca.CityAreaID, ca.CityAreaCode, ca.CityAreaName
@@ -169,7 +171,35 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 ";
 
                 Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
-                return _dbConnection.QueryFirst<DTOOrderHeaderDetailed>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
+                return _dbConnection.QueryFirst<OrderHeaderDetailedDTO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAmendOrderItemsDTO: " + ex.Message, this);
+                return null;
+            }
+        }
+        public OrderHeaderDTO GetOrderHeader(int orderHeaderID)
+        {
+            try
+            {
+                string query = @"
+                SELECT ordHead.OrderHeaderID AS [OrderID],  ordHead.OrderDate, ordHead.DeliveryDate AS [OrderDueDate]
+                , ohStatus.OrderStatusValue AS [OrderStatus], cust.CustomerName, addLoc.AddressLine1, addLoc.AddressLine2
+                , ca.CityAreaName, cit.CityName, addLoc.PostCode, c.CountryName
+                FROM OrderHeaders ordHead                
+                INNER JOIN OrderStatus ohStatus ON ohStatus.OrderStatusID = ordHead.OrderStatusID                
+                INNER JOIN Customers cust ON ordHead.CustomerID = cust.CustomerID
+                INNER JOIN CustomerAddresses custAdd ON custAdd.CustomerAddressID = ordHead.CustomerAddressID
+                INNER JOIN AddressLocations addLoc ON addLoc.AddressLocationID = custAdd.AddressLocationID
+                INNER JOIN CityAreas ca ON ca.CityAreaID = addLoc.CityAreaID
+                INNER JOIN Cities cit ON cit.CityID = ca.CityID
+                INNER JOIN Countries c ON c.CountryID = cit.CountryID
+                WHERE ordHead.OrderHeaderID = @OrderHeaderID
+                ";
+
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
+                return _dbConnection.QueryFirst<OrderHeaderDTO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
             }
             catch(Exception ex)
             {

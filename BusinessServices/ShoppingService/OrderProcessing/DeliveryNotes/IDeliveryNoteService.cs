@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface IDeliveryNoteService : IDisposable
     {
-        DeliveryNote DeliverOrderItems(int orderHeaderID);
-        List<DeliveryNote> GetDeliveryNotesForOrder(int orderID);
-        DeliveryNote GetDeliveryNoteByID(int deliveryNoteID);
-        Order GetOrder(int orderHeaderID);
+        int DeliverOrderItems(int orderHeaderID);
+        IEnumerable<int> GetDeliveryNotesForOrder(int orderID);
+
+        IEnumerable<DeliveryNoteItemDTO> GetDeliveryNoteByDeliveryNoteID(int deliveryNoteID);
     }
 }

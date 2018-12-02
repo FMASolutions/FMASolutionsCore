@@ -21,7 +21,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             if(id>0)
             {
                 DeliveryNoteModel model = GetNewModel();
-                DeliveryNoteViewModel vmReturn = model.DeliverItems(id);
+                DisplayDeliveryNoteViewModel vmReturn = model.DeliverItems(id);
                 if(vmReturn != null)
                     return View("DisplayDeliveryNote",vmReturn);
                 else
@@ -33,7 +33,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult ViewDeliveryNote(int id=0) //id = deliverynoteID
         {            
             DeliveryNoteModel model = GetNewModel();
-            DeliveryNoteViewModel deliveryNote = model.GetDeliveryNoteByDeliveryNoteID(id);
+            DisplayDeliveryNoteViewModel deliveryNote = model.GetDeliveryNoteByDeliveryNoteID(id);
             if(deliveryNote != null)
             {
                 return View("DisplayDeliveryNote", deliveryNote);

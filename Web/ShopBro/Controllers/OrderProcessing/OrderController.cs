@@ -11,12 +11,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
 {
     public class OrderController : BaseController
     {
-        public IActionResult AmendItems(int id=0)
-        {
-            OrderModel model = GetNewModel();
-            var vm =  model.GetAmendOrderItemsViewModel(id);
-            return View("AmendItems",vm);
-        }
+        
         public OrderController(IOrderService orderService, IOrderItemService orderItemService)
         {
             _orderService = orderService;
@@ -25,11 +20,12 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         private IOrderService _orderService;
         private IOrderItemService _orderItemService;
         
+
         public IActionResult Index()
         {
             return View("Search",new GenericSearchViewModel());
         }
-        
+
         [HttpGet]
         public IActionResult Search(int id=0)
         {
@@ -48,46 +44,43 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpPost]
         public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
         {            
-            OrderModel model = GetNewModel();            
-            OrderViewModel vm = model.Search(vmInput.ID);
+            OrderModel model = GetOrderModel();            
+            DisplayOrderViewModel vm = model.Search(vmInput.ID);
             
-            if(vm.OrderID > 0)
+            if(vm != null)
                 return View("Display",vm);
             else
             {
                 vmInput.StatusMessage = "Not found";
                 return View("Search", vmInput);
             }
-        }            
+        }
 
         [HttpGet]
         public IActionResult DisplayAll()
         {
-            OrderModel model = GetNewModel();
-            OrdersViewModel ordersVM = model.GetAllOrders();
+            OrderModel model = GetOrderModel();
+            DisplayAllOrdersViewModel ordersVM = model.GetAllOrders();
             if(ordersVM != null && ordersVM.Orders.Count > 0)
-            {
                 return View("DisplayAll",ordersVM);
-            }
             else
-            {
                 return View("Search",new GenericSearchViewModel());
-            }
         }
 
        [HttpGet]
-        public IActionResult EditItems(int id=0)
+        public IActionResult AmendItems(int id=0)
         {
-            OrderModel model = GetNewModel();
-            return View("EditItems", model.Search(id));
+            OrderModel model = GetOrderModel();
+            var vm =  model.GetAmendOrderItemsViewModel(id);
+            return View("AmendItems",vm);
         }
         
         [HttpPost]
-        public IActionResult ProcessEditItems(OrderViewModel vm)
+        public IActionResult ProcessEditItems(AmendOrderItemsViewModel vm)
         {
-            OrderModel model = GetNewModel();
+            OrderModel model = GetOrderModel();
 
-            OrderViewModel updatedVM = model.UpdateItems(vm);
+            DisplayOrderViewModel updatedVM = model.UpdateItems(vm);
             if(updatedVM != null)
                 return View("Display",updatedVM);
             else
@@ -100,15 +93,15 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            OrderModel model = GetNewModel();            
-            OrderViewModel vm = model.GetDefaultViewModel();
-            return View("Create",vm);
+            OrderModel model = GetOrderModel();            
+            CreateOrderViewModel emptyVM = model.GetEmptyCreateModel();
+            return View("Create",emptyVM);
         }
 
         [HttpPost]
-        public IActionResult Create(OrderViewModel vm)
+        public IActionResult Create(CreateOrderViewModel vm)
         {
-            OrderModel model = GetNewModel();
+            OrderModel model = GetOrderModel();
             int orderHeaderID = model.CreateOrder(vm);
             if(orderHeaderID > 0)
                 return Search(orderHeaderID);
@@ -117,7 +110,7 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
             
         }
          
-        private OrderModel GetNewModel()
+        private OrderModel GetOrderModel()
         {
             return new OrderModel(new ModelStateConverter(this).Convert(), _orderService, _orderItemService);
         }

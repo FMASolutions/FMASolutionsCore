@@ -6,20 +6,21 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface IOrderService : IDisposable
     {
-        Order GetByID(int id);
-        int CreateOrder(OrderHeader model,AddressLocation newAddress = null);
-        List<Order> GetAllOrders();              
-        DTOOrderHeaderDetailed GetOrderHeaderDetailed(int orderHeaderID);
+        OrderHeaderDTO GetOrderHeader(int orderHeaderID);
+        int CreateOrderWithNewAddress(OrderHeaderCreationDTO orderHeader, AddressLocation newAddress, int customerID);
+        int CreateOrderWithExistingAddress(OrderHeaderCreationDTO orderHeader,int addressID, int customerID);
+        IEnumerable<OrderPreviewDTO> GetAllOrders();              
+        OrderHeaderDetailedDTO GetOrderHeaderDetailed(int orderHeaderID);
+        Dictionary<int, string> GetOrderStatusDictionary();
         
         //Wrappers to other services.
-        List<DeliveryNote> GetDeliveryNotesForOrder(int orderID);
-        List<Invoice> GetInvoicesForOrder(int orderHeaderID);
+        IEnumerable<int> GetDeliveryNotesForOrder(int orderID);
+        IEnumerable<int> GetInvoicesForOrder(int orderHeaderID);
         List<StockHierarchyItem> GetStockHierarchy();
         List<Customer> GetAvailableCustomers();
         List<AddressLocation> GetAvailableAddresses();
         List<CityArea>  GetAvailableCityAreas();
-        List<CustomerAddress> GetAvailableCustomerAddresses();
-        Dictionary<int, string> GetOrderStatusDictionary();
+        
         
     }
 }

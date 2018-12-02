@@ -22,71 +22,33 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         private IInvoiceService _service;
         public ICustomModelState ModelState { get { return _modelState; } }
 
-                public InvoiceViewModel GenerateInvoiceForOrder(int orderHeaderID)
+        public int GenerateInvoiceForOrder(int orderHeaderID)
         {
-            InvoiceViewModel returnInvoice = null;
-            Invoice inv = _service.GenerateInvoiceForOrder(orderHeaderID);
-            if(inv != null)
-                returnInvoice = ConvertToInvoiceViewModel(inv.Header, inv.Items);
-            return returnInvoice;            
+            return _service.GenerateInvoiceForOrder(orderHeaderID);            
         }
-        public List<InvoiceViewModel> GetInvoicesByOrder(int orderHeaderID)
+        public List<int> GetInvoicesByOrder(int orderHeaderID)
         {
-            List<InvoiceViewModel> returnInvoices = new List<InvoiceViewModel>();
-            var invoices = _service.GetInvoicesForOrder(orderHeaderID);
-            
-            if(invoices != null && invoices.Count > 0)
-                foreach(var invoice in invoices)
-                    returnInvoices.Add(ConvertToInvoiceViewModel(invoice.Header, invoice.Items));
-            
-            if(returnInvoices.Count > 0)
-                return returnInvoices;
-            else
-                return null;
-        }
-        public InvoiceViewModel GetInvoiceByInvoiceID(int invoiceID)
-        {
-            InvoiceViewModel returnVM = new InvoiceViewModel();
-            var searchInvoice = _service.GetInvoiceByInvoiceID(invoiceID);
-            if(searchInvoice != null)
+            var searchResult = _service.GetInvoicesForOrder(orderHeaderID);
+            List<int> returnInvoices = null;
+            if(searchResult != null)
             {
-                returnVM = ConvertToInvoiceViewModel(searchInvoice.Header, searchInvoice.Items);
-                return returnVM;
+                returnInvoices = new List<int>();
+                foreach(var invoice in searchResult)
+                    returnInvoices.Add(invoice);
             }
-            else
-                return null;
+            return returnInvoices;
         }
-
-
-        private InvoiceViewModel ConvertToInvoiceViewModel(InvoiceHeader header, IEnumerable<InvoiceItem> items)
+        public DisplayInvoiceViewModel GetInvoiceByInvoiceID(int invoiceID)
         {
-            InvoiceViewModel returnViewModel = new InvoiceViewModel();
-            Dictionary<int,string> invoiceStatusDic = _service.GetInvoiceStatusDic();
-            Order orderForInvoice = _service.GetOrder(header.OrderHeaderID);
-
-            returnViewModel.InvoiceDate = header.InvoiceDate;
-            returnViewModel.InvoiceHeaderID = header.InvoiceHeaderID;
-            returnViewModel.InvoiceStatus = invoiceStatusDic[header.InvoiceStatusID];
-            returnViewModel.OrderHeaderID = header.OrderHeaderID;
-            
-            foreach(var item in items)
+            DisplayInvoiceViewModel returnVM = null;
+            var searchInvoiceItems = _service.GetInvoiceItemsByInvoiceID(invoiceID);
+            if(searchInvoiceItems != null)
             {
-                InvoiceItemViewModel currentItem = new InvoiceItemViewModel();
-                OrderItem currentOrderItem = orderForInvoice.OrderItems.Find(e => e.OrderItemID == item.OrderItemID);
-                currentItem.InvoiceHeaderID = item.InvoiceHeaderID;
-                currentItem.InvoiceItemID = item.InvoiceItemID;
-                currentItem.InvoiceItemQty = item.InvoiceItemQty;
-                currentItem.InvoiceItemStatus = invoiceStatusDic[item.InvoiceItemStatusID];
-                currentItem.OrderItemID = item.OrderItemID;
-                currentItem.ItemDescription = currentOrderItem.OrderItemDescription;
-                currentItem.ItemPrice = currentOrderItem.OrderItemUnitPrice;
-
-                returnViewModel.Items.Add(currentItem);                
+                returnVM =  new DisplayInvoiceViewModel();
+                foreach(var item in searchInvoiceItems)
+                    returnVM.InvoiceItems.Add(item);
             }
-            return returnViewModel;
+            return returnVM;
         }
-
-
-    }
-    
+    }    
 }

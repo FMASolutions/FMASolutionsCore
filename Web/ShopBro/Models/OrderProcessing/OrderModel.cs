@@ -20,328 +20,145 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             _orderService.Dispose();
         }
 
+
         private ICustomModelState _modelState;
         private IOrderService _orderService;
         private IOrderItemService _orderItemService;
-        public ICustomModelState ModelState { get { return _modelState; } }
 
-        public OrderViewModel Search(int OrderHeaderID)
+
+        public ICustomModelState ModelState { get { return _modelState; } }
+        public DisplayOrderViewModel Search(int OrderHeaderID)
         {
-            OrderViewModel returnVM = null;
-            var orderModel = _orderService.GetByID(OrderHeaderID);
-            if(orderModel != null)
-            {
-                returnVM = ConvertToViewModel(orderModel);
-                return returnVM;
-            }
-            else
-            {
-                returnVM = new OrderViewModel();
-                _modelState.ErrorDictionary.Add("NoResult","No Search Result Found");
-                return returnVM;
-            }
-        }
-        public OrdersViewModel GetAllOrders()
-        {
-            OrdersViewModel returnVM = new OrdersViewModel();
-            var searchResults = _orderService.GetAllOrders();
-            var customers = GetAvailableCustomers();
-            var orderStatusDic = _orderService.GetOrderStatusDictionary();
-            foreach(var order in searchResults)
-            { 
-                OrderViewModel current = new OrderViewModel();
-                current.OrderID = order.Header.OrderHeaderID;
-                current.OrderStatus = orderStatusDic.GetValueOrDefault(order.Header.OrderStatusID);
-                current.DeliveryDate = order.Header.DeliveryDate;
-                current.OrderDate = order.Header.OrderDate;
-                current.CustomerID = order.Header.CustomerID;
-                current.AvailableCustomers = customers;
-                returnVM.Orders.Add(current);
+            DisplayOrderViewModel returnVM = null;
+            var orderModel = _orderService.GetOrderHeader(OrderHeaderID);
+            var items = _orderItemService.GetOrderItemsForOrder(OrderHeaderID);
+            if(orderModel != null && items != null)
+            {                
+                returnVM = ConvertToDisplayViewModel(orderModel, items);
             }
             return returnVM;
         }
-        public OrderViewModel UpdateItems(OrderViewModel newModel)
+        public DisplayAllOrdersViewModel GetAllOrders()
         {
-            Order dbExistingOrder = _orderService.GetByID(newModel.OrderID);
-            Dictionary<int,string> orderStatusDic = _orderService.GetOrderStatusDictionary();
-            List<StockHierarchyItem> stockHierarcy = _orderService.GetStockHierarchy();
+            DisplayAllOrdersViewModel returnVM = new DisplayAllOrdersViewModel();
+            var searchResults = _orderService.GetAllOrders();
+            if(searchResults != null)
+                foreach(var order in searchResults)
+                    returnVM.Orders.Add(order);
+            else
+                returnVM.StatusMessage = "No Orders Found";
+            return returnVM;
+        }
+        public DisplayOrderViewModel UpdateItems(AmendOrderItemsViewModel newModel)
+        {
+            var dbExistingOrderItems = _orderItemService.GetOrderItemsForOrder(newModel.HeaderDetail.OrderID);
             bool errorDetected = false;
 
-            foreach(var item in newModel.ExistingItems)
+            foreach(var item in newModel.ItemDetails)
             {
-                item.OrderHeaderID = newModel.OrderID;
-                if(item.OrderItemRowID == 0) //New item, this needs adding.
+                if(item.OrderItemID == 0) //New item, this needs adding.
                 {
-                    if(_orderItemService.AddItemToOrder(ConvertToOrderItemModel(item,orderStatusDic,stockHierarcy)) <= 0)                    
+                    int orderItemID = _orderItemService.AddItemToOrder(
+                        new OrderItem(_modelState, 0, 1, newModel.HeaderDetail.OrderID
+                            , item.OrderItemDescription, item.ItemID, item.OrderItemQty
+                            , item.OrderItemUnitPrice, item.OrderItemUnitPriceAfterDiscount
+                    ));
+                    if(orderItemID == 0)                    
                         errorDetected = true;
                 }
             }
-            foreach(var item in dbExistingOrder.OrderItems)
+            foreach(var item in dbExistingOrderItems)
             {
                 //Check if the item still exists in the new model, it may need deleting.
-                if(!newModel.ExistingItems.Exists(e => e.OrderItemRowID == item.ID && e.OrderItemRowID != 0))
-                    if(!_orderItemService.RemoveItemFromOrder(item))
+                if(!newModel.ItemDetails.Exists(e => e.OrderItemID == item.OrderItemID && e.OrderItemID != 0))
+                    if(!_orderItemService.RemoveItemFromOrder(item.OrderItemID))
                         errorDetected = true;
             }
             if(errorDetected)
                 return null;
             else
-                return Search(newModel.OrderID);
+                return Search(newModel.HeaderDetail.OrderID);
         }
-        public int CreateOrder(OrderViewModel vmCreate)
+        public int CreateOrder(CreateOrderViewModel vmCreate)
         {
-            OrderHeader headerModel = null;
-            int returnOrderID = 0;
-            vmCreate.OrderStatus = "Estimate";
-            vmCreate.CustomerAddressID = vmCreate.SelectedAddressID; //CustomerAddressID here will be used to search for the addressID in customeraddressID
-            headerModel = ConvertToOrderHeaderModel(vmCreate);
+            OrderHeaderCreationDTO creationDTO = new OrderHeaderCreationDTO();
+            creationDTO.DeliveryDate = vmCreate.OrderDeliveryDueDate;
+            creationDTO.OrderDate = vmCreate.OrderDate;
+            int createdOrderID = 0;
+
             if(vmCreate.UseExistingAddress)
-            {        
-                returnOrderID = _orderService.CreateOrder(headerModel);
-            }
+            {
+                createdOrderID = _orderService.CreateOrderWithExistingAddress(creationDTO, vmCreate.SelectedAddressID, vmCreate.SelectedCustomerID);
+            }   
             else
             {
-                AddressLocation addressLocation = new AddressLocation(
-                    _modelState,0
-                    ,vmCreate.NewDeliveryAddress.CityAreaID
-                    , vmCreate.NewDeliveryAddress.AddressLine1
-                    , vmCreate.NewDeliveryAddress.AddressLine2
-                    , vmCreate.NewDeliveryAddress.PostCode
+                AddressLocation addLoc = new AddressLocation(_modelState, vmCreate.SelectedAddressID
+                    , vmCreate.NewAddressLocationVM.CityAreaID
+                    , vmCreate.NewAddressLocationVM.AddressLine1
+                    ,vmCreate.NewAddressLocationVM.AddressLine2
+                    ,vmCreate.NewAddressLocationVM.PostCode
                 );
-                returnOrderID = _orderService.CreateOrder(headerModel, addressLocation);
-            }
-            return returnOrderID;
+                createdOrderID = _orderService.CreateOrderWithNewAddress(creationDTO, addLoc, vmCreate.SelectedCustomerID);
+            }         
+
+            return createdOrderID;
         }
-        
         public AmendOrderItemsViewModel GetAmendOrderItemsViewModel(int orderID)
         {
-            AmendOrderItemsViewModel returnVM = new AmendOrderItemsViewModel();
+            AmendOrderItemsViewModel returnVM = null;
             var searchHeader = _orderService.GetOrderHeaderDetailed(orderID);
             var searchItems = _orderItemService.GetOrderItemsDetailed(orderID);
             if(searchItems != null)
             {
+                returnVM = new AmendOrderItemsViewModel();
                 foreach(var result in searchItems)
-                {
-                    returnVM.ItemDetails.Add(result);                    
-                }
-                AppendStockHierarchyAndAvailableItems(returnVM);
-                return returnVM;
-            }
+                    returnVM.ItemDetails.Add(result);
 
-            return null;
+                AppendStockHierarchyAndAvailableItems(returnVM);
+            }
+            return returnVM;
         }       
-        internal OrderViewModel GetDefaultViewModel()
-        {            
-            OrderViewModel vmReturn = new OrderViewModel();
-            vmReturn.AvailableAddresses = GetAvailableAddresses();
-            vmReturn.AvailableCustomers = GetAvailableCustomers();    
-            vmReturn.NewDeliveryAddress.AvailableCityAreas = GetAvailableCityAreas();
-            AppendStockHierarchyAndAvailableItems(vmReturn);
-            return vmReturn;
+        
+        public CreateOrderViewModel GetEmptyCreateModel()
+        {
+            CreateOrderViewModel emptyModel = new CreateOrderViewModel();
+            AddressLocationViewModel newAddressVM = new AddressLocationViewModel();
+            
+            var cityAreas = _orderService.GetAvailableCityAreas();
+            var addresses = _orderService.GetAvailableAddresses();
+            var customers = _orderService.GetAvailableCustomers();
+            
+            foreach(var address in addresses)
+                emptyModel.AvailableAddresses.Add(address.AddressLocationID, address.AddressLine1 + " " + address.AddressLine2 + ", " + address.PostCode);
+            foreach(var cityArea in cityAreas)
+                newAddressVM.AvailableCityAreas.Add(cityArea.CityAreaID, cityArea.CityAreaName);
+            foreach(var customer in customers)
+                emptyModel.AvailableCustomers.Add(customer.CustomerID, customer.CustomerName);
+
+            emptyModel.NewAddressLocationVM = newAddressVM;
+            return emptyModel;
         }
         
-        private OrderViewModel ConvertToViewModel(Order model)
+        private DisplayOrderViewModel ConvertToDisplayViewModel(OrderHeaderDTO header, IEnumerable<OrderItemDTO> items)
         {
-            OrderViewModel vmReturn = GetDefaultViewModel();
-            Dictionary<int,string> statusDictionary = _orderService.GetOrderStatusDictionary();                     
-            vmReturn.OrderStatus = statusDictionary[model.Header.OrderStatusID];
-            vmReturn.OrderID = model.Header.OrderHeaderID;            
-            vmReturn.DeliveryDate = model.Header.DeliveryDate;
-            vmReturn.OrderDate = model.Header.OrderDate;
-            vmReturn.CustomerID = model.Header.CustomerID;
-            vmReturn.CustomerAddressID = model.Header.CustomerAddressID;
-            
-            List<CustomerAddress> customerAddresses = _orderService.GetAvailableCustomerAddresses();
-            var currentCustAddress = customerAddresses.Find(x => x.CustomerAddressID == model.Header.CustomerAddressID);
-            var currentAddress = vmReturn.AvailableAddresses.Find(x => x.AddressLocationID == currentCustAddress.AddressLocationID);
-            AddressLocationViewModel addressLocVM = new AddressLocationViewModel();
-            addressLocVM.AddressLine1 = currentAddress.AddressLine1;
-            addressLocVM.AddressLine2 = currentAddress.AddressLine2;
-            addressLocVM.AddressLocationID = currentAddress.AddressLocationID;
-            addressLocVM.AvailableCityAreas = GetAvailableCityAreas();
-            addressLocVM.CityAreaID = currentAddress.CityAreaID;
-            addressLocVM.PostCode = currentAddress.PostCode;
-            
-            vmReturn.CurrentDeliveryAddress = addressLocVM;
+            DisplayOrderViewModel returnVM = new DisplayOrderViewModel();
+            returnVM.OrderHeader = header;
 
-            var delNotes = _orderService.GetDeliveryNotesForOrder(model.Header.OrderHeaderID);
-            var invoices = _orderService.GetInvoicesForOrder(model.Header.OrderHeaderID);
+            if(items != null)
+                foreach(var item in items)
+                    returnVM.OrderItems.Add(item);
+
+            var delNoteSearchResult = _orderService.GetDeliveryNotesForOrder(header.OrderID);
+            if(delNoteSearchResult != null)
+                foreach(var item in delNoteSearchResult)
+                    returnVM.DeliveryNotesForOrder.Add(item);
             
-            if(delNotes != null && delNotes.Count > 0)
-                foreach(var note in delNotes)
-                    vmReturn.DeliveryNotesForOrder.Add(note.DeliveryNoteID);
-            
-            if(invoices != null && invoices.Count > 0)
-                foreach(var inv in invoices)
-                    vmReturn.InvoicesFOrOrder.Add(inv.Header.InvoiceHeaderID);
+            var invSearchResult = _orderService.GetInvoicesForOrder(header.OrderID);
+            if(invSearchResult != null)
+                foreach(var item in invSearchResult)
+                    returnVM.InvoicesForOrder.Add(item);
 
-            //Set up the Existing OrderItem List
-            List<OrderItemViewModel> orderItems = new List<OrderItemViewModel>();
-            if(model.OrderItems != null && model.OrderItems.Count > 0)
-            {
-                foreach(var orderItem in model.OrderItems)
-                {
-                    OrderItemViewModel orderItemVM = ConvertToOrderItemVM(orderItem, statusDictionary);
-                    orderItems.Add(orderItemVM);
-                    if(!vmReturn.DistinctItemStatusList.Contains(orderItemVM.OrderItemStatus))
-                        vmReturn.DistinctItemStatusList.Add(orderItemVM.OrderItemStatus);
-                }
-                vmReturn.ExistingItems = orderItems;
-            }            
-            return vmReturn;
-        }
-        private OrderItem ConvertToOrderItemModel(OrderItemViewModel vm, Dictionary<int, string> itemStatusDic, List<StockHierarchyItem> stockHierarcy)
-        {
-            int i = 1;
-            int itemStatus = 0;            
-            foreach(var statusString in itemStatusDic.Values)
-            {
-                if(vm.OrderItemStatus == statusString)
-                    itemStatus = i;
-                else
-                    i++;
-            }            
-            decimal originalPrice = 0.0m;
-            foreach(var item in stockHierarcy)
-            {
-                if(item.ItemID == vm.ItemID)
-                    originalPrice = item.ItemUnitPrice;
-            }
-            
-            OrderItem returnItem = new OrderItem(
-                _modelState
-                ,vm.ItemID
-                ,itemStatus
-                ,vm.OrderHeaderID
-                ,vm.ItemDescription
-                ,vm.OrderItemRowID
-                ,vm.Qty
-                ,originalPrice
-                ,vm.UnitPrice
-            );
-
-            return returnItem;
-        }    
-        private OrderItemViewModel ConvertToOrderItemVM(OrderItem model, Dictionary<int,string> orderStatusDic)
-        {
-            OrderItemViewModel orderItemVM = new OrderItemViewModel();
-                orderItemVM.ItemDescription = model.OrderItemDescription;
-                orderItemVM.ItemID = model.ItemID;
-                orderItemVM.OrderItemRowID = model.OrderItemID;
-                orderItemVM.Qty = model.OrderItemQty;
-                orderItemVM.UnitPrice = model.OrderItemUnitPriceAfterDiscount;
-                orderItemVM.OrderItemStatus = orderStatusDic[model.OrderItemStatusID];
-                orderItemVM.OrderHeaderID = model.OrderHeaderID;
-            return orderItemVM;
-
-        }   
-        private OrderHeader ConvertToOrderHeaderModel(OrderViewModel vm)
-        {            
-            Dictionary<int,string> statusDictionary = _orderService.GetOrderStatusDictionary();
-            int orderStatusInt = 0;
-            foreach(KeyValuePair<int,string> pair in statusDictionary)            
-                if(pair.Value == vm.OrderStatus)
-                    orderStatusInt = pair.Key;
-            
-            OrderHeader returnHeader = new OrderHeader(
-                _modelState,
-                vm.CustomerAddressID,
-                vm.CustomerID,
-                vm.DeliveryDate,
-                vm.OrderDate,
-                vm.OrderID,
-                orderStatusInt
-            );
-            return returnHeader;
-        }
-        private Dictionary<int,string> GetAvailableCustomers()
-        {
-            Dictionary<int,string> availableCustomers = new Dictionary<int, string>();
-            foreach(var customer in _orderService.GetAvailableCustomers())
-                availableCustomers.Add(customer.CustomerID, customer.CustomerName);
-            return availableCustomers;
-        }
-        private Dictionary<int,string> GetAvailableCityAreas()
-        {
-            List<CityArea> cityAreas = _orderService.GetAvailableCityAreas();
-            Dictionary<int,string> returnDic = new Dictionary<int, string>();
-            foreach(var cityArea in cityAreas)
-                returnDic.Add(cityArea.CityAreaID, cityArea.CityAreaName);
-
-            return returnDic;
-        }
-        private List<AddressLocationViewModel> GetAvailableAddresses()
-        {
-            List<AddressLocationViewModel> returnAddresses = new List<AddressLocationViewModel>();
-            Dictionary<int,string> cityAreaDic = GetAvailableCityAreas();
-            
-            foreach(var address in _orderService.GetAvailableAddresses())
-            {
-                var current = new AddressLocationViewModel(){
-                    AddressLine1 = address.AddressLine1
-                    ,AddressLine2 = address.AddressLine2
-                    ,AddressLocationID = address.AddressLocationID
-                    ,CityAreaID = address.CityAreaID
-                    ,PostCode = address.PostCode
-                };
-                current.AvailableCityAreas = cityAreaDic;
-                
-                returnAddresses.Add(current);
-                
-            }
-            return returnAddresses;
-        }
-        private void AppendStockHierarchyAndAvailableItems(OrderViewModel vmDestination)
-        {
-            //Set up Stock Hierarchy Object as well as Available Item List
-            StockHierarchyViewModel stockHierarchy = new StockHierarchyViewModel();
-            List<ItemViewModel> availableItems = new List<ItemViewModel>();
-            List<StockHierarchyItem> itemDataRows = _orderService.GetStockHierarchy();
-            foreach(var item in itemDataRows)
-            {
-                PGroupDetailed currentPGroupDetailed = null;
-                SGroupDetailed currentSGroupDetailed = null;
-                ItemViewModel currentItemViewModel = new ItemViewModel();
-
-                if(stockHierarchy.ProductGroups.Exists(e => e.ToString() == item.ProductGroupCode))                
-                    currentPGroupDetailed = stockHierarchy.ProductGroups.Find(e => e.ToString() == item.ProductGroupCode);
-                else
-                {
-                    currentPGroupDetailed = new PGroupDetailed();
-                    currentPGroupDetailed.ProductGroupCode = item.ProductGroupCode;
-                    currentPGroupDetailed.ProductGroupDescription = item.ProductGroupDescription;
-                    currentPGroupDetailed.ProductGroupID = item.ProductGroupID;
-                    currentPGroupDetailed.ProductGroupName = item.ProductGroupName;
-                    stockHierarchy.ProductGroups.Add(currentPGroupDetailed);
-                }
-
-                if(currentPGroupDetailed.AvailableSubs.Exists(e => e.ToString() == item.SubGroupCode))
-                    currentSGroupDetailed = currentPGroupDetailed.AvailableSubs.Find(e => e.ToString() == item.SubGroupCode);
-                else
-                {
-                    //Add new SubGroup to currentPGroup if it's not in the list already.
-                    currentSGroupDetailed = new SGroupDetailed();
-                    currentSGroupDetailed.SubGroupCode = item.SubGroupCode;
-                    currentSGroupDetailed.SubGroupDescription = item.SubGroupDescription;
-                    currentSGroupDetailed.SubGroupID = item.SubGroupID;
-                    currentSGroupDetailed.SubGroupName = item.SubGroupName;
-                    currentPGroupDetailed.AvailableSubs.Add(currentSGroupDetailed);
-                }
-                currentItemViewModel.ItemAvailableQty = item.ItemAvailableQty;
-                currentItemViewModel.ItemCode = item.ItemCode;
-                currentItemViewModel.ItemDescription = item.ItemDescription;
-                currentItemViewModel.ItemID = item.ItemID;
-                currentItemViewModel.ItemImageFilename = item.ItemImageFilename;
-                currentItemViewModel.ItemName = item.ItemName;
-                currentItemViewModel.ItemUnitPrice = item.ItemUnitPrice;
-                currentItemViewModel.ItemUnitPriceWithMaxDiscount = item.ItemUnitPriceWithMaxDiscount;
-                currentItemViewModel.SubGroupID = item.SubGroupID;
-                
-                currentSGroupDetailed.AvailableItems.Items.Add(currentItemViewModel);
-                availableItems.Add(currentItemViewModel);
-            }
-            vmDestination.AvailableItems = availableItems;
-            vmDestination.StockHierarchy = stockHierarchy;
+            return returnVM;
         }
         private void AppendStockHierarchyAndAvailableItems(AmendOrderItemsViewModel vmDestination)
         {

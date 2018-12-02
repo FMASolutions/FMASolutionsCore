@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.BusinessServices.ShoppingService
 {
     public interface IInvoiceService : IDisposable
     {
-        Invoice GenerateInvoiceForOrder(int orderHeaderID);
-        List<Invoice> GetInvoicesForOrder(int orderHeaderID);
-        Invoice GetInvoiceByInvoiceID(int invoiceHeaderID);
+        int GenerateInvoiceForOrder(int orderHeaderID);
+        IEnumerable<int> GetInvoicesForOrder(int orderHeaderID);
         Dictionary<int, string> GetInvoiceStatusDic();
-        Order GetOrder(int orderHeaderID);
+        IEnumerable<InvoiceItemDTO> GetInvoiceItemsByInvoiceID(int invoiceID);
     }
 }

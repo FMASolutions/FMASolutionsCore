@@ -6,8 +6,10 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
     public interface IOrderHeaderRepo : IDataRepository<OrderHeaderEntity>
     {        
-         IEnumerable<OrderItemEntity> GetAllItemsForOrder(int orderID);
-         DTOOrderHeaderDetailed GetOrderHeaderDetailed(int orderHeaderID);
+         
+         IEnumerable<OrderPreviewDTO> GetAllOrderPreviews();
+         OrderHeaderDetailedDTO GetOrderHeaderDetailed(int orderHeaderID);
+         OrderHeaderDTO GetOrderHeader(int orderHeaderID);
          OrderHeaderEntity GetLatestOrder();
          
          

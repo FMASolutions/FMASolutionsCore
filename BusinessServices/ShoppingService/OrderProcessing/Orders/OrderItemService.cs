@@ -57,39 +57,27 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
                 return -1;
             }
         }
-        public bool RemoveItemFromOrder(OrderItem item)
+        public bool RemoveItemFromOrder(int orderItemID)
         {
-            if (item.OrderItemID > 0)
-                if(_uow.OrderItemRepo.Delete(ConvertItemModelToEntity(item)))
+            OrderItemEntity orderItem = new OrderItemEntity();
+            orderItem.OrderItemID = orderItemID;
+            if (orderItemID > 0)
+                if(_uow.OrderItemRepo.Delete(orderItem))
                 {
                     _uow.SaveChanges();
                     return true;
-                }            
-                else
-                    return false;
-            else
-            {
-                item.ModelState.AddError("Unable To Remove","Unable to remove item from oreder, please specify OrderItemID");
-                return false;
-            }
+                }
+            return false;     
         }
 
-        public IEnumerable<DTOOrderItemDetailed> GetOrderItemsDetailed(int orderHeaderID)
+        public IEnumerable<OrderItemDetailedDTO> GetOrderItemsDetailed(int orderHeaderID)
         {
             return _uow.OrderItemRepo.GetOrderItemsDetailedForOrder(orderHeaderID);            
         }
-        public List<OrderItem> GetOrderItemsForOrder(int orderHeaderID)
+        public IEnumerable<OrderItemDTO> GetOrderItemsForOrder(int orderHeaderID)
         {
-            var searchResults = _uow.OrderItemRepo.GetOrderItemsForOrder(orderHeaderID);
-            if(searchResults != null)
-            {
-                List<OrderItem> returnItems = new List<OrderItem>();
-                foreach(var item in searchResults)
-                    returnItems.Add(ConvertItemEntityToModel(item));
-            }
-            return null;
+            return  _uow.OrderItemRepo.GetOrderItemsForOrder(orderHeaderID);
         }
-
 
 
         private bool ValidateItemForCreate(OrderItem model)

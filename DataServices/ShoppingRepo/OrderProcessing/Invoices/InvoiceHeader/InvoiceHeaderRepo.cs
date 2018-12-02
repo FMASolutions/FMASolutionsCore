@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using Dapper;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
@@ -177,6 +178,29 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
             catch (Exception ex)
             {
                 Helper.logger.WriteToErrorLog("Error in InvoiceHeaderRepo.GetInvoicesForOrder: " + ex.Message, this);
+                return null;
+            }
+        }
+        public IEnumerable<InvoiceItemDTO> GetInvoiceByInvoiceID(int invoiceID)
+        {
+            try
+            {
+                string query = @"
+                SELECT ih.InvoiceHeaderID AS [InvoiceID], ii.InvoiceItemID, oi.OrderHeaderID, ih.InvoiceDate
+                    ,oi.OrderItemDescription AS [ItemDescription], oi.OrderItemQty AS [ItemQty], oi.OrderItemUnitPriceAfterDiscount AS [ItemPrice]
+                    ,oi.OrderItemUnitPriceAfterDiscount * oi.OrderItemQty AS [ItemTotal]
+                FROM InvoiceItems ii
+                INNER JOIN InvoiceHeaders ih ON ii.InvoiceHeaderID = ih.InvoiceHeaderID
+                INNER JOIN OrderItems oi ON ii.OrderItemID = oi.OrderItemID
+                WHERE ih.InvoiceHeaderID = @InvoiceHeaderID";
+
+                Helper.logger.WriteToProcessLog("InvoiceHeaderRepo.GetInvoiceByInvoiceID Started for invoiceID: " + invoiceID.ToString() + " full query := " + query);
+
+                return _dbConnection.Query<InvoiceItemDTO>(query,new { InvoiceHeaderID = invoiceID }, transaction: Transaction);
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in InvoiceHeaderRepo.GetInvoiceByInvoiceID: " + ex.Message, this);
                 return null;
             }
         }

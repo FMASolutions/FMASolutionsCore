@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using Dapper;
 using System.Collections.Generic;
+using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.DataServices.ShoppingRepo
 {
@@ -23,160 +24,11 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         #region IDataRepository
         public DeliveryNoteEntity GetByID(int id)
         {
-            try
-            {
-                string query = @"
-                SELECT DN.DeliveryNoteID, DN.OrderHeaderID, DN.DeliveryDate, DNI.OrderItemID, DNI.DeliveryNoteItemID
-                FROM DeliveryNotes DN
-                INNER JOIN DeliveryNoteItems DNI ON DN.DeliveryNoteID = DNI.DeliveryNoteID
-                WHERE DN.DeliveryNoteID = @DeliveryNoteID
-                ";
-
-                Helper.logger.WriteToProcessLog("DeliveryNoteRepo.GetByID Started for ID: " + id.ToString() + " full query = " + query);
-
-                var pocoList = _dbConnection.Query<DeliveryNotePOCO>(query, new { DeliveryNoteID = id }, transaction: Transaction);
-                
-                DeliveryNoteEntity returnEntity = new DeliveryNoteEntity();
-                bool firstFlag = true;
-                foreach(var item in pocoList)
-                {
-                    if(firstFlag)
-                    {       
-                        firstFlag = false;
-                        returnEntity.DeliveryNoteID = item.DeliveryNoteID;
-                        returnEntity.OrderHeaderID = item.OrderHeaderID;
-                        returnEntity.DeliveryDate = item.DeliveryDate;
-                    }
-                    DeliveryNoteEntity.DeliveryNoteItem current = new DeliveryNoteEntity.DeliveryNoteItem();
-                    current.DeliveryNoteItemID = item.DeliveryNoteItemID;
-                    current.DeliveryNoteID = item.DeliveryNoteID;
-                    current.OrderItemID = item.OrderItemID;
-                    
-                    returnEntity.Items.Add(current);
-                }
-                
-                if(returnEntity.DeliveryNoteID > 0 && returnEntity.Items.Count > 0)
-                  return returnEntity;
-                else
-                  return null;
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.GetByID: " + ex.Message, this);
-                return null;
-            }
+            throw new NotImplementedException();
         }
         public IEnumerable<DeliveryNoteEntity> GetAll()
         {
-            try
-            {
-                string query = @"
-                SELECT DN.DeliveryNoteID, DN.OrderHeaderID, DN.DeliveryDate, DNI.OrderItemID, DNI.DeliveryNoteItemID
-                FROM DeliveryNotes DN
-                INNER JOIN DeliveryNoteItems DNI ON DN.DeliveryNoteID = DNI.DeliveryNoteID
-                ORDER BY DN.DeliveryNoteID DESC
-                ";
-                Helper.logger.WriteToProcessLog("DeliveryNoteRepo.GetAll Started, full query = " + query);
-
-                var pocoList = _dbConnection.Query<DeliveryNotePOCO>(query, transaction: Transaction);
-                
-                
-                List<DeliveryNoteEntity> returnEntity = new List<DeliveryNoteEntity>();
-                DeliveryNoteEntity currentEntity = null;
-                                
-                bool first = true;
-                int currentDeliveryNoteID = 0;
-                
-                foreach(var item in pocoList)
-                {
-                    if(currentDeliveryNoteID != item.DeliveryNoteID)
-                    {       
-                        currentDeliveryNoteID = item.DeliveryNoteID;
-                        if(first)                        
-                            first = false;
-                        else
-                            returnEntity.Add(currentEntity);
-                        
-                        currentEntity = new DeliveryNoteEntity();
-                        currentEntity.DeliveryNoteID = item.DeliveryNoteID;
-                        currentEntity.OrderHeaderID = item.OrderHeaderID;
-                        currentEntity.DeliveryDate = item.DeliveryDate;
-                    }
-                    DeliveryNoteEntity.DeliveryNoteItem currentItem = new DeliveryNoteEntity.DeliveryNoteItem();
-                    currentItem.DeliveryNoteItemID = item.DeliveryNoteItemID;
-                    currentItem.DeliveryNoteID = item.DeliveryNoteID;
-                    currentItem.OrderItemID = item.OrderItemID;             
-                    currentEntity.Items.Add(currentItem);
-                }
-                returnEntity.Add(currentEntity); 
-                
-                if(returnEntity.Count > 0)
-                  return returnEntity;
-                else
-                  return null;
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.GetAll: " + ex.Message, this);
-                return null;
-            }
-        }
-
-        public IEnumerable<DeliveryNoteEntity> GetByOrderHeaderID(int orderHeaderID)
-        {
-            try
-            {
-                string query = @"
-                SELECT DN.DeliveryNoteID, DN.OrderHeaderID, DN.DeliveryDate, DNI.OrderItemID, DNI.DeliveryNoteItemID
-                FROM DeliveryNotes DN
-                INNER JOIN DeliveryNoteItems DNI ON DN.DeliveryNoteID = DNI.DeliveryNoteID
-                WHERE DN.OrderHeaderID = @OrderHeaderID
-                ORDER BY DN.DeliveryNoteID DESC
-                ";
-                Helper.logger.WriteToProcessLog("DeliveryNoteRepo.GetAll Started, full query = " + query);
-
-                var pocoList = _dbConnection.Query<DeliveryNotePOCO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);
-                
-                
-                List<DeliveryNoteEntity> returnEntity = new List<DeliveryNoteEntity>();
-                DeliveryNoteEntity currentEntity = null;
-                                
-                bool first = true;
-                int currentDeliveryNoteID = 0;
-                
-                foreach(var item in pocoList)
-                {
-                    if(currentDeliveryNoteID != item.DeliveryNoteID)
-                    {       
-                        currentDeliveryNoteID = item.DeliveryNoteID;
-                        if(first)                        
-                            first = false;
-                        else
-                            returnEntity.Add(currentEntity);
-                        
-                        currentEntity = new DeliveryNoteEntity();
-                        currentEntity.DeliveryNoteID = item.DeliveryNoteID;
-                        currentEntity.OrderHeaderID = item.OrderHeaderID;
-                        currentEntity.DeliveryDate = item.DeliveryDate;
-                    }
-                    DeliveryNoteEntity.DeliveryNoteItem currentItem = new DeliveryNoteEntity.DeliveryNoteItem();
-                    currentItem.DeliveryNoteItemID = item.DeliveryNoteItemID;
-                    currentItem.DeliveryNoteID = item.DeliveryNoteID;
-                    currentItem.OrderItemID = item.OrderItemID;             
-                    currentEntity.Items.Add(currentItem);
-                }
-                returnEntity.Add(currentEntity); 
-                
-                if(returnEntity.Count > 0)
-                  return returnEntity;
-                else
-                  return null;
-            }
-            catch (Exception ex)
-            {
-                Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.GetAll: " + ex.Message, this);
-                return null;
-            }
+            throw new NotImplementedException();
         }
 
         public bool Create(DeliveryNoteEntity entity)
@@ -194,7 +46,27 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
         }
         #endregion     
         
-        public DeliveryNoteEntity DeliverOrder(int orderHeaderID)
+        public IEnumerable<int> GetByOrderHeaderID(int orderHeaderID)
+        {
+            try
+            {
+                string query = @"
+                SELECT DN.DeliveryNoteID
+                FROM DeliveryNotes DN
+                WHERE DN.OrderHeaderID = @OrderHeaderID
+                ORDER BY DN.DeliveryNoteID DESC
+                ";
+                Helper.logger.WriteToProcessLog("DeliveryNoteRepo.GetAll Started, full query = " + query);
+                return _dbConnection.Query<int>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.GetAll: " + ex.Message, this);
+                return null;
+            }
+        }
+
+        public int DeliverOrder(int orderHeaderID)
         {
             try
             {
@@ -204,17 +76,38 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                     var queryParameters = new DynamicParameters();
                     queryParameters.Add("@OrderHeaderID", orderHeaderID);
                     int deliveryNoteID = _dbConnection.QueryFirst<int>("DeliverExistingItems",queryParameters,transaction: Transaction, commandType: CommandType.StoredProcedure);
-                    return GetByID(deliveryNoteID);
+                    return deliveryNoteID;
                 }
                 else
-                    return null;
+                    return 0;
             }
             catch(Exception ex)
             {
                 Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.DeliverOutstandingItems: " + ex.Message, this);
+                return 0;
+            }
+        }
+        public IEnumerable<DeliveryNoteItemDTO> GetDeliveryNoteItems(int deliveryNoteID)
+        {
+            try
+            {
+                string query = @"
+                SELECT di.DeliveryNoteItemID, di.DeliveryNoteID, oi.OrderHeaderID, dn.DeliveryDate, di.OrderItemID, oi.OrderItemDescription, oi.OrderItemQty
+                FROM DeliveryNoteItems di
+                INNER JOIN DeliveryNotes dn ON dn.DeliveryNoteID = di.DeliveryNoteID
+                INNER JOIN OrderItems oi ON di.OrderItemID = oi.OrderItemID
+                WHERE di.DeliveryNoteID = @DeliveryNoteID
+                ";
+
+                Helper.logger.WriteToProcessLog("DeliveryNoteRepo.GetDeliveryNoteItems Started: " + query);
+
+                return _dbConnection.Query<DeliveryNoteItemDTO>(query, new { DeliveryNoteID = deliveryNoteID }, transaction: Transaction);
+            }
+            catch (Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in DeliveryNoteRepo.GetDeliveryNoteItems: " + ex.Message, this);
                 return null;
             }
         }
-        
     }
 }

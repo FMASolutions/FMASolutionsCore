@@ -7,8 +7,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
     public interface IOrderItemService : IDisposable
     {
         int AddItemToOrder(OrderItem item);
-        bool RemoveItemFromOrder(OrderItem item);
-        List<OrderItem> GetOrderItemsForOrder(int orderHeaderID);
-        IEnumerable<DTOOrderItemDetailed> GetOrderItemsDetailed(int orderHeaderID);
+        bool RemoveItemFromOrder(int orderItemID);
+        IEnumerable<OrderItemDTO> GetOrderItemsForOrder(int orderHeaderID);
+        IEnumerable<OrderItemDetailedDTO> GetOrderItemsDetailed(int orderHeaderID);
     }
 }
