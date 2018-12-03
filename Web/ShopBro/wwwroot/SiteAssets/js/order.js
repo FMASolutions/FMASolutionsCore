@@ -48,7 +48,12 @@ function addRowFromDD() {
     var itemDescription = $("[id*='SelectedItem'] :selected")[0].text
     var price = $("#UnitPriceInput").val();
     var itemID = $("#SelectedItem")[0].value;    
-    AddItemToExistingList(qty, itemDescription, price, itemID);    
+
+    if(AddItemToExistingList(qty, itemDescription, price, itemID))
+    {
+        $("#QtyInput")[0].value = "";
+        $("#UnitPriceInput")[0].value = "";
+    }
 }
 
 function AddSearchItem(){    
@@ -62,7 +67,14 @@ function AddSearchItem(){
     var itemSearch = AvailableItemList.find(function(inputItem){ return inputItem.ItemCode == this;}, Code);    
         
     if(itemSearch)        
-        AddItemToExistingList(Qty, itemSearch.ItemDescription, Price, itemSearch.ItemID);
+    {
+        if(AddItemToExistingList(Qty, itemSearch.ItemDescription, Price, itemSearch.ItemID))
+        {
+            $('#CodeInputSearch')[0].value = "";
+            $('#QtyInputSearch')[0].value = "";
+            $('#PriceInputSearch')[0].value = "";
+        }
+    }
     else
         window.alert('Item with code: ' + Code + ' doesn\'t exist');
 }
@@ -74,12 +86,18 @@ function AddAccordItem(){
     var InputPrice = $(this).parent().siblings('.row').children().children().children('.PriceInput')[0].value;  
     var ItemDescription = $(this).parent().siblings('span.ItemDescritpion')[0].textContent; 
     
-    AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID);
+    if(AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID))
+    {
+        $(this).parent().siblings('.row').children().children().children('.QtyInput')[0].value = "";
+        $(this).parent().siblings('.row').children().children().children('.PriceInput')[0].value = "";
+    }
+
 }
 
 function AddItemToExistingList(qty, itemDescription, price, itemID){
 
     var itemSearch = AvailableItemList.find(function(inputItem){ return inputItem.ItemID == this;}, itemID);
+    var success = false;
     if(itemSearch)
     {
         if(itemSearch.ItemMinPrice > price)
@@ -103,10 +121,13 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
             }); 
 
             GenerateNewTableBody();
+            success = true;
+            alert("Item Added Successfully")
         }   
     }
     else
         window.alert('invalid item');
+    return Boolean(success);
 }
 function GenerateNewTableBody(){
     var newTableBody = '<tbody>'
@@ -138,14 +159,14 @@ function GenerateItemHTML(itemID, itemDescription, itemStatus, qty, price, index
         newHTML += '</span></td>';
 
         if(itemStatus.indexOf("Estimate") >= 0){
-            newHTML += '<td class="ExistingItemsRemovalButton text-center"><span class="form-control">';             
-                newHTML += '<span>Remove</span>';
-            newHTML += '</span></td>';
+            newHTML += '<td class="ExistingItemsRemovalButton text-center">';             
+                newHTML += ' <img class="icon" src="/SiteAssets/images/Icons/delete.svg" width="20">';
+            newHTML += '</td>';
         }
         else
         {
             newHTML += '<td class="text-center"><span>';
-                newHTML += 'N/A';
+                newHTML += '';
             newHTML += '</span></td>';
         }
    

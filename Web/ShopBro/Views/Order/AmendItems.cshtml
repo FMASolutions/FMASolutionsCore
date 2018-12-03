@@ -106,8 +106,8 @@
                                 <tr>
                                     <th>Item Description</th>
                                     <th class="text-center">Qty</th>
-                                    <th class="text-center">Unit Price</th>
-                                    <th class="text-center">Remove?</th>
+                                    <th class="text-center">Price</th>
+                                    <th class="text-center">Remove</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -128,14 +128,14 @@
                                     </span></td>
                                     @if (Model.ItemDetails[i].OrderItemStatusValue == "Estimate")
                                     { 
-                                        <td class="ExistingItemsRemovalButton text-center"><span class="form-control">                                                                           
-                                            Remove
-                                        </span></td> 
+                                        <td class="ExistingItemsRemovalButton text-center">                                                                        
+                                            <img class="icon" src="/SiteAssets/images/Icons/delete.svg" width="20">
+                                        </td> 
                                     }          
                                     else
                                     {
                                         <td class="text-center"><span>                                                                           
-                                            N/A
+                                            
                                         </span></td> 
                                     }                     
                                     @Html.HiddenFor(model => model.ItemDetails[i].ItemID)
@@ -177,7 +177,7 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="text-left">
-                        Unit Price:  <input type="text" class="form-control" placeholder="Qty" id="UnitPriceInput">
+                        Unit Price:  <input type="text" class="form-control" placeholder="Price" id="UnitPriceInput">
                     </div>
                 </div>
             </div> 
