@@ -5,6 +5,12 @@
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
 }
 
+<script src="~/SiteAssets/js/autoCompleteModule.js"></script>
+<link rel="stylesheet" href="~/SiteAssets/css/autoCompleteModule.css">
+<script>
+    
+</script>
+
 <div id="DataRoot" style="display:none">
     <div id="OrderItemsRaw">
         @for (var i = 0; i < Model.ItemDetails.Count; i++)
@@ -151,10 +157,16 @@
 
         <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-dark" id="AddSearchItemWrapper">
                 <h3>Search and Add:</h3>
-                <span>Code:<input type="text" class="form-control SearchItemControl" placeholder="Code" id="CodeInputSearch"></span>
-                <span>Qty:<input type="number" class="form-control SearchItemControl" placeholder="Qty" id="QtyInputSearch"></span>
-                <span>Price:<input type="number" class="form-control SearchItemControl" placeholder="Price" id="PriceInputSearch"></span>
-                <span><input type="button" class="btn btn-outline-light btn-block mb-3 mt-2" value="Add Item" id="AddItemButtonSearch"></span>
+                <form autocomplete="off">
+                    <span>
+                    <div class="autocomplete text-dark">
+                        Code:<input id="CodeInputSearch" type="text" name="myCode" placeholder="Code" class="form-control SearchItemControl text-dark mb-2">
+                    </div>
+                    </span>           
+                </form>
+                <span><input type="number" class="form-control SearchItemControl mb-2" placeholder="Qty" id="QtyInputSearch"></span>
+                <span><input type="number" class="form-control SearchItemControl mb-2" placeholder="Price" id="PriceInputSearch"></span>
+                <span><input type="button" class="btn btn-outline-light btn-block mb-2" value="Add Item" id="AddItemButtonSearch"></span>
         </div>
 
         <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-secondary" id="ItemSelectorContainer">
@@ -225,10 +237,43 @@
             }
         </div>
 
+        <form autocomplete="off">
+            <div class="autocomplete" style="width:300px;">
+                <input id="countryInput" type="text" name="myCountry" placeholder="Country">
+            </div>            
+        </form>
+        <form autocomplete="off">
+            <div class="autocomplete" style="width:300px;">
+                <input id="cityInput" type="text" name="myCity" placeholder="City">
+            </div>
+        </form>
+
         <div class="row mt-3">        
             <div class="col-sm-6"><button type="submit" formaction=@Url.Action("ProcessAmendItems") formmethod="POST" class="btn btn-outline-dark btn-block mb-3">Save Changes</button></div>            
             <div class="col-sm-6"><a href="/Order/Search/@Model.HeaderDetail.OrderID" class="btn btn-outline-dark btn-block mb-3">Back (Discard changes)</a></div>        
         </div>
     </form>
 </div>
+
+
+
+
+
+
+<script>
+    var countries = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua & Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia & Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre & Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts & Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad & Tobago","Tunisia","Turkey","Turkmenistan","Turks & Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
+    var cities = ["Nottingham","Manchester","Birmingham","London","Glagow"];
+    var availableCodes = [];
+
+    @foreach (var d in Model.AvailableItems)
+    {
+        @:availableCodes.push("@d.ItemCode");
+    }
+
+    /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+    autocomplete(document.getElementById("countryInput"), countries);
+    autocomplete(document.getElementById("cityInput"), cities);
+    autocomplete(document.getElementById("CodeInputSearch"),availableCodes)
+</script>
+
 <script src="~/SiteAssets/js/order.js"></script>

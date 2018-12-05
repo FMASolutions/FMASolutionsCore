@@ -40,6 +40,8 @@ VALUES
 /*10*/('PNLSCRW'  ,5          ,'Panel Screws'         ,'Panel Screws 10 Pack'         ,0.49           ,0.39                           ,200                ,50                     ,'Random.jpeg'),
 /*11*/('TILGLUE'  ,6          ,'Tile Glue'            ,'Tile Glue 500ML'              ,1.29           ,0.99                           ,75                 ,25                     ,'Random.jpeg'),
 /*12*/('PNLGLUE'  ,6          ,'Panel Glue'           ,'Panel Glue 500ML'             ,1.29           ,0.99                           ,75                 ,25                     ,'Random.jpeg')
+
+
 GO
 /*-------------------------------------
 ADDRESS:
