@@ -151,9 +151,9 @@
 
         <div class="container-fluid mb-3 pt-2 pb-2 pr-2 pl-2 text-light bg-dark" id="AddSearchItemWrapper">
                 <h3>Search and Add:</h3>
-                <span>Code:<input type="text" class="form-control" placeholder="Code" id="CodeInputSearch"></span>
-                <span>Qty:<input type="number" class="form-control" placeholder="Qty" id="QtyInputSearch"></span>
-                <span>Price:<input type="number" class="form-control" placeholder="Price" id="PriceInputSearch"></span>
+                <span>Code:<input type="text" class="form-control SearchItemControl" placeholder="Code" id="CodeInputSearch"></span>
+                <span>Qty:<input type="number" class="form-control SearchItemControl" placeholder="Qty" id="QtyInputSearch"></span>
+                <span>Price:<input type="number" class="form-control SearchItemControl" placeholder="Price" id="PriceInputSearch"></span>
                 <span><input type="button" class="btn btn-outline-light btn-block mb-3 mt-2" value="Add Item" id="AddItemButtonSearch"></span>
         </div>
 
@@ -172,12 +172,12 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="text-left">
-                        Qty: <input type="text" class="form-control" placeholder="Qty" id="QtyInput">
+                        Qty: <input type="text" class="form-control SelectorItemControl" placeholder="Qty" id="QtyInput">
                     </div>
                 </div>
                 <div class="col-sm-3">
                     <div class="text-left">
-                        Unit Price:  <input type="text" class="form-control" placeholder="Price" id="UnitPriceInput">
+                        Unit Price:  <input type="text" class="form-control SelectorItemControl" placeholder="Price" id="UnitPriceInput">
                     </div>
                 </div>
             </div> 
@@ -207,10 +207,10 @@
                                         <span class="ItemDescritpion text-light ">@(Model.StockHierarchy.ProductGroups[i].AvailableSubs[j].AvailableItems.Items[k].ItemDescription)</span>
                                         <div class="row">
                                             <div class="col-6">
-                                                <span><input type="number" placeholder="Qty" class="QtyInput form-control"></span>
+                                                <span><input type="number" placeholder="Qty" class="QtyInput form-control AccordItemControl"></span>
                                             </div>
                                             <div class="col-6">
-                                                <span><input type="number" placeholder="Price" class="PriceInput form-control"></span>
+                                                <span><input type="number" placeholder="Price" class="PriceInput form-control AccordItemControl"></span>
                                             </div>
                                         </div>
                                         <span><input type="button" value="Add Item" class="AddAccordItemButton form-control btn btn-outline-light btn-block mt-3"></span>

@@ -5,6 +5,7 @@ var NewItemID = 0;
 
 $(document).ready(function() {
     setupGlobals();
+    document.onkeypress = processKeyStroke;
     $('#DDAddItemButton').on("click",addRowFromDD);
     $('.ProductHeading').on('click', ToggleProduct);
     $('.SubHeading').on('click',ToggleSub);
@@ -93,6 +94,22 @@ function AddAccordItem(){
     }
 
 }
+function AddAccordItemFromEnterKey(node){
+    
+    var ItemID = $(node).parent().parent().parent().siblings('span.ItemID')[0].textContent;
+    var MinimumPrice = $(node).parent().parent().parent().siblings('span.MinimumPrice')[0].textContent;
+    var Qty = $(node).parent().parent().parent().children().children().children('.QtyInput')[0].value;
+    var InputPrice = $(node).parent().parent().parent().children().children().children('.PriceInput')[0].value;  
+    var ItemDescription = $(node).parent().parent().parent().siblings('span.ItemDescritpion')[0].textContent; 
+    
+    if(AddItemToExistingList(Qty, ItemDescription, InputPrice, ItemID))
+    {
+        $(node).parent().parent().parent().children().children().children('.QtyInput')[0].value = "";
+        $(node).parent().parent().parent().children().children().children('.PriceInput')[0].value = "";
+    }
+    
+
+}
 
 function AddItemToExistingList(qty, itemDescription, price, itemID){
 
@@ -100,9 +117,14 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
     var success = false;
     if(itemSearch)
     {
-        if(itemSearch.ItemMinPrice > price)
+        var convertedPrice = parseFloat(price);
+        var convertedMinPrice = parseFloat(itemSearch.ItemMinPrice);
+        var convertedQty = parseInt(qty);
+        var convertedAvailQty = parseInt(itemSearch.ItemAvailQty);
+
+        if(convertedMinPrice > convertedPrice)
             window.alert('price can\'t be less than the minimum sale value of: ' + itemSearch.ItemMinPrice);
-        else if(Number(itemSearch.ItemAvailQty) < Number(qty))
+        else if(convertedAvailQty < convertedQty)
             window.alert('Items current stock level is: ' + itemSearch.ItemAvailQty);
         else
         {
@@ -202,4 +224,28 @@ function ToggleProduct(){
 }
 function ToggleSub(){
     $(this).siblings('ul').toggle();
+}
+
+function processKeyStroke(evt) {
+    var evt = (evt) ? evt : ((event) ? event : null);
+    if ((evt.keyCode == 13)) 
+    {
+        var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+        var classList = $(node).attr('class').split(/\s+/);
+        for (var i = 0; i < classList.length; i++) {
+            if (classList[i] === 'AccordItemControl') {
+                AddAccordItemFromEnterKey(node);
+                return false;
+            }
+            else if(classList[i] === 'SelectorItemControl'){
+                addRowFromDD();
+                return false;
+            }
+            else if(classList[i] === 'SearchItemControl'){
+                AddSearchItem();
+                return false;
+            }
+        }
+        return false; 
+    }
 }

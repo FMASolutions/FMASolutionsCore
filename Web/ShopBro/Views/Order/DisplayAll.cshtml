@@ -4,13 +4,14 @@
     ViewData["Title"] = "Items - Update Page";
     Layout = "~/Views/Shared/_LayoutShopBro.cshtml";
 }
-<h3 class="pl-2">Current Orders:</h3>
+
 <div class="container bg-light pt-2 pb-2">
     <form class="form-signin">
         @if (Model != null && Model.StatusMessage != null)
         {
             <Label class="error-text">@Model.StatusMessage </Label>
         }
+        <h3 class="pl-2">Current Orders:</h3>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-left">                                    
@@ -39,6 +40,11 @@
                         </tbody>
                     </table>
                 </div>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <a href="/Order/Search" class="btn btn-outline-dark btn-block mb-3">Back</a>
             </div>
         </div>
     </form>
