@@ -128,23 +128,31 @@ function AddItemToExistingList(qty, itemDescription, price, itemID){
             window.alert('Items current stock level is: ' + itemSearch.ItemAvailQty);
         else
         {
-            ID = ++NewItemID;
-            var indexValue = ExistingItemList.length;
-            ExistingItemList.push({
-                "ID": ID,
-                "IDText": "ItemRowNew" + ID,
-                "Description": itemDescription,
-                "Qty": qty,
-                "Price": price,
-                "ItemID" : itemID,
-                "ItemStatus" : "Estimate",
-                "CurrentIndex" : indexValue,
-                "OrderItemRowID" : 0
-            }); 
+            if(convertedPrice >= 0.01 && Number(convertedQty) >= 1)
+            {
+                ID = ++NewItemID;
+                var indexValue = ExistingItemList.length;
+                ExistingItemList.push({
+                    "ID": ID,
+                    "IDText": "ItemRowNew" + ID,
+                    "Description": itemDescription,
+                    "Qty": qty,
+                    "Price": price,
+                    "ItemID" : itemID,
+                    "ItemStatus" : "Estimate",
+                    "CurrentIndex" : indexValue,
+                    "OrderItemRowID" : 0
+                }); 
+                    
+                GenerateNewTableBody();
+                success = true;
+                alert("Item Added Successfully")
+            }
+            else
+            {
+                alert("Price and Qty must be greater than 0")
+            }
 
-            GenerateNewTableBody();
-            success = true;
-            alert("Item Added Successfully")
         }   
     }
     else
