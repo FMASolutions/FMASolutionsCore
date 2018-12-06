@@ -22,7 +22,9 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Index()
         {
-            return View("Search",new GenericSearchViewModel());
+            OrderModel model = GetOrderModel();
+            SearchOrderViewModel vm = model.GetEmptySearchViewodel();
+            return View("Search",vm);
         }
 
         [Authorize(Policy = "Admin")]

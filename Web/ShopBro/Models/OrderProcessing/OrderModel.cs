@@ -136,6 +136,17 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             emptyModel.OrderDate = DateTime.Now.AddDays(3);
             return emptyModel;
         }
+        public SearchOrderViewModel GetEmptySearchViewodel()
+        {
+            SearchOrderViewModel vm = new SearchOrderViewModel();
+            var customersSearch = _orderService.GetAvailableCustomers();
+            vm.CustomersWithOrdersDictionary = new Dictionary<int, string>();
+            foreach(var customer in customersSearch)
+            {
+                vm.CustomersWithOrdersDictionary.Add(customer.CustomerID,customer.CustomerCode + " - " + customer.CustomerName);
+            }
+            return vm;
+        }
         
 
         private DisplayOrderViewModel ConvertToDisplayViewModel(OrderHeaderDTO header, IEnumerable<OrderItemDTO> items)
