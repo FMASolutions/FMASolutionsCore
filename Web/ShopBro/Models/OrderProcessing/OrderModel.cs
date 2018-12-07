@@ -4,6 +4,7 @@ using FMASolutionsCore.Web.ShopBro.ViewModels;
 using FMASolutionsCore.BusinessServices.BusinessCore.CustomModel;
 using FMASolutionsCore.BusinessServices.ShoppingService;
 using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
+using System.Linq;
 
 namespace FMASolutionsCore.Web.ShopBro.Models
 {
@@ -22,7 +23,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         private IOrderService _orderService;
 
         public ICustomModelState ModelState { get { return _modelState; } }
-        public DisplayOrderViewModel Search(int OrderHeaderID)
+        public DisplayOrderViewModel SearchByID(int OrderHeaderID)
         {
             DisplayOrderViewModel returnVM = null;
             var orderModel = _orderService.GetOrderHeader(OrderHeaderID);
@@ -33,9 +34,21 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             }
             return returnVM;
         }
-        public DisplayAllOrdersViewModel GetAllOrders()
+        public DisplayOrdersViewModel SearchByCustomer(string customerCode)
         {
-            DisplayAllOrdersViewModel returnVM = new DisplayAllOrdersViewModel();
+            DisplayOrdersViewModel returnVM = new DisplayOrdersViewModel();
+            var searchResults = _orderService.GetOrdersByCustomerCode(customerCode);
+            if(searchResults != null)
+                foreach(var order in searchResults)
+                    returnVM.Orders.Add(order);
+            else
+                returnVM.StatusMessage = "No Orders Found";
+            return returnVM;
+        }
+
+        public DisplayOrdersViewModel GetAllOrders()
+        {
+            DisplayOrdersViewModel returnVM = new DisplayOrdersViewModel();
             var searchResults = _orderService.GetAllOrders();
             if(searchResults != null)
                 foreach(var order in searchResults)
@@ -70,7 +83,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
             if(errorDetected)
                 return null;
             else
-                return Search(newModel.HeaderDetail.OrderID);
+                return SearchByID(newModel.HeaderDetail.OrderID);
         }
         public int CreateOrder(CreateOrderViewModel vmCreate)
         {

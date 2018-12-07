@@ -76,6 +76,10 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         {
             return _uow.OrderHeaderRepo.GetAllOrderPreviews();
         }    
+        public IEnumerable<OrderPreviewDTO> GetOrdersByCustomerCode(string customerCode)
+        {
+            return _uow.OrderHeaderRepo.GetOrdersByCustomerCode(customerCode);
+        }
         public OrderHeaderDetailedDTO GetOrderHeaderDetailed(int orderHeaderID)
         {
             return _uow.OrderHeaderRepo.GetOrderHeaderDetailed(orderHeaderID);

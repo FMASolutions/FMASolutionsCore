@@ -9,7 +9,8 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         OrderHeaderDTO GetOrderHeader(int orderHeaderID);
         int CreateOrderWithNewAddress(OrderHeaderCreationDTO orderHeader, AddressLocation newAddress, int customerID);
         int CreateOrderWithExistingAddress(OrderHeaderCreationDTO orderHeader,int addressID, int customerID);
-        IEnumerable<OrderPreviewDTO> GetAllOrders();              
+        IEnumerable<OrderPreviewDTO> GetAllOrders();   
+        IEnumerable<OrderPreviewDTO> GetOrdersByCustomerCode(string customerCode);           
         OrderHeaderDetailedDTO GetOrderHeaderDetailed(int orderHeaderID);
         Dictionary<int, string> GetOrderStatusDictionary();
 

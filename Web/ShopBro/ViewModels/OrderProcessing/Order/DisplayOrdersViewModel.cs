@@ -4,9 +4,9 @@ using FMASolutionsCore.BusinessServices.ShoppingDTOFactory;
 
 namespace FMASolutionsCore.Web.ShopBro.ViewModels
 {
-    public class DisplayAllOrdersViewModel
+    public class DisplayOrdersViewModel
     {
-        public DisplayAllOrdersViewModel()
+        public DisplayOrdersViewModel()
         {
             Orders = new List<OrderPreviewDTO>();
         }

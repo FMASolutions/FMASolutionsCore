@@ -8,6 +8,7 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
     {        
          
          IEnumerable<OrderPreviewDTO> GetAllOrderPreviews();
+         IEnumerable<OrderPreviewDTO> GetOrdersByCustomerCode(string customerCode);
          OrderHeaderDetailedDTO GetOrderHeaderDetailed(int orderHeaderID);
          OrderHeaderDTO GetOrderHeader(int orderHeaderID);
          OrderHeaderEntity GetLatestOrder();

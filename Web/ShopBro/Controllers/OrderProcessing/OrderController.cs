@@ -45,19 +45,45 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         }
         
         [Authorize(Policy = "Admin")]
+        [HttpGet]
+        public IActionResult SearchByCustomer(string customerCode="")
+        {
+            OrderModel model = GetOrderModel();
+            SearchOrderViewModel vm = model.GetEmptySearchViewodel();
+            
+            if(!string.IsNullOrEmpty(customerCode))
+            {
+                vm.CustomerCodeUserInput = customerCode;
+                return ProcessSearch(vm);
+            }
+            else
+                return View("Search",vm);
+        }
+        
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public IActionResult ProcessSearch(SearchOrderViewModel vmInput)
         {            
-            OrderModel model = GetOrderModel();            
-            DisplayOrderViewModel vm = model.Search(vmInput.OrderIDUserInput);
-            
-            if(vm != null)
-                return View("Display",vm);
-            else
+            OrderModel model = GetOrderModel();
+            if(vmInput.OrderIDUserInput > 0)
             {
-                vmInput.StatusMessage = "Not found";
-                return View("Search", vmInput);
+                DisplayOrderViewModel vm = model.SearchByID(vmInput.OrderIDUserInput);
+                if(vm != null && vm.OrderHeader.OrderID > 0)
+                    return View("Display",vm);
+                else
+                    return View("Search",vm);
+                
             }
+            else if(!string.IsNullOrEmpty(vmInput.CustomerCodeUserInput))
+            {
+                DisplayOrdersViewModel vmOrders = model.SearchByCustomer(GetCustomerCodePart(vmInput.CustomerCodeUserInput));
+                if(vmOrders != null && vmOrders.Orders.Count > 0 )
+                    return View("DisplayMultiple", vmOrders);
+                else
+                    return View("Search", vmInput);
+            }
+            vmInput.StatusMessage = "No User Input Detected";
+            return View("Search", vmInput);
         }
 
         [Authorize(Policy = "Admin")]
@@ -65,13 +91,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult DisplayAll()
         {
             OrderModel model = GetOrderModel();
-            DisplayAllOrdersViewModel ordersVM = model.GetAllOrders();
+            DisplayOrdersViewModel ordersVM = model.GetAllOrders();
             if(ordersVM != null && ordersVM.Orders.Count > 0)
-                return View("DisplayAll",ordersVM);
+                return View("DisplayMultiple",ordersVM);
             else
                 return View("Search",new GenericSearchViewModel());
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public IActionResult AmendItems(int id=0)
         {
@@ -118,6 +145,14 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         private OrderModel GetOrderModel()
         {
             return new OrderModel(new ModelStateConverter(this).Convert(), _orderService);
+        }
+        private string GetCustomerCodePart(string inputString)
+        {
+            string returnString = "";
+            if(inputString.Contains("-"))
+                returnString = inputString.Substring(0,inputString.LastIndexOf("-")-1);
+            return returnString;
+            
         }
     }
 }

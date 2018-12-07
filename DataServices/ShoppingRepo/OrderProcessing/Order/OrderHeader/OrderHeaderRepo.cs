@@ -140,12 +140,34 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 INNER JOIN Customers cust ON ordHead.CustomerID = cust.CustomerID
                 ";
 
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAllOrderPreviews Started: " + query);
                 return _dbConnection.Query<OrderPreviewDTO>(query, transaction: Transaction);             
             }
             catch(Exception ex)
             {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAmendOrderItemsDTO: " + ex.Message, this);
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAllOrderPreviews: " + ex.Message, this);
+                return null;
+            }
+        }
+        public IEnumerable<OrderPreviewDTO> GetOrdersByCustomerCode(string customerCode)
+        {
+            try
+            {
+                string query = @"
+                SELECT ordHead.OrderHeaderID AS [OrderID], ohStatus.OrderstatusValue AS [OrderStatus], cust.CustomerName AS [Customer]
+                    ,ordHead.OrderDate, ordHead.DeliveryDate AS [OrderDueDate]
+                FROM OrderHeaders ordHead
+                INNER JOIN OrderStatus ohStatus ON ohStatus.OrderStatusID = ordHead.OrderStatusID
+                INNER JOIN Customers cust ON ordHead.CustomerID = cust.CustomerID
+                WHERE cust.CustomerCode = @CustomerCode
+                ";
+
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetOrdersByCustomerCode Started for code: " + customerCode + " full query := " + query);
+                return _dbConnection.Query<OrderPreviewDTO>(query,new {CustomerCode = customerCode}, transaction: Transaction);             
+            }
+            catch(Exception ex)
+            {
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetOrdersByCustomerCode: " + ex.Message, this);
                 return null;
             }
         }
@@ -170,12 +192,12 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 WHERE ordHead.OrderHeaderID = @OrderHeaderID
                 ";
 
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetOrderHeaderDetailed Started: " + query);
                 return _dbConnection.QueryFirst<OrderHeaderDetailedDTO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
             }
             catch(Exception ex)
             {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAmendOrderItemsDTO: " + ex.Message, this);
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetOrderHeaderDetailed: " + ex.Message, this);
                 return null;
             }
         }
@@ -198,12 +220,12 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 WHERE ordHead.OrderHeaderID = @OrderHeaderID
                 ";
 
-                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetAmendOrderItemsDTO Started: " + query);
+                Helper.logger.WriteToProcessLog("OrderHeaderRepo.GetOrderHeader Started: " + query);
                 return _dbConnection.QueryFirst<OrderHeaderDTO>(query, new { OrderHeaderID = orderHeaderID }, transaction: Transaction);             
             }
             catch(Exception ex)
             {
-                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetAmendOrderItemsDTO: " + ex.Message, this);
+                Helper.logger.WriteToErrorLog("Error in OrderHeaderRepo.GetOrderHeader: " + ex.Message, this);
                 return null;
             }
         }
