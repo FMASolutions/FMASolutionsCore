@@ -11,6 +11,7 @@ namespace FMASolutionsCore.BusinessServices.ShoppingDTOFactory
         public int ItemQty{get;set;}
         public decimal ItemPrice{get;set;}
         public decimal ItemTotal{get;set;}
+        public string InvoiceItemStatus{get;set;}
         
     }
 }

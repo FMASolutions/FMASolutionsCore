@@ -32,10 +32,11 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         public IActionResult Search(int id=0)
         {
             
-            GenericSearchViewModel vm = new GenericSearchViewModel();
+            OrderModel model = GetOrderModel();
+            SearchOrderViewModel vm = model.GetEmptySearchViewodel();
             if(id > 0)
             {
-                vm.ID = id;
+                vm.OrderIDUserInput = id;
                 return ProcessSearch(vm);
             }
             else
@@ -45,10 +46,10 @@ namespace FMASolutionsCore.Web.ShopBro.Controllers
         
         [Authorize(Policy = "Admin")]
         [HttpPost]
-        public IActionResult ProcessSearch(GenericSearchViewModel vmInput)
+        public IActionResult ProcessSearch(SearchOrderViewModel vmInput)
         {            
             OrderModel model = GetOrderModel();            
-            DisplayOrderViewModel vm = model.Search(vmInput.ID);
+            DisplayOrderViewModel vm = model.Search(vmInput.OrderIDUserInput);
             
             if(vm != null)
                 return View("Display",vm);

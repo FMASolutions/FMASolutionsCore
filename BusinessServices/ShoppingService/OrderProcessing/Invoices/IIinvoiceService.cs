@@ -10,5 +10,6 @@ namespace FMASolutionsCore.BusinessServices.ShoppingService
         IEnumerable<int> GetInvoicesForOrder(int orderHeaderID);
         Dictionary<int, string> GetInvoiceStatusDic();
         IEnumerable<InvoiceItemDTO> GetInvoiceItemsByInvoiceID(int invoiceID);
+        
     }
 }

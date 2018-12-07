@@ -29,6 +29,7 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         public List<int> GetInvoicesByOrder(int orderHeaderID)
         {
             var searchResult = _service.GetInvoicesForOrder(orderHeaderID);
+            
             List<int> returnInvoices = null;
             if(searchResult != null)
             {
@@ -42,11 +43,16 @@ namespace FMASolutionsCore.Web.ShopBro.Models
         {
             DisplayInvoiceViewModel returnVM = null;
             var searchInvoiceItems = _service.GetInvoiceItemsByInvoiceID(invoiceID);
+            var statusDic = _service.GetInvoiceStatusDic();
             if(searchInvoiceItems != null)
             {
                 returnVM =  new DisplayInvoiceViewModel();
+                
                 foreach(var item in searchInvoiceItems)
+                {
+                    returnVM.InvoiceStatus = item.InvoiceItemStatus;
                     returnVM.InvoiceItems.Add(item);
+                }
             }
             return returnVM;
         }

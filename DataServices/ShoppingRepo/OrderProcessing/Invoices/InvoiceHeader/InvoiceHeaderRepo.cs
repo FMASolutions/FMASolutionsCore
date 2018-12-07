@@ -188,11 +188,13 @@ namespace FMASolutionsCore.DataServices.ShoppingRepo
                 string query = @"
                 SELECT ih.InvoiceHeaderID AS [InvoiceID], ii.InvoiceItemID, oi.OrderHeaderID, ih.InvoiceDate
                     ,oi.OrderItemDescription AS [ItemDescription], oi.OrderItemQty AS [ItemQty], oi.OrderItemUnitPriceAfterDiscount AS [ItemPrice]
-                    ,oi.OrderItemUnitPriceAfterDiscount * oi.OrderItemQty AS [ItemTotal]
+                    ,oi.OrderItemUnitPriceAfterDiscount * oi.OrderItemQty AS [ItemTotal], iiStatus.InvoiceStatusValue AS [InvoiceItemStatus]
                 FROM InvoiceItems ii
                 INNER JOIN InvoiceHeaders ih ON ii.InvoiceHeaderID = ih.InvoiceHeaderID
                 INNER JOIN OrderItems oi ON ii.OrderItemID = oi.OrderItemID
-                WHERE ih.InvoiceHeaderID = @InvoiceHeaderID";
+                INNER JOIN InvoiceStatus iiStatus ON iiStatus.InvoiceStatusID = ii.InvoiceItemStatusID
+                WHERE ih.InvoiceHeaderID = @InvoiceHeaderID
+                ";
 
                 Helper.logger.WriteToProcessLog("InvoiceHeaderRepo.GetInvoiceByInvoiceID Started for invoiceID: " + invoiceID.ToString() + " full query := " + query);
 

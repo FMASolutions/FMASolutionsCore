@@ -11,6 +11,7 @@ namespace FMASolutionsCore.Web.ShopBro.ViewModels
             InvoiceItems = new List<InvoiceItemDTO>();
         }
         public List<InvoiceItemDTO> InvoiceItems {get;set;}
+        public string InvoiceStatus {get;set;}
         public decimal InvoiceTotal { 
             get{
                 decimal runningTotal = 0.0m;
