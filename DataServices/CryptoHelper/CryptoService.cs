@@ -11,8 +11,8 @@ namespace FMASolutionsCore.DataServices.CryptoHelper
             AesCryptoServiceProvider encDec = new AesCryptoServiceProvider();
             encDec.BlockSize = 128;
             encDec.KeySize = 256;
-            encDec.Key = ASCIIEncoding.ASCII.GetBytes(privateKey);
-            encDec.IV = ASCIIEncoding.ASCII.GetBytes(salt);
+            encDec.Key = ASCIIEncoding.ASCII.GetBytes(privateKey.Substring(0,encDec.Key.Length));
+            encDec.IV = ASCIIEncoding.ASCII.GetBytes(salt.Substring(encDec.IV.Length));
             encDec.Padding = PaddingMode.PKCS7;
             encDec.Mode = CipherMode.CBC;
 
